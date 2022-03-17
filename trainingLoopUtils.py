@@ -71,8 +71,8 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         t1_pred, t1_pred_class, h = model(t0, h.detach())
 
         # debug
-        print(t1_pred_class.dtype())
-        print(t1_binary.dtype())
+        print(t1_pred_class.dtype)
+        print(t1_binary.dtype)
 
 
         # backwards    
