@@ -85,8 +85,8 @@ def make_df(prio_grid, ucdp):
 
 # --------------------------------------------------------------
 
-#location = '/home/projects/ku_00017/data/raw/conflictNet'
-location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
+location = '/home/projects/ku_00017/data/raw/conflictNet'
+#location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
 
 prio_grid, ucdp = get_data(location)
 ucpd_vol = make_df(prio_grid = prio_grid, ucdp=ucdp)
