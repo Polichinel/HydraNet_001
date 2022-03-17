@@ -92,8 +92,8 @@ prio_grid, ucdp = get_data(location)
 ucpd_vol = make_df(prio_grid = prio_grid, ucdp=ucdp)
 
 print('Saving pickle')
-file_name = "ucpd_vol.pkl"
-output = open(file_name, 'wb')
+file_name = "/ucpd_vol.pkl"
+output = open(location + file_name, 'wb')
 pickle.dump(ucpd_vol, output)
 output.close()
 
