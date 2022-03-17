@@ -70,6 +70,11 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         # forward
         t1_pred, t1_pred_class, h = model(t0, h.detach())
 
+        # debug
+        print(t1_pred_class.dtype())
+        print(t1_binary.dtype())
+
+
         # backwards    
         optimizer.zero_grad()
         loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
