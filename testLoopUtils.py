@@ -48,7 +48,7 @@ def get_posterior(model, ucpd_vol, device, n=100):
   pred_list_class = []
 
   for i in range(n):
-    t31_pred_np, tn_pred_class_np = test(model, ttime_tensor)
+    t31_pred_np, tn_pred_class_np = test(model, ttime_tensor, device)
     pred_list.append(t31_pred_np)
     pred_list_class.append(tn_pred_class_np)
 
