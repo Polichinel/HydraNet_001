@@ -66,3 +66,7 @@ print('Done training. Saving model...')
 
 PATH = 'unet.pth'
 torch.save(unet.state_dict(), PATH)
+
+end_t = time.time()
+minutes = (end_t - start_t)/60
+print(f'Done. Runtime: {minutes:.3f} minutes')

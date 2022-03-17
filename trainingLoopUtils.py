@@ -64,7 +64,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
 
         # NEW THING!
-        t1_binary = (input_tensor[:, i+1, :, :] > 0).float().reshape(1, 1 , window_dim, window_dim).to(device)
+        t1_binary = (input_tensor[:, i+1, :, :] > 0).float32().reshape(1, 1 , window_dim, window_dim).to(device)
 
         # forward
         t1_pred, t1_pred_class, h = model(t0, h.detach())
@@ -72,8 +72,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         # backwards    
         optimizer.zero_grad()
         loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
+        
+        # NEEDS DEBUGGING
         #loss_class = criterion_class(t1_binary, t1_pred_class)  # forward-pass 
-
         #loss = loss_reg + loss_class # naive no weights und so weider
 
         loss = loss_reg # naive no weights und so weider
