@@ -72,8 +72,9 @@ print(t31_pred_class_np_std.min(), t31_pred_class_np_std.max())
 y_var = t31_pred_np_std.reshape(360*720)
 y_score = t31_pred_np_mean.reshape(360*720)
 
-y_score_prob = torch.sigmoid(torch.tensor(y_score))
-# y_score_prob = t31_pred_class_np_mean.reshape(360*720) #right now this is exactly equvilant.
+# HERE
+#y_score_prob = torch.sigmoid(torch.tensor(y_score))
+y_score_prob = t31_pred_class_np_mean.reshape(360*720)
 
 
 y_true = ucpd_vol[30,:,:,4].reshape(360*720)
