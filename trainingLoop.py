@@ -37,7 +37,8 @@ learning_rate = 0.0001
 weight_decay = 0.01
 optimizer = torch.optim.Adam(unet.parameters(), lr = learning_rate, weight_decay = weight_decay)
 criterion_reg = nn.MSELoss().to(device)
-criterion_class = nn.CrossEntropyLoss().to(device)
+#criterion_class = nn.CrossEntropyLoss().to(device)
+criterion_class = nn.BCELoss().to(device)
 
 transformer = transforms.Compose([transforms.RandomRotation((0,360)), transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
