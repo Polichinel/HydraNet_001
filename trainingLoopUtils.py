@@ -65,7 +65,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
 
         # NEW THING!
         # t1_binary = (input_tensor[:, i+1, :, :] > 0).float().reshape(1, 1 , window_dim, window_dim).to(device)
-        t1_binary = torch.tensor((t1 > 0) * 1, dtype = torch.float32)
+        t1_binary = torch.tensor((t1 > 0) * 1, dtype = torch.float32) # avoid long error.
 
         # forward
         t1_pred, t1_pred_class, h = model(t0, h.detach())
@@ -73,8 +73,6 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         # debug
         print(t1_pred_class.dtype)
         print(t1_binary.dtype)
-
-        break
 
         # backwards    
         optimizer.zero_grad()
