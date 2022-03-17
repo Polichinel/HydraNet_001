@@ -78,7 +78,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         optimizer.zero_grad()
 
         # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
-        loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
+        # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
+        loss_reg = criterion_reg(t1_pred, t1)  # forward-pass 
+
         
         # NEEDS DEBUGGING
 #        loss_class = criterion_class(t1_binary, t1_pred_class)  # forward-pass
