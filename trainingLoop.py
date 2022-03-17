@@ -18,7 +18,7 @@ start_t = time.time()
 
 print('loading data....')
 #location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
-location = '/home/projects/ku_00017/data/raw/ConflictNet'
+location = '/home/projects/ku_00017/data/raw/conflictNet'
 file_name = "/ucpd_vol.pkl"
 pkl_file = open(location + file_name, 'rb')
 ucpd_vol = pickle.load(pkl_file)
