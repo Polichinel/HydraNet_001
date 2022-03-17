@@ -74,7 +74,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
         
         # NEEDS DEBUGGING
-        loss_class = criterion_class(t1_binary.float32, t1_pred_class.float32)  # forward-pass 
+        loss_class = criterion_class(t1_binary.dtype(torch.float32), t1_pred_class.dtype(torch.float32))  # forward-pass 
         loss = loss_reg + loss_class # naive no weights und so weider
 
         # loss = loss_reg # naive no weights und so weider
