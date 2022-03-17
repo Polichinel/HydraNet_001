@@ -64,7 +64,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
 
         # NEW THING!
-        t1_binary = (input_tensor[:, i+1, :, :] > 0).float().reshape(1, 1 , window_dim, window_dim).to(device)
+        t1_binary = (input_tensor[:, i+1, :, :] > 0).long().reshape(1, 1 , window_dim, window_dim).to(device)
 
         # forward
         t1_pred, t1_pred_class, h = model(t0, h.detach())
