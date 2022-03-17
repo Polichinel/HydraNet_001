@@ -1,8 +1,9 @@
 import numpy as np
 import torch
 import random
+from recurrentUnet import *
 
-def draw_window(min_events = 10, ucpd_vol = ucpd_vol):
+def draw_window(ucpd_vol, min_events = 10):
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..
 
@@ -33,7 +34,7 @@ def get_input_tensors(ucpd_vol):
     seq_len = train_ucpd_vol.shape[0]
 
     # ...
-    window_dict = draw_window(min_events = 5, ucpd_vol = ucpd_vol)
+    window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = 5)
     
     min_lat = int(window_dict['lat'] - (window_dict['dim']/2)) 
     max_lat = int(window_dict['lat'] + (window_dict['dim']/2))
@@ -46,7 +47,7 @@ def get_input_tensors(ucpd_vol):
     return(input_tensor)
 
 
-def train(model, optimizer, criterion_reg, criterion_class, input_tensor, plot = False):
+def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device, unet, plot = False):
     
     avg_loss = 0
 

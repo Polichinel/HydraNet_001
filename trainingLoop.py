@@ -53,7 +53,7 @@ for i in range(draws):
     # data augmentation (can be turned of for final experiments)
     input_tensor = transformer(input_tensor) # rotations and flips
 
-    avg_loss = train(unet, optimizer, criterion_reg, criterion_class, input_tensor, plot = False)
+    avg_loss = train(unet, optimizer, criterion_reg, criterion_class, input_tensor, device, unet, plot = False)
     avg_losses.append(avg_loss.cpu().detach().numpy())
 
     
