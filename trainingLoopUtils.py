@@ -74,6 +74,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         print(t1_pred_class.dtype)
         print(t1_binary.dtype)
 
+        break
 
         # backwards    
         optimizer.zero_grad()
