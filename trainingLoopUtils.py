@@ -70,6 +70,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
 
         # forward
         t1_pred, t1_pred_class, h = model(t0, h.detach())
+        t1_pred_class = torch.tensor(t1_pred_class, dtype=torch.float32)
 
         # backwards    
         optimizer.zero_grad()
