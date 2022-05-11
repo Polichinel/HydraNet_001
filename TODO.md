@@ -1,7 +1,13 @@
 # TODO
 
+- [ ] Impliement wasserstain distance as regression metric!
+
+https://stats.stackexchange.com/questions/295617/what-is-the-advantages-of-wasserstein-metric-compared-to-kullback-leibler-diverg/295729#295729
+
+https://arxiv.org/abs/1701.07875
+
 - [ ] Impliment Multi-head model (classification and regression)
-  - I gues you just have to normalize both loses before adding them togheter. But how to do that when the loss i just one number? Sigmoid the regression output?    
+  - I guess you just have to normalize both loses before adding them togheter. But how to do that when the loss i just one number? Sigmoid the regression output?    
     > loss = loss1+loss2
     > loss.backward()
     > optimizer.step()
@@ -16,7 +22,7 @@
   - But log-normal might be better since you do not really have count data after the log transformation..
   - But the question is, wheter you should do zero inflated, rather than multy task. But htne you can't really do the risk thing.. It is down to the question if it is really two different taks (perfctly corrolated) or two different task..
 
-- [ ] Random size of sampled subregions
+- [x] Random size of sampled subregions
 - [ ] Use ViEWS replication Data - but you should also have a global model
 - [ ] Now you also need to predict longer into the furture.
 - [ ] Check if LTSM models are better now you use monthly data.
