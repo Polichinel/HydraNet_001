@@ -97,14 +97,17 @@ def test_sinkhorn_time():
 # Weights:
     input_tensor, meta_tensor_dict = get_input_tensors()
     # just comparing tow years. fixes dim at 64
+    # WORKS
     t0 = input_tensor[:, 0, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
     t1 = input_tensor[:, 1, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
 
 # Labels:
+    # WORKS!
+    gids = meta_tensor_dict['gids'].to(device).reshape(-1).argsort() 
+
     #gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
     #gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
 
-    gids = meta_tensor_dict['gids'].to(device).reshape(-1).argsort()
     
     #gids_norm = (gids - gids.min())/(gids.max()-gids.min())
 
@@ -112,20 +115,25 @@ def test_sinkhorn_time():
     #gids1 = torch.tensor(np.arange(0, 64*64, 1), dtype = torch.int).to(device)
 
 # # Coordinates
-#     longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach().clone()
-#     latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
-#     coords = torch.column_stack([longitudes, latitudes])
+
+    longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach().clone()
+    latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
+
+    longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
+    latitudes_norm = (latitudes - latitudes.min())/(latitudes.max()-latitudes.min())
+
+    coords = torch.column_stack([longitudes_norm, latitudes_norm])
 
     # coords0, coords1 = torch.tensor(np.random.rand(2, 64*64, 2), dtype=torch.float).to(device)
 
-    grid_x = np.linspace(0,1, 64)
-    grid_y = np.linspace(0,1, 64)
+    # grid_x = np.linspace(0,1, 64)
+    # grid_y = np.linspace(0,1, 64)
 
-    coordsM = np.meshgrid(grid_x, grid_y)
-    coords_x = coordsM[0].reshape(-1)
-    coords_y = coordsM[1].reshape(-1)
+    # coordsM = np.meshgrid(grid_x, grid_y)
+    # coords_x = coordsM[0].reshape(-1)
+    # coords_y = coordsM[1].reshape(-1)
 
-    coords = np.column_stack([coords_x, coords_y])
+    # coords = np.column_stack([coords_x, coords_y])
     coords0 = torch.tensor(coords, dtype = torch.float).to(device)
     coords1 = torch.tensor(coords, dtype = torch.float).to(device)
 
