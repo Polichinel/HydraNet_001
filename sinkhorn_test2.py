@@ -102,8 +102,13 @@ def test_sinkhorn_time():
     coords = torch.column_stack([longitudes, latitudes])
 
     # just comparing tow years. fixes dim at 64
-    t0 = input_tensor[:, 0, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
-    t1 = input_tensor[:, 1, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
+    #t0 = input_tensor[:, 0, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
+    #t1 = input_tensor[:, 1, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
+
+    weights0, weights1 = np.random.rand(2, 64*64) 
+
+    t0 = torch.tensor(weights0, dtype=torch.float).to(device)
+    t1 = torch.tensor(weights1, dtype=torch.float).to(device)
 
     loss = geomloss.SamplesLoss(loss='sinkhorn', p = 1, blur= 0.05, verbose=False)
 
