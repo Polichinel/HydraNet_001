@@ -52,9 +52,9 @@ def get_input_tensors(ucpd_vol):
     longitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 1].reshape(1, 1, window_dict['dim'], window_dict['dim'])
     latitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 2].reshape(1, 1, window_dict['dim'], window_dict['dim']) 
 
-    gids_tensor = torch.tensor(gids).int() # must be int.
-    longitudes_tensor = torch.tensor(longitudes).float()
-    latitudes_tensor = torch.tensor(latitudes).float()
+    gids_tensor = torch.tensor(gids, dtype=torch.int) # must be int.
+    longitudes_tensor = torch.tensor(longitudes, dtype=torch.float)
+    latitudes_tensor = torch.tensor(latitudes, dtype=torch.float)
 
     meta_tensor_dict = {'gids' : gids_tensor, 'longitudes' : longitudes_tensor, 'latitudes' : latitudes_tensor }
     input_tensor = torch.tensor(input_window).float()
