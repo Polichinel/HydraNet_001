@@ -10,8 +10,8 @@ def test_sinkhorn_time(M):
         dev = "cuda:0" 
     else:  
         dev = "cpu"  
-        device = torch.device(dev) 
-
+    
+    device = torch.device(dev) 
     start = time.time()
 
     coords0, coords1 = np.random.rand(2, M, 2)
