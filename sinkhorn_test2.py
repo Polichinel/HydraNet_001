@@ -23,7 +23,6 @@ def get_data():
 def draw_window(ucpd_vol, min_events = 10):
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..
-    np.random.seed(42)
     #ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,4], axis = 0) # with coordinates in vol, log best is 7
     ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,7], axis = 0) # with coordinates in vol, log best is 7
 
@@ -34,7 +33,9 @@ def draw_window(ucpd_vol, min_events = 10):
 
     min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] # is is index... Not lat long.
 
-    indx = random.choice(min_events_indx)
+    #indx = random.choice(min_events_indx)
+    indx = min_events_indx[0]
+    
     #dim = 16 # if truble, start by hard coding this to 16
     dim = 64 # np.random.choice([8, 16, 32, 64]) # 8, 64
 
