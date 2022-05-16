@@ -125,8 +125,8 @@ def test_sinkhorn_time():
     # weights0t = torch.tensor(weights0, dtype=torch.float).to(device)
     # weights1t = torch.tensor(weights1, dtype=torch.float).to(device)
 
-    print(gids0.shape)
-    print(gids1.shape)
+    # print(gids0.shape)
+    # print(gids1.shape)
     # print(coords0t.shape)
     # print(coords1t.shape)
     print(t0.shape)
