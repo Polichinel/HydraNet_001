@@ -128,8 +128,8 @@ def test_sinkhorn_time():
     # weights1t = torch.tensor(weights1, dtype=torch.float).to(device)
 
     #sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
-    # sinkhornLoss = loss(gids, t0, coords, gids, t1, coords)
-    sinkhornLoss = 0
+    sinkhornLoss = loss(gids, t0, coords, gids, t1, coords)
+    #sinkhornLoss = 0
 
     end = time.time()
     run_time = (end - start)
