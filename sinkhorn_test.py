@@ -30,6 +30,14 @@ def test_sinkhorn_time(M):
 
     sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
 
+    print(labels0t.shape)
+    print(labels1t.shape)
+    print(coords0t.shape)
+    print(coords1t.shape)
+    print(weights0t.shape)
+    print(weights1t.shape)
+
+
     end = time.time()
     run_time = (end - start)
 
