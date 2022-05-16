@@ -99,14 +99,16 @@ def test_sinkhorn_time():
     t0 = input_tensor[:, 0, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
     t1 = input_tensor[:, 1, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
 
-# # Labels:
-#     gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
-#     gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
+# Labels:
+    gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
+    gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
 
 # # Coordinates
 #     longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach().clone()
 #     latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
 #     coords = torch.column_stack([longitudes, latitudes])
+
+    coords0, coords1 = np.random.rand(2, 64*64, 2)
 
     #weights0, weights1 = np.random.rand(2, 64*64)
 
@@ -125,16 +127,10 @@ def test_sinkhorn_time():
     # weights0t = torch.tensor(weights0, dtype=torch.float).to(device)
     # weights1t = torch.tensor(weights1, dtype=torch.float).to(device)
 
-    # print(gids0.shape)
-    # print(gids1.shape)
-    # print(coords0t.shape)
-    # print(coords1t.shape)
-    print(t0.shape)
-    print(t1.shape)
 
     #sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
-    #sinkhornLoss = loss(gids0, t0, coords, gids1, t1, coords)
-    sinkhornLoss = loss(t0, t1)
+    sinkhornLoss = loss(gids0, t0, coords0, gids1, t1, coords1)
+    #sinkhornLoss = loss(t0, t1) 
 
     end = time.time()
     run_time = (end - start)
