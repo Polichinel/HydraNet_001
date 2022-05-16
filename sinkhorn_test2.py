@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import geomloss # also needs: pip install pykeops
 import time
-import os 
+import os
 import pickle
 import random
 
@@ -32,7 +32,7 @@ def draw_window(ucpd_vol, min_events = 10):
     min_events_col = min_events_index[1]
 
     min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] # is is index... Not lat long.
-    
+
     indx = random.choice(min_events_indx)
     #dim = 16 # if truble, start by hard coding this to 16
     dim = 64 # np.random.choice([8, 16, 32, 64]) # 8, 64
@@ -43,7 +43,7 @@ def draw_window(ucpd_vol, min_events = 10):
 
 
 def get_input_tensors():
-  
+
     ucpd_vol = get_data()
 
     # ...
@@ -55,20 +55,20 @@ def get_input_tensors():
 
     # ...
     window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = 5)
-    
-    min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
+
+    min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2))
     max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
     min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
     max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
     # It is now 7, not 4, since you keep coords.
 #    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx , 4].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
-    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim']) 
-    
+    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
+
     # 0 since this is constant across years. 1 dim for batch and one dim for time.
     gids = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 0].reshape(1, 1, window_dict['dim'], window_dict['dim'])
     longitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 1].reshape(1, 1, window_dict['dim'], window_dict['dim'])
-    latitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 2].reshape(1, 1, window_dict['dim'], window_dict['dim']) 
+    latitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 2].reshape(1, 1, window_dict['dim'], window_dict['dim'])
 
     gids_tensor = torch.tensor(gids, dtype=torch.int) # must be int.
     longitudes_tensor = torch.tensor(longitudes, dtype=torch.float)
@@ -82,31 +82,33 @@ def get_input_tensors():
 
 def test_sinkhorn_time():
 
-    if torch.cuda.is_available():  
-        dev = "cuda:0" 
-    else:  
-        dev = "cpu"  
-    
-    device = torch.device(dev) 
+    if torch.cuda.is_available():
+        dev = "cuda:0"
+    else:
+        dev = "cpu"
+
+    device = torch.device(dev)
     start = time.time()
 
     #coords0, coords1 = np.random.rand(2, 64*64, 2)
-    # weights0, weights1 = np.random.rand(2, M) 
+    # weights0, weights1 = np.random.rand(2, M)
 
+# Weights:
     input_tensor, meta_tensor_dict = get_input_tensors()
-    
-    gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
-    gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
-    longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach().clone()
-    latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
-
-    coords = torch.column_stack([longitudes, latitudes])
-
     # just comparing tow years. fixes dim at 64
     t0 = input_tensor[:, 0, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
     t1 = input_tensor[:, 1, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
 
-    #weights0, weights1 = np.random.rand(2, 64*64) 
+# # Labels:
+#     gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
+#     gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
+
+# # Coordinates
+#     longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach().clone()
+#     latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
+#     coords = torch.column_stack([longitudes, latitudes])
+
+    #weights0, weights1 = np.random.rand(2, 64*64)
 
     #t0 = torch.tensor(weights0, dtype=torch.float).to(device)
     #t1 = torch.tensor(weights1, dtype=torch.float).to(device)
@@ -123,7 +125,6 @@ def test_sinkhorn_time():
     # weights0t = torch.tensor(weights0, dtype=torch.float).to(device)
     # weights1t = torch.tensor(weights1, dtype=torch.float).to(device)
 
-
     print(gids0.shape)
     print(gids1.shape)
     # print(coords0t.shape)
@@ -132,8 +133,8 @@ def test_sinkhorn_time():
     print(t1.shape)
 
     #sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
-    sinkhornLoss = loss(gids0, t0, coords, gids1, t1, coords)
-    #sinkhornLoss = 0
+    #sinkhornLoss = loss(gids0, t0, coords, gids1, t1, coords)
+    sinkhornLoss = loss(t0, t1)
 
     end = time.time()
     run_time = (end - start)
@@ -147,7 +148,7 @@ def main():
 
     # M = input('Input number of cells (e.g. 259200 for full prio grid):')
     # M = int(M)
-    
+
     test_sinkhorn_time()
 
 #full prio grid is 360×720 = 259200 cells.
