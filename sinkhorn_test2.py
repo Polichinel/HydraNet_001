@@ -95,10 +95,10 @@ def test_sinkhorn_time():
 
     input_tensor, meta_tensor_dict = get_input_tensors()
     
-    gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).copy()
-    gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).copy()
-    longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1)
-    latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1)
+    gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
+    gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
+    longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach().clone()
+    latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
 
     #coords = torch.column_stack([longitudes, latitudes])
 
@@ -106,7 +106,7 @@ def test_sinkhorn_time():
     t0 = input_tensor[:, 0, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
     t1 = input_tensor[:, 1, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
 
-    weights0, weights1 = np.random.rand(2, 64*64) 
+    #weights0, weights1 = np.random.rand(2, 64*64) 
 
     #t0 = torch.tensor(weights0, dtype=torch.float).to(device)
     #t1 = torch.tensor(weights1, dtype=torch.float).to(device)
