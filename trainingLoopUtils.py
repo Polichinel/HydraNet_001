@@ -7,19 +7,21 @@ def draw_window(ucpd_vol, min_events = 10):
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..
 
-    ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,4], axis = 0)
-    min_events_index = np.where(ucpd_vol_count >= min_events) # number of events so >= 1 or >0 is the same as np.nonzero
+    #ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,4], axis = 0) # with coordinates in vol, log best is 7
+    ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,7], axis = 0) # with coordinates in vol, log best is 7
+
+    min_events_index = np.where(ucpd_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
 
     min_events_row = min_events_index[0]
     min_events_col = min_events_index[1]
 
-    min_events_coord = [(row, col) for row, col in zip(min_events_row, min_events_col)]
+    min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] # is is index... Not lat long.
     
-    coord = random.choice(min_events_coord)
+    indx = random.choice(min_events_indx)
     #dim = 16 # if truble, start by hard coding this to 16
     dim = np.random.choice([8, 16, 32, 64]) # 8, 64
 
-    window_dict = {'lat':coord[0], 'long':coord[1], 'dim' : dim}
+    window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim}
 
     return(window_dict)
 
@@ -30,24 +32,37 @@ def get_input_tensors(ucpd_vol):
     train_ucpd_vol = ucpd_vol[:-1] # all except the last year
     #print(f'train data shape: {train_ucpd_vol.shape}') # debug.
 
-    # ...
+    # The lenght of a whole time lime.
     seq_len = train_ucpd_vol.shape[0]
 
     # ...
     window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = 5)
     
-    min_lat = int(window_dict['lat'] - (window_dict['dim']/2)) 
-    max_lat = int(window_dict['lat'] + (window_dict['dim']/2))
-    min_long = int(window_dict['long'] - (window_dict['dim']/2))
-    max_long = int(window_dict['long'] + (window_dict['dim']/2))
+    min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
+    max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
+    min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
+    max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
-    input_window = train_ucpd_vol[ : , min_lat : max_lat , min_long : max_long , 4].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
+    # It is now 7, not 4, since you keep coords.
+#    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx , 4].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
+    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim']) 
+    
+    # 0 since this is constant across years. 1 dim for batch and one dim for time.
+    gids = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 0].reshape(1, 1, window_dict['dim'], window_dict['dim'])
+    longitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 1].reshape(1, 1, window_dict['dim'], window_dict['dim'])
+    latitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 2].reshape(1, 1, window_dict['dim'], window_dict['dim']) 
+
+    gids_tensor = torch.tensor(gids).int() # must be int.
+    longitudes_tensor = torch.tensor(longitudes).float()
+    latitudes_tensor = torch.tensor(latitudes).float()
+
+    meta_tensor_dict = {'gids' : gids_tensor, 'longitudes' : longitudes_tensor, 'latitudes' : latitudes_tensor }
     input_tensor = torch.tensor(input_window).float()
 
-    return(input_tensor)
+    return(input_tensor, meta_tensor_dict)
 
 
-def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device, unet, plot = False):
+def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, plot = False):
     
     avg_loss = 0
 
@@ -56,6 +71,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
     seq_len = input_tensor.shape[1] 
     window_dim = input_tensor.shape[2]
     
+    # initialize a hidden state
     h = unet.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
 
     for i in range(seq_len-1): # so your sequnce is the full time len
@@ -81,13 +97,35 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
 # not sure that works.
 
 
+        # TESTING GEOLOSS!!!!
+        gids = meta_tensor_dict['gids'].to(device).reshape(-1, order = 'C')
+        longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1, order = 'C')
+        latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1, order = 'C')
+
+        coords = torch.Tensor(np.column_stack([longitudes, latitudes])).float()
+
+        t1_pred_1d = t1_pred.reshape(-1, order = 'C')
+        t1_1d = t1.reshape(-1, order = 'C')
+        t1_pred_class_1d = t1_pred_class.reshape(-1, order = 'C')
+        t1_binary_1d = t1_binary.reshape(-1, order = 'C')
+
+        #sinkhornLoss = loss(labels0, weights0, coords0, labels1, weights1, coords1)
+
+        loss_reg = criterion_reg(gids, t1_pred_1d, coords, t1_1d, gids, coords)
+        loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
+        # ---------------------------------------------------------
+
+
         # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
         # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
-        loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. 
+        #loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. # correct and working!!!
 
         # NEEDS DEBUGGING
 #        loss_class = criterion_class(t1_binary, t1_pred_class)  # forward-pass
-        loss_class = criterion_class(t1_pred_class, t1_binary)  # forward-pass 
+        #loss_class = criterion_class(t1_pred_class, t1_binary)  # forward-pass # correct and working!!!
+
+
+
 
         loss = loss_reg + loss_class # naive no weights und so weider
 

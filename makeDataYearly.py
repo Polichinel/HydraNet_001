@@ -4,6 +4,7 @@ import geopandas as gpd
 import pickle
 import urllib.request
 
+# run with geo_env
 
 def get_data(location):
 
@@ -73,7 +74,8 @@ def make_df(prio_grid, ucdp):
 
     grid_ucdpS = grid_ucdp.sort_values(['year', 'ycoord', 'xcoord'], ascending = [True, False, True])
 
-    grid_ucdpS = grid_ucdpS[['gid','best', 'low',  'high', 'log_best', 'log_low', 'log_high']].copy() # remove the everything also the geo col. But keep gid. Why not.
+    # try to keep the jazz
+    #grid_ucdpS = grid_ucdpS[['gid','best', 'low',  'high', 'log_best', 'log_low', 'log_high']].copy() # remove the everything also the geo col. But keep gid. Why not.
 
     x_dim = grid_ucdp['xcoord'].unique().shape[0]
     y_dim = grid_ucdp['ycoord'].unique().shape[0]
@@ -85,8 +87,8 @@ def make_df(prio_grid, ucdp):
 
 # --------------------------------------------------------------
 
-location = '/home/projects/ku_00017/data/raw/conflictNet'
-#location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
+#location = '/home/projects/ku_00017/data/raw/conflictNet'
+location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
 
 prio_grid, ucdp = get_data(location)
 ucpd_vol = make_df(prio_grid = prio_grid, ucdp=ucdp)

@@ -64,11 +64,11 @@ print('Training initiated...')
 for i in range(draws):
 
     #input_tensor = torch.tensor(train_ucpd_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
-    input_tensor = get_input_tensors(ucpd_vol)
+    input_tensor, meta_tensor_dict = get_input_tensors(ucpd_vol)
     # data augmentation (can be turned of for final experiments)
     input_tensor = transformer(input_tensor) # rotations and flips
 
-    avg_loss = train(unet, optimizer, criterion_reg, criterion_class, input_tensor, device, unet, plot = False)
+    avg_loss = train(unet, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, plot = False)
     avg_losses.append(avg_loss.cpu().detach().numpy())
 
     
