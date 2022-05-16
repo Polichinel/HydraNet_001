@@ -108,7 +108,7 @@ def test_sinkhorn_time():
 #     latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
 #     coords = torch.column_stack([longitudes, latitudes])
 
-    coords0, coords1 = np.random.rand(2, 64*64, 2)
+    coords0, coords1 = torch.tensor(np.random.rand(2, 64*64, 2), dtype=torch.float).to(device)
 
     #weights0, weights1 = np.random.rand(2, 64*64)
 
