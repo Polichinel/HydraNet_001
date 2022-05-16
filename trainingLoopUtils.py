@@ -102,7 +102,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1)
         latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1)
 
-        coords = torch.Tensor(np.column_stack([longitudes, latitudes])).float()
+        coords = torch.column_stack([longitudes, latitudes])
 
         t1_pred_1d = t1_pred.reshape(-1)
         t1_1d = t1.reshape(-1)
