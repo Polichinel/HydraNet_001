@@ -1,3 +1,4 @@
+from pyexpat.errors import XML_ERROR_INCORRECT_ENCODING
 import numpy as np
 import torch
 import geomloss # also needs: pip install pykeops
@@ -111,7 +112,18 @@ def test_sinkhorn_time():
 #     latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
 #     coords = torch.column_stack([longitudes, latitudes])
 
-    coords0, coords1 = torch.tensor(np.random.rand(2, 64*64, 2), dtype=torch.float).to(device)
+    # coords0, coords1 = torch.tensor(np.random.rand(2, 64*64, 2), dtype=torch.float).to(device)
+
+    grid_x = np.linspace(0,1, 64)
+    grid_y = np.linspace(0,1, 64)
+
+    coordsM = np.meshgrid(grid_x, grid_y)
+    coords_x = coordsM[0].reshape(-1)
+    coords_y = coordsM[1].reshape(-1)
+
+    coords = np.column_stack([coords_x, coords_y])
+    coords0 = torch.tensor(coords, dtype = torch.float)
+    coords1 = torch.tensor(coords, dtype = torch.float)
 
     #weights0, weights1 = np.random.rand(2, 64*64)
 
