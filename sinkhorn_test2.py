@@ -95,7 +95,8 @@ def test_sinkhorn_time():
 
     input_tensor, meta_tensor_dict = get_input_tensors()
     
-    gids = meta_tensor_dict['gids'].to(device).reshape(-1)
+    gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).copy()
+    gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).copy()
     longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1)
     latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1)
 
@@ -112,11 +113,6 @@ def test_sinkhorn_time():
 
     loss = geomloss.SamplesLoss(loss='sinkhorn', p = 1, blur= 0.05, verbose=False)
 
-    print(gids.shape)
-    #print(coords.shape)
-    print(t0.shape)
-    print(t1.shape)
-
 
     #labels0t = torch.tensor(np.arange(0, coords0.shape[0], 1), dtype=torch.int).to(device)
     #labels1t = torch.tensor(np.arange(0, coords1.shape[0], 1), dtype=torch.int).to(device)
@@ -128,14 +124,15 @@ def test_sinkhorn_time():
     # weights1t = torch.tensor(weights1, dtype=torch.float).to(device)
 
 
-    print(gids.shape)
+    print(gids0.shape)
+    print(gids1.shape)
     print(coords0t.shape)
     print(coords1t.shape)
     print(t0.shape)
     print(t1.shape)
 
     #sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
-    sinkhornLoss = loss(gids, t0, coords0t, gids, t1, coords1t)
+    sinkhornLoss = loss(gids0, t0, coords0t, gids1, t1, coords1t)
     #sinkhornLoss = 0
 
     end = time.time()
