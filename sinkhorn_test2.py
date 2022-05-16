@@ -93,9 +93,9 @@ def test_sinkhorn_time():
 
     #coords0, coords1 = np.random.rand(2, 64*64, 2)
     # weights0, weights1 = np.random.rand(2, M)
+    input_tensor, meta_tensor_dict = get_input_tensors()
 
 # Weights:
-    input_tensor, meta_tensor_dict = get_input_tensors()
     # just comparing tow years. fixes dim at 64
     # WORKS
     t0 = input_tensor[:, 0, :, :].reshape(1, 1 , 64 , 64).to(device).reshape(-1)
@@ -115,9 +115,9 @@ def test_sinkhorn_time():
     #gids1 = torch.tensor(np.arange(0, 64*64, 1), dtype = torch.int).to(device)
 
 # # Coordinates
-
-    longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach().clone()
-    latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach().clone()
+    # WORKS
+    longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1) #.detach().clone()
+    latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1) #.detach().clone()
 
     longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
     latitudes_norm = (latitudes - latitudes.min())/(latitudes.max()-latitudes.min())
