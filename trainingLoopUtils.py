@@ -97,12 +97,20 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 # not sure that works.
 
 
-        # TESTING GEOLOSS!!!!
-        gids = meta_tensor_dict['gids'].to(device).reshape(-1)
+        # TESTING GEOLOSS!!!! Should prob detach...
+        # Label
+        gids = meta_tensor_dict['gids'].to(device).reshape(-1).argsort() # unique ID for each grid cell.
+
+        # Coordinates
         longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1)
         latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1)
 
-        coords = torch.column_stack([longitudes, latitudes])
+        # norm to between 0 and 1
+        longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
+        latitudes_norm = (latitudes - latitudes.min())/(latitudes.max()-latitudes.min())
+
+        # NxD
+        coords = torch.column_stack([longitudes_norm, latitudes_norm])
 
         # print(gids.shape)
         # print(coords.shape)
