@@ -134,10 +134,10 @@ def test_sinkhorn_time():
     # coords_y = coordsM[1].reshape(-1)
 
     # coords = np.column_stack([coords_x, coords_y])
-    coords = torch.tensor(coords, dtype = torch.float).to(device)
+    #coords = torch.tensor(coords, dtype = torch.float).to(device)
 
-    coords0 = torch.tensor(coords, dtype = torch.float).to(device)
-    coords1 = torch.tensor(coords, dtype = torch.float).to(device)
+   # coords0 = torch.tensor(coords, dtype = torch.float).to(device)
+    #coords1 = torch.tensor(coords, dtype = torch.float).to(device)
 
     #weights0, weights1 = np.random.rand(2, 64*64)
 
