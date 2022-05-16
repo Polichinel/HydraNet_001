@@ -111,7 +111,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 
         #sinkhornLoss = loss(labels0, weights0, coords0, labels1, weights1, coords1)
 
-        loss_reg = criterion_reg(gids, t1_pred_1d, coords, t1_1d, gids, coords)
+        loss_reg = criterion_reg(gids, t1_pred_1d, coords, gids, t1_1d, coords)
         loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
         # ---------------------------------------------------------
 
