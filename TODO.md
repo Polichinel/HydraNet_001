@@ -1,6 +1,21 @@
 # TODO
 
-- [ ] Impliement wasserstain distance as regression metric!
+- [x] Random size of sampled subregions
+
+# if you can do this before Wednesday...
+
+- [ ] Use Sinkhorn as a loss
+- [ ] Impliement wasserstain distance/Sinkhorn as regression metric!
+- [ ] Use ViEWS replication Data - but you should also have a global model
+- [ ] Now you also need to predict longer into the furture.
+- [ ] Check if LTSM models are better now you use monthly data.
+- [ ] Data uncertainty by using all three measure - or a distribution hereof.
+
+-----------------
+
+- [ ] Model uncertinty by Prob. UNet.
+- [ ] Spatial transformer.
+- [ ] Add more channels: Population, Urban, Rough terrain, night light etc.
 
 https://stats.stackexchange.com/questions/295617/what-is-the-advantages-of-wasserstein-metric-compared-to-kullback-leibler-diverg/295729#295729
 
@@ -22,12 +37,6 @@ https://arxiv.org/abs/1701.07875
   - But log-normal might be better since you do not really have count data after the log transformation..
   - But the question is, wheter you should do zero inflated, rather than multy task. But htne you can't really do the risk thing.. It is down to the question if it is really two different taks (perfctly corrolated) or two different task..
 
-- [x] Random size of sampled subregions
-- [ ] Use ViEWS replication Data - but you should also have a global model
-- [ ] Now you also need to predict longer into the furture.
-- [ ] Check if LTSM models are better now you use monthly data.
-- [ ] Data uncertainty by using all three measure - or a distribution hereof.
-- [ ] Model uncertinty by Prob. UNet.
-- [ ] Add more channels: night light etc.
+
 
 note every thing can be run from anaconda3/2021.05

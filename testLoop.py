@@ -73,8 +73,8 @@ y_var = t31_pred_np_std.reshape(360*720)
 y_score = t31_pred_np_mean.reshape(360*720)
 
 # HERE
-#y_score_prob = torch.sigmoid(torch.tensor(y_score))
-y_score_prob = t31_pred_class_np_mean.reshape(360*720)
+#y_score_prob = torch.sigmoid(torch.tensor(y_score)) # old trick..
+y_score_prob = t31_pred_class_np_mean.reshape(360*720) # way better brier!
 
 
 y_true = ucpd_vol[30,:,:,4].reshape(360*720)
@@ -92,3 +92,7 @@ end_t = time.time()
 minutes = (end_t - start_t)/60
 
 print(f'Done. Runtime: {minutes:.3f} minutes')
+
+
+#TODO:
+# Ppersitance model should go back in and yo should output in a .txt fil.

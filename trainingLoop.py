@@ -8,6 +8,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
 
+import geomloss # New loss. also needs: pip install pykeops 
+
+
 from trainingLoopUtils import *
 from recurrentUnet import *
 
@@ -36,10 +39,21 @@ unet = UNet(input_channels, hidden_channels, output_channels, dropout_rate).to(d
 learning_rate = 0.0001
 weight_decay = 0.01
 optimizer = torch.optim.Adam(unet.parameters(), lr = learning_rate, weight_decay = weight_decay)
-criterion_reg = nn.MSELoss().to(device)
-#criterion_class = nn.CrossEntropyLoss().to(device)
-criterion_class = nn.BCELoss().to(device)
 
+# --------------------------------------------------------------
+#criterion_reg = nn.MSELoss().to(device) # works
+#criterion_class = nn.CrossEntropyLoss().to(device) # shoulfd not use
+#criterion_class = nn.BCELoss().to(device) # works
+
+# New:
+criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', p = 2, blur= 0.05, verbose=False).to(device)
+criterion_class = geomloss.SamplesLoss(loss='sinkhorn', p = 2, blur= 0.05, verbose=False).to(device)
+# Needs to set reach: "[...] if reach is None (balanced Optimal Transport), the resulting routine will expect measures whose total masses are equal with each other."
+# Needs to set backend explicitly: online or multiscale
+
+# --------------------------------------------------------------
+
+# add spatail transformer
 transformer = transforms.Compose([transforms.RandomRotation((0,360)), transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
 draws = 1000 # same as draws..give other name... 

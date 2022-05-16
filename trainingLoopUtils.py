@@ -77,11 +77,14 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, device
         # backwards    
         optimizer.zero_grad()
 
+# Regarding sinkhorn. Right now you are not wiegthing the tensors or feeding the coordinates. you just give it tensor maps...
+# not sure that works.
+
+
         # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
         # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
-        loss_reg = criterion_reg(t1_pred, t1)  # forward-pass 
+        loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. 
 
-        
         # NEEDS DEBUGGING
 #        loss_class = criterion_class(t1_binary, t1_pred_class)  # forward-pass
         loss_class = criterion_class(t1_pred_class, t1_binary)  # forward-pass 
