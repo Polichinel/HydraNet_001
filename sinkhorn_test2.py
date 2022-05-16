@@ -23,7 +23,7 @@ def get_data():
 def draw_window(ucpd_vol, min_events = 10):
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..
-
+    np.random.seed(42)
     #ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,4], axis = 0) # with coordinates in vol, log best is 7
     ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,7], axis = 0) # with coordinates in vol, log best is 7
 
@@ -144,7 +144,7 @@ def test_sinkhorn_time():
     #t0 = torch.tensor(weights0, dtype=torch.float).to(device)
     #t1 = torch.tensor(weights1, dtype=torch.float).to(device)
 
-    loss = geomloss.SamplesLoss(loss='sinkhorn', p = 1, blur= 0.0001, verbose=False)
+    loss = geomloss.SamplesLoss(loss='sinkhorn', p = 1, blur= 0.05, verbose=False)
 
 
     #labels0t = torch.tensor(np.arange(0, coords0.shape[0], 1), dtype=torch.int).to(device)
