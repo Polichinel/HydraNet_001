@@ -104,11 +104,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 
         coords = torch.column_stack([longitudes, latitudes])
 
-        print(gids.shape)
-        print(coords.shape)
-        #..
+        # print(gids.shape)
+        # print(coords.shape)
 
-        break
         t1_pred_1d = t1_pred.reshape(-1)
         t1_1d = t1.reshape(-1)
         t1_pred_class_1d = t1_pred_class.reshape(-1)
