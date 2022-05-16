@@ -140,8 +140,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 
         loss = loss_reg + loss_class # naive no weights und so weider
 
-        print(f'reg: {loss_reg}')
-        print(f'class: {loss_class}')
+# for debuf and testing..
+        # print(f'reg: {loss_reg}')
+        # print(f'class: {loss_class}')
 
         # loss = loss_reg # naive no weights und so weider
 
