@@ -90,7 +90,7 @@ def test_sinkhorn_time():
     device = torch.device(dev) 
     start = time.time()
 
-    coords0, coords1 = np.random.rand(2, M, 2)
+    coords0, coords1 = np.random.rand(2, 64*64, 2)
     # weights0, weights1 = np.random.rand(2, M) 
 
     input_tensor, meta_tensor_dict = get_input_tensors()
@@ -122,7 +122,7 @@ def test_sinkhorn_time():
     #labels1t = torch.tensor(np.arange(0, coords1.shape[0], 1), dtype=torch.int).to(device)
 
     coords0t = torch.tensor(coords0, dtype=torch.float).to(device)
-    coords1t = torch.tensor(coords0, dtype=torch.float).to(device)
+    coords1t = torch.tensor(coords1, dtype=torch.float).to(device)
 
     # weights0t = torch.tensor(weights0, dtype=torch.float).to(device)
     # weights1t = torch.tensor(weights1, dtype=torch.float).to(device)
