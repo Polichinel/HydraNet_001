@@ -134,6 +134,8 @@ def test_sinkhorn_time():
     # coords_y = coordsM[1].reshape(-1)
 
     # coords = np.column_stack([coords_x, coords_y])
+    coords = torch.tensor(coords, dtype = torch.float).to(device)
+
     coords0 = torch.tensor(coords, dtype = torch.float).to(device)
     coords1 = torch.tensor(coords, dtype = torch.float).to(device)
 
@@ -156,7 +158,7 @@ def test_sinkhorn_time():
 
 
     #sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
-    sinkhornLoss = loss(gids, t0, coords0, gids, t1, coords1)
+    sinkhornLoss = loss(gids, t0, coords, gids, t1, coords)
     #sinkhornLoss = loss(t0, t1) 
 
     end = time.time()
