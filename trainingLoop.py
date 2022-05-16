@@ -76,7 +76,6 @@ for i in range(draws):
         print(f'{i} {avg_loss:.4f}') # could plot ap instead...
 
 
-
 print('Done training. Saving model...')
 
 PATH = 'unet.pth'

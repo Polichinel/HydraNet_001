@@ -100,7 +100,8 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 # not sure that works.
 
 
-        # TESTING GEOLOSS!!!! Should prob detach...
+        # TESTING GEOLOSS!!!! Should prob detach... 
+        # (you should be able to just put al  this in a big if statement)
         # Label
         gids = meta_tensor_dict['gids'].to(device).reshape(-1).argsort() # unique ID for each grid cell.
 
@@ -124,9 +125,13 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         t1_binary_1d = t1_binary.reshape(-1)
 
         #sinkhornLoss = loss(labels0, weights0, coords0, labels1, weights1, coords1)
+        # Apprently you can do with no labels...
+        # loss_reg = criterion_reg(gids, t1_pred_1d, coords, gids, t1_1d, coords)
+        # loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
 
-        loss_reg = criterion_reg(gids, t1_pred_1d, coords, gids, t1_1d, coords)
-        loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
+        # Apprently you can do with no labels...
+        loss_reg = criterion_reg(t1_pred_1d, coords, t1_1d, coords)
+        loss_class = criterion_class(t1_pred_class_1d, coords, t1_binary_1d, coords)
         # ---------------------------------------------------------
 
 
