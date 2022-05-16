@@ -33,8 +33,8 @@ def draw_window(ucpd_vol, min_events = 10):
 
     min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] # is is index... Not lat long.
 
-    #indx = random.choice(min_events_indx)
-    indx = min_events_indx[0]
+    indx = random.choice(min_events_indx)
+    #indx = min_events_indx[0] # fixed window test. The algorithme appears deterministic.
     
     #dim = 16 # if truble, start by hard coding this to 16
     dim = 64 # np.random.choice([8, 16, 32, 64]) # 8, 64
