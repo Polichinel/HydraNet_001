@@ -107,6 +107,12 @@ def test_sinkhorn_time():
 
     loss = geomloss.SamplesLoss(loss='sinkhorn', p = 1, blur= 0.05, verbose=False)
 
+    print(gids.shape)
+    print(coords.shape)
+    print(t0.shape)
+    print(t1.shape)
+
+
     #labels0t = torch.tensor(np.arange(0, coords0.shape[0], 1), dtype=torch.int).to(device)
     #labels1t = torch.tensor(np.arange(0, coords1.shape[0], 1), dtype=torch.int).to(device)
 
@@ -117,7 +123,8 @@ def test_sinkhorn_time():
     # weights1t = torch.tensor(weights1, dtype=torch.float).to(device)
 
     #sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
-    sinkhornLoss = loss(gids, t0, coords, gids, t1, coords)
+    # sinkhornLoss = loss(gids, t0, coords, gids, t1, coords)
+    sinkhornLoss = 0
 
     end = time.time()
     run_time = (end - start)
