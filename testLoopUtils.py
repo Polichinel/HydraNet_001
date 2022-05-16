@@ -43,7 +43,9 @@ def test(model, input_tensor, device):
 
 def get_posterior(model, ucpd_vol, device, n=100):
 
-  ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
+  #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
+  ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #7 not 4 when you do sinkhorn
+  
   pred_list = []
   pred_list_class = []
 
