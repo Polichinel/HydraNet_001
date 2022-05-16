@@ -104,8 +104,8 @@ def test_sinkhorn_time():
     #gids0 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
     #gids1 = meta_tensor_dict['gids'].to(device).reshape(-1).detach().clone()
 
-    gids0 = torch.tensor(np.arange(0, 64*64, 1), dtype = torch.int).to(device)
-    gids1 = torch.tensor(np.arange(0, 64*64, 1), dtype = torch.int).to(device)
+    gids = torch.tensor(np.arange(0, 64*64, 1), dtype = torch.int).to(device)
+    #gids1 = torch.tensor(np.arange(0, 64*64, 1), dtype = torch.int).to(device)
 
 # # Coordinates
 #     longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach().clone()
@@ -144,7 +144,7 @@ def test_sinkhorn_time():
 
 
     #sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
-    sinkhornLoss = loss(gids0, t0, coords0, gids1, t1, coords1)
+    sinkhornLoss = loss(gids, t0, coords0, gids, t1, coords1)
     #sinkhornLoss = loss(t0, t1) 
 
     end = time.time()
