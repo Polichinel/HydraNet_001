@@ -101,7 +101,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 # Regarding sinkhorn. Right now you are not wiegthing the tensors or feeding the coordinates. you just give it tensor maps...
 # not sure that works.
 
-        if type(criterion_reg) == geomloss.samples_loss.SamplesLoss:
+        #if type(criterion_reg) == geomloss.samples_loss.SamplesLoss:
+        if type(criterion_class) == geomloss.samples_loss.SamplesLoss:
+
 
             #print('Using sinkhorn loss')
 
@@ -135,16 +137,17 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
             # loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
 
             # Apprently you can do with no labels... # with unique weights, no wieghts makes no difference
-            loss_reg = criterion_reg(t1_pred_1d, coords, t1_1d, coords)
-            #loss_class = criterion_class(t1_pred_class_1d, coords, t1_binary_1d, coords)
+            #loss_reg = criterion_reg(t1_pred_1d, coords, t1_1d, coords)
+            loss_class = criterion_class(t1_pred_class_1d, coords, t1_binary_1d, coords)
 
             # Just testing----
-            loss_class = criterion_class(t1_pred_class, t1_binary)
+            loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. # correct and working!!!
+            #loss_class = criterion_class(t1_pred_class, t1_binary)
             # ---------------------------------------------------------
 
 
-        #elif type(criterion_class) == torch.nn.modules.loss.BCELoss:
-        elif type(criterion_reg) == torch.nn.modules.loss.MSELoss:
+        elif type(criterion_class) == torch.nn.modules.loss.BCELoss:
+        #elif type(criterion_reg) == torch.nn.modules.loss.MSELoss:
 
 
             #print('Using BCE/MSE loss')
