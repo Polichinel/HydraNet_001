@@ -4,6 +4,13 @@ import random
 import geomloss
 from recurrentUnet import *
 
+def norm(x, a = 0, b = 1):
+
+    """Return a normalized x in range [a:b]. Default is [0:1]"""
+    x_norm = (b-a)*(x - x.min())/(x.max()-x.min())+a
+
+    return(x_norm)
+
 def draw_window(ucpd_vol, min_events = 10):
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..

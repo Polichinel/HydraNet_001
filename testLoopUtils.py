@@ -14,6 +14,13 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import brier_score_loss
 
+def norm(x, a = 0, b = 1):
+
+    """Return a normalized x in range [a:b]. Default is [0:1]"""
+    x_norm = (b-a)*(x - x.min())/(x.max()-x.min())+a
+
+    return(x_norm)
+
 def apply_dropout(m):
     if type(m) == nn.Dropout:
         m.train()
