@@ -101,7 +101,6 @@ print(roc_auc_score(y_true_binary, y_score_prob))
 print(brier_score_loss(y_true_binary, y_score_prob))
 
 
-
 # ------------------------------------------------------------------
 criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
 criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
@@ -122,12 +121,12 @@ y_score_t = torch.tensor(y_score, dtype = torch.float).to(device)
 y_true_binary_t = torch.tensor(y_true_binary, dtype = torch.float).to(device) 
 y_score_prob_t = torch.tensor(y_score_prob, dtype = torch.float).to(device)
 
-loss_reg = criterion_reg(y_true_t, coords, y_score_t, coords)
-loss_class = criterion_class(y_true_binary_t, coords, y_score_prob_t, coords)
+sinkhorn_reg = criterion_reg(y_true_t, coords, y_score_t, coords)
+sinkhorn_class = criterion_class(y_true_binary_t, coords, y_score_prob_t, coords)
 # -----------------------------------------------------------------------
 
-print(loss_reg)
-print(loss_class)
+print(sinkhorn_reg.item())
+print(sinkhorn_class.item())
 
 
 end_t = time.time()
