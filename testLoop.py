@@ -19,6 +19,9 @@ from recurrentUnet import *
 
 start_t = time.time()
 
+
+loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
@@ -39,7 +42,13 @@ output_channels = 1
 dropout_rate = 0.5
 
 unet = UNet(input_channels, hidden_channels, output_channels, dropout_rate).to(device)
-PATH = 'unet.pth'
+
+if loss_arg == 'a':
+    PATH = 'unet_sinkhorn.pth'
+
+elif loss_arg == 'b':
+    PATH = 'unet.pth'
+
 unet.load_state_dict(torch.load(PATH))
 #unet.eval() # you do this some other place right?
 

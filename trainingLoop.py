@@ -14,7 +14,6 @@ import geomloss # New loss. also needs: pip install pykeops
 from trainingLoopUtils import *
 from recurrentUnet import *
 
-
 loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -46,7 +45,7 @@ unet = UNet(input_channels, hidden_channels, output_channels, dropout_rate).to(d
 optimizer = torch.optim.Adam(unet.parameters(), lr = learning_rate, weight_decay = weight_decay)
 
 if loss_arg == 'a':
-
+    PATH = 'unet_sinkhorn.pth'
     # New:
     criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
     criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
@@ -58,6 +57,7 @@ if loss_arg == 'a':
 # Needs to set backend explicitly: online or multiscale
 
 elif loss_arg == 'b':
+    PATH = 'unet.pth'
     criterion_reg = nn.MSELoss().to(device) # works
     criterion_class = nn.BCELoss().to(device) # works
 
@@ -94,7 +94,8 @@ for i in range(draws):
 
 print('Done training. Saving model...')
 
-PATH = 'unet.pth'
+#PATH = 'unet.pth'
+
 torch.save(unet.state_dict(), PATH)
 
 end_t = time.time()
