@@ -160,7 +160,7 @@ def test_sinkhorn_time():
 
     #sinkhornLoss = loss(labels0t, weights0t, coords0t, labels1t, weights1t, coords1t)
     #sinkhornLoss = loss(gids, t0, coords, gids, t1, coords)
-    sinkhornLoss = loss(t0, coords, t1, coords)
+    sinkhornLoss = loss(t0, coords, t1, coords) # with unique weights, no wieghts makes no difference
 
     #sinkhornLoss = loss(t0, t1) 
 
