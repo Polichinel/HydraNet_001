@@ -100,7 +100,6 @@ print(average_precision_score(y_true_binary, y_score_prob))
 print(roc_auc_score(y_true_binary, y_score_prob))
 print(brier_score_loss(y_true_binary, y_score_prob))
 
-
 # ------------------------------------------------------------------
 criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
 criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
@@ -112,8 +111,8 @@ latitudes = ucpd_vol[0 ,  :  ,  : , 2].reshape(-1)
 #longitudes_norm = torch.tensor((longitudes - longitudes.min())/(longitudes.max()-longitudes.min()), dtype = torch.float).to(device)#.detach()
 #latitudes_norm = torch.tensor((latitudes - latitudes.min())/(latitudes.max()-latitudes.min()), dtype = torch.float).to(device)#.detach()
 
-longitudes_norm = torch.tensor(norm(longitudes, -1 ,1), dtype = torch.float).to(device)#.detach()
-latitudes_norm = torch.tensor(norm(latitudes, -1 ,1), dtype = torch.float).to(device)#.detach()
+longitudes_norm = torch.tensor(norm(longitudes, 0 ,1), dtype = torch.float).to(device)#.detach()
+latitudes_norm = torch.tensor(norm(latitudes, 0 ,1), dtype = torch.float).to(device)#.detach()
 
 # NxD
 coords = torch.column_stack([longitudes_norm, latitudes_norm])
