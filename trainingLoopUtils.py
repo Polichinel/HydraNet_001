@@ -101,7 +101,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 # Regarding sinkhorn. Right now you are not wiegthing the tensors or feeding the coordinates. you just give it tensor maps...
 # not sure that works.
 
-        if type(criterion_class) == geomloss.samples_loss.SamplesLoss:
+        if type(criterion_reg) == geomloss.samples_loss.SamplesLoss:
 
             #print('Using sinkhorn loss')
 
@@ -143,7 +143,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
             # ---------------------------------------------------------
 
 
-        elif type(criterion_class) == torch.nn.modules.loss.BCELoss:
+        #elif type(criterion_class) == torch.nn.modules.loss.BCELoss:
+        elif type(criterion_reg) == torch.nn.modules.loss.MSELoss:
+
 
             #print('Using BCE/MSE loss')
 
