@@ -15,7 +15,7 @@ from trainingLoopUtils import *
 from recurrentUnet import *
 
 
-loss_arg = input(f'a) Sinkhorn\n b) BCE/MSE')
+loss_arg = input(f'a) Sinkhorn\n b) BCE/MSE\n')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)

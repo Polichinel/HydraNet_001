@@ -100,7 +100,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 # Regarding sinkhorn. Right now you are not wiegthing the tensors or feeding the coordinates. you just give it tensor maps...
 # not sure that works.
 
-        if type(criterion_class) == geomloss.sempls_loss.SamplesLoss:
+        if type(criterion_class) == geomloss.samples_loss.SamplesLoss:
 
             print('Using sinkhorn loss')
 
