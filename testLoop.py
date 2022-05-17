@@ -108,11 +108,11 @@ longitudes = ucpd_vol[0 ,  :  ,  : , 1].reshape(-1)
 latitudes = ucpd_vol[0 ,  :  ,  : , 2].reshape(-1) 
 
 # norm to between 0 and 1 - does another norm change the result?
-longitudes_norm = torch.tensor((longitudes - longitudes.min())/(longitudes.max()-longitudes.min()), dtype = torch.float).to(device)#.detach()
-latitudes_norm = torch.tensor((latitudes - latitudes.min())/(latitudes.max()-latitudes.min()), dtype = torch.float).to(device)#.detach()
+#longitudes_norm = torch.tensor((longitudes - longitudes.min())/(longitudes.max()-longitudes.min()), dtype = torch.float).to(device)#.detach()
+#latitudes_norm = torch.tensor((latitudes - latitudes.min())/(latitudes.max()-latitudes.min()), dtype = torch.float).to(device)#.detach()
 
-#longitudes_norm = torch.tensor(norm(longitudes, 0 ,1), dtype = torch.float).to(device)#.detach()
-#latitudes_norm = torch.tensor(norm(latitudes, 0 ,1), dtype = torch.float).to(device)#.detach()
+longitudes_norm = torch.tensor(norm(longitudes, 0 ,1), dtype = torch.float).to(device)#.detach()
+latitudes_norm = torch.tensor(norm(latitudes, 0 ,1), dtype = torch.float).to(device)#.detach()
 
 # NxD
 coords = torch.column_stack([longitudes_norm, latitudes_norm])
