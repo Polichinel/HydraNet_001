@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import random
+import geomloss
 from recurrentUnet import *
 
 def draw_window(ucpd_vol, min_events = 10):
@@ -99,49 +100,57 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 # Regarding sinkhorn. Right now you are not wiegthing the tensors or feeding the coordinates. you just give it tensor maps...
 # not sure that works.
 
+        if type(criterion_class) == geomloss.sempls_loss.SamplesLoss:
 
-        # TESTING GEOLOSS!!!! Should prob detach... 
-        # (you should be able to just put al  this in a big if statement)
-        # Label
-        gids = meta_tensor_dict['gids'].to(device).reshape(-1).argsort() # unique ID for each grid cell.
+            print('Using sinkhorn loss')
 
-        # Coordinates
-        longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1)
-        latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1)
+            # TESTING GEOLOSS!!!! Should prob detach... 
+            # (you should be able to just put al  this in a big if statement)
+            # Label
+            # gids = meta_tensor_dict['gids'].to(device).reshape(-1).argsort() # unique ID for each grid cell.
 
-        # norm to between 0 and 1
-        longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
-        latitudes_norm = (latitudes - latitudes.min())/(latitudes.max()-latitudes.min())
+            # Coordinates
+            longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1)
+            latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1)
 
-        # NxD
-        coords = torch.column_stack([longitudes_norm, latitudes_norm])
+            # norm to between 0 and 1
+            longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
+            latitudes_norm = (latitudes - latitudes.min())/(latitudes.max()-latitudes.min())
 
-        # print(gids.shape)
-        # print(coords.shape)
+            # NxD
+            coords = torch.column_stack([longitudes_norm, latitudes_norm])
 
-        t1_pred_1d = t1_pred.reshape(-1)
-        t1_1d = t1.reshape(-1)
-        t1_pred_class_1d = t1_pred_class.reshape(-1)
-        t1_binary_1d = t1_binary.reshape(-1)
+            # print(gids.shape)
+            # print(coords.shape)
 
-        #sinkhornLoss = loss(labels0, weights0, coords0, labels1, weights1, coords1)
-        # Apprently you can do with no labels...
-        # loss_reg = criterion_reg(gids, t1_pred_1d, coords, gids, t1_1d, coords)
-        # loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
+            t1_pred_1d = t1_pred.reshape(-1)
+            t1_1d = t1.reshape(-1)
+            t1_pred_class_1d = t1_pred_class.reshape(-1)
+            t1_binary_1d = t1_binary.reshape(-1)
 
-        # Apprently you can do with no labels... # with unique weights, no wieghts makes no difference
-        loss_reg = criterion_reg(t1_pred_1d, coords, t1_1d, coords)
-        loss_class = criterion_class(t1_pred_class_1d, coords, t1_binary_1d, coords)
-        # ---------------------------------------------------------
+            #sinkhornLoss = loss(labels0, weights0, coords0, labels1, weights1, coords1)
+            # Apprently you can do with no labels...
+            # loss_reg = criterion_reg(gids, t1_pred_1d, coords, gids, t1_1d, coords)
+            # loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
 
+            # Apprently you can do with no labels... # with unique weights, no wieghts makes no difference
+            loss_reg = criterion_reg(t1_pred_1d, coords, t1_1d, coords)
+            loss_class = criterion_class(t1_pred_class_1d, coords, t1_binary_1d, coords)
+            # ---------------------------------------------------------
+
+
+        elif type(criterion_class) == torch.nn.modules.loss.BCELoss:
+
+            print('Using BCE/MSE loss')
 
         # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
         # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
-        #loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. # correct and working!!!
+            loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. # correct and working!!!
 
         # NEEDS DEBUGGING
 #        loss_class = criterion_class(t1_binary, t1_pred_class)  # forward-pass
-        #loss_class = criterion_class(t1_pred_class, t1_binary)  # forward-pass # correct and working!!!
+            loss_class = criterion_class(t1_pred_class, t1_binary)  # forward-pass # correct and working!!!
+        # ---------------------------------------------------
 
         loss = loss_reg + loss_class # naive no weights und so weider
 

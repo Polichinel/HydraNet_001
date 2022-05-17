@@ -2,6 +2,7 @@ import numpy as np
 import random
 import pickle
 import time
+import sys
 
 import torch
 import torch.nn as nn
@@ -10,15 +11,18 @@ from torchvision import transforms
 
 import geomloss # New loss. also needs: pip install pykeops 
 
-
 from trainingLoopUtils import *
 from recurrentUnet import *
+
+
+loss_arg = input(f'a) Sinkhorn\n b) BCE/MSE')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
 start_t = time.time()
 
+# Data
 print('loading data....')
 #location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
 location = '/home/projects/ku_00017/data/raw/conflictNet'
@@ -33,27 +37,35 @@ hidden_channels = 64
 input_channels = 1
 output_channels = 1
 dropout_rate = 0.5
+learning_rate = 0.0001
+weight_decay = 0.01
 
 unet = UNet(input_channels, hidden_channels, output_channels, dropout_rate).to(device)
 
-learning_rate = 0.0001
-weight_decay = 0.01
+# Optimization ---------------------------------------------------------------------------------
 optimizer = torch.optim.Adam(unet.parameters(), lr = learning_rate, weight_decay = weight_decay)
 
-# --------------------------------------------------------------
-#criterion_reg = nn.MSELoss().to(device) # works
-#criterion_class = nn.CrossEntropyLoss().to(device) # shoulfd not use
-#criterion_class = nn.BCELoss().to(device) # works
+if loss_arg == 'a':
 
-# New:
-criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.8, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.8, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+    # New:
+    criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+    criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
 
 # set higer reach: ex 64
 # set highet scaling = 0.9
 # try p = 1
 # Needs to set reach: "[...] if reach is None (balanced Optimal Transport), the resulting routine will expect measures whose total masses are equal with each other."
 # Needs to set backend explicitly: online or multiscale
+
+elif loss_arg == 'b':
+    criterion_reg = nn.MSELoss().to(device) # works
+    criterion_class = nn.BCELoss().to(device) # works
+
+#criterion_class = nn.CrossEntropyLoss().to(device) # shoulfd not use
+
+else:
+    print('Wrong loss...')
+    sys.exit()
 
 # --------------------------------------------------------------
 
