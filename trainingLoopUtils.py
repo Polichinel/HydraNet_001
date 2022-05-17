@@ -83,7 +83,8 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         # NEW THING!
         # t1_binary = (input_tensor[:, i+1, :, :] > 0).float().reshape(1, 1 , window_dim, window_dim).to(device)
         #t1_binary = torch.tensor((t1 > 0) * 1, dtype = torch.float32) # avoid long error.
-        t1_binary = torch.tensor((t1 > 0) * 1, dtype = torch.float32) # avoid long error.
+        #t1_binary = torch.tensor((t1 > 0) * 1, dtype = torch.float32) # avoid long error.
+        t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         
         # UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True),rather than torch.tensor(sourceTensor).
 
