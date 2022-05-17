@@ -102,7 +102,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 
         if type(criterion_class) == geomloss.samples_loss.SamplesLoss:
 
-            print('Using sinkhorn loss')
+            #print('Using sinkhorn loss')
 
             # TESTING GEOLOSS!!!! Should prob detach... 
             # (you should be able to just put al  this in a big if statement)
@@ -141,7 +141,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 
         elif type(criterion_class) == torch.nn.modules.loss.BCELoss:
 
-            print('Using BCE/MSE loss')
+            #print('Using BCE/MSE loss')
 
         # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
         # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
