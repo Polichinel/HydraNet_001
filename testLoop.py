@@ -110,16 +110,20 @@ longitudes = ucpd_vol[0 ,  :  ,  : , 1].reshape(-1)
 latitudes = ucpd_vol[0 ,  :  ,  : , 2].reshape(-1) 
 
 # norm to between 0 and 1 - does another norm change the result?
-longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
-latitudes_norm = (latitudes - latitudes.min())/(latitudes.max()-latitudes.min())
+longitudes_norm = torch.tensor((longitudes - longitudes.min())/(longitudes.max()-longitudes.min()), dtype = torch.float).to(device)#.detach()
+latitudes_norm = torch.tensor((latitudes - latitudes.min())/(latitudes.max()-latitudes.min()), dtype = torch.float).to(device)#.detach()
 
 # NxD
-coords = np.column_stack([longitudes_norm, latitudes_norm])
+coords = torch.column_stack([longitudes_norm, latitudes_norm])
 
-# 1d
-# Apprently you can do with no labels... # with unique weights, no wieghts makes no difference
-loss_reg = criterion_reg(y_true, coords, y_score, coords)
-loss_class = criterion_class(y_true_binary, coords, y_score_prob, coords)
+# weights
+y_true_t = torch.tensor(y_true, dtype = torch.float).to(device) 
+y_score_t = torch.tensor(y_score, dtype = torch.float).to(device) 
+y_true_binary_t = torch.tensor(y_true_binary, dtype = torch.float).to(device) 
+y_score_prob_t = torch.tensor(y_score_prob, dtype = torch.float).to(device)
+
+loss_reg = criterion_reg(y_true_t, coords, y_score_t, coords)
+loss_class = criterion_class(y_true_binary_t, coords, y_score_prob_t, coords)
 # -----------------------------------------------------------------------
 
 print(loss_reg)

@@ -53,7 +53,7 @@ def get_input_tensors(ucpd_vol):
     longitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 1].reshape(1, 1, window_dict['dim'], window_dict['dim'])
     latitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 2].reshape(1, 1, window_dict['dim'], window_dict['dim']) 
 
-    gids_tensor = torch.tensor(gids, dtype=torch.int) # must be int.
+    gids_tensor = torch.tensor(gids, dtype=torch.int) # must be int. You don't use it any more.
     longitudes_tensor = torch.tensor(longitudes, dtype=torch.float)
     latitudes_tensor = torch.tensor(latitudes, dtype=torch.float)
 
@@ -122,9 +122,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
             # NxD
             coords = torch.column_stack([longitudes_norm, latitudes_norm])
 
-            # print(gids.shape)
-            # print(coords.shape)
-
+            # 1d
             t1_pred_1d = t1_pred.reshape(-1)
             t1_1d = t1.reshape(-1)
             t1_pred_class_1d = t1_pred_class.reshape(-1)
