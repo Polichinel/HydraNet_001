@@ -111,8 +111,8 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
             # gids = meta_tensor_dict['gids'].to(device).reshape(-1).argsort() # unique ID for each grid cell.
 
             # Coordinates
-            longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1)
-            latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1)
+            longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach()
+            latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach()
 
             # norm to between 0 and 1
             longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
