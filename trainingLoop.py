@@ -46,8 +46,12 @@ optimizer = torch.optim.Adam(unet.parameters(), lr = learning_rate, weight_decay
 #criterion_class = nn.BCELoss().to(device) # works
 
 # New:
-criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.8, reach = 5, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.8, reach = 5, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.8, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.8, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+
+# set higer reach: ex 64
+# set highet scaling = 0.9
+# try p = 1
 # Needs to set reach: "[...] if reach is None (balanced Optimal Transport), the resulting routine will expect measures whose total masses are equal with each other."
 # Needs to set backend explicitly: online or multiscale
 

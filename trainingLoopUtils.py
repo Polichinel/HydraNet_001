@@ -129,7 +129,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         # loss_reg = criterion_reg(gids, t1_pred_1d, coords, gids, t1_1d, coords)
         # loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
 
-        # Apprently you can do with no labels...
+        # Apprently you can do with no labels... # with unique weights, no wieghts makes no difference
         loss_reg = criterion_reg(t1_pred_1d, coords, t1_1d, coords)
         loss_class = criterion_class(t1_pred_class_1d, coords, t1_binary_1d, coords)
         # ---------------------------------------------------------
