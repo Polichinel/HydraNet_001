@@ -17,6 +17,8 @@ from sklearn.metrics import brier_score_loss
 from testLoopUtils import *
 from recurrentUnet import *
 
+import geomloss
+
 start_t = time.time()
 
 
@@ -97,6 +99,31 @@ print(mean_squared_error(y_true, y_score))
 print(average_precision_score(y_true_binary, y_score_prob))
 print(roc_auc_score(y_true_binary, y_score_prob))
 print(brier_score_loss(y_true_binary, y_score_prob))
+
+
+
+# ------------------------------------------------------------------
+criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+
+longitudes = ucpd_vol[0 ,  :  ,  : , 1].reshape(-1)
+latitudes = ucpd_vol[0 ,  :  ,  : , 2].reshape(-1) 
+
+# norm to between 0 and 1 - does another norm change the result?
+longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
+latitudes_norm = (latitudes - latitudes.min())/(latitudes.max()-latitudes.min())
+
+# NxD
+coords = np.column_stack([longitudes_norm, latitudes_norm])
+
+# 1d
+# Apprently you can do with no labels... # with unique weights, no wieghts makes no difference
+loss_reg = criterion_reg(y_true, coords, y_score, coords)
+loss_class = criterion_class(y_true_binary, coords, y_score_prob, coords)
+# -----------------------------------------------------------------------
+
+print(loss_reg)
+print(loss_class)
 
 
 end_t = time.time()
