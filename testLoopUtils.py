@@ -23,10 +23,10 @@ def norm(x, a = 0, b = 1):
 def unit_norm(x, noise = False):
 
     """Return a normalized x (unit vector). Used for coordinates"""
-    x_unit_norm = x / np.linalg.norm(x)
+    x_unit_norm = x / torch.linalg.norm(x)
 
     if noise == True:
-        x_unit_norm += np.random.normal(1, 2*x_unit_norm.std(), len(x_unit_norm))
+        x_unit_norm += torch.tensor(np.random.normal(1, 2*x_unit_norm.std(), len(x_unit_norm)), dtype = torch.float)
 
     return(x_unit_norm)
 
