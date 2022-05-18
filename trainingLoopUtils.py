@@ -149,8 +149,8 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
             #latitudes_norm = norm(latitudes, 0 ,1).detach()
 
 
-            longitudes_norm = unit_norm(longitudes, 0 ,1).detach() # detaching helped!
-            latitudes_norm = unit_norm(latitudes, 0 ,1).detach()
+            longitudes_norm = unit_norm(longitudes).detach() # detaching helped!
+            latitudes_norm = unit_norm(latitudes).detach()
             
             # NxD
             coords = torch.column_stack([longitudes_norm, latitudes_norm])
