@@ -127,21 +127,21 @@ y_score_t = torch.tensor(y_score, dtype = torch.float).to(device)
 y_true_binary_t = torch.tensor(y_true_binary, dtype = torch.float).to(device) 
 y_score_prob_t = torch.tensor(y_score_prob, dtype = torch.float).to(device)
 
-# sinkhorn_reg = criterion_reg(y_true_t, coords, y_score_t, coords)
-# sinkhorn_class = criterion_class(y_true_binary_t, coords, y_score_prob_t, coords)
+sinkhorn_reg = criterion_reg(y_true_t, coords, y_score_t, coords)
+sinkhorn_class = criterion_class(y_true_binary_t, coords, y_score_prob_t, coords)
 
 # softmax to get prob dens TEST!
-softmax = torch.nn.Softmax(dim = 0)
+#softmax = torch.nn.Softmax(dim = 0)
 
-sinkhorn_reg = criterion_reg(softmax(y_true_t), coords, softmax(y_score_t), coords)
-sinkhorn_class = criterion_class(softmax(y_true_binary_t), coords, softmax(y_score_prob_t), coords)
+#sinkhorn_reg = criterion_reg(softmax(y_true_t), coords, softmax(y_score_t), coords)
+#sinkhorn_class = criterion_class(softmax(y_true_binary_t), coords, softmax(y_score_prob_t), coords)
 # -----------------------------------------------------------------------
 
-# print(np.sqrt(sinkhorn_reg.item()))
-# print(np.sqrt(sinkhorn_class.item()))
+print(np.sqrt(sinkhorn_reg.item()))
+print(np.sqrt(sinkhorn_class.item()))
 
-print(sinkhorn_reg.item())
-print(sinkhorn_class.item())
+#print(sinkhorn_reg.item())
+#print(sinkhorn_class.item())
 
 end_t = time.time()
 minutes = (end_t - start_t)/60
