@@ -18,8 +18,20 @@ def norm(x, a = 0, b = 1):
 
     """Return a normalized x in range [a:b]. Default is [0:1]"""
     x_norm = (b-a)*(x - x.min())/(x.max()-x.min())+a
-
     return(x_norm)
+
+def unit_norm(x):
+
+    """Return a normalized x (unit vector)"""
+    x_unit_norm = x / np.linalg.norm(x)
+    return(x_unit_norm)
+
+def standard(x):
+
+    """Return a standardnized x """
+    x_standard = (x - x.mean()) / x.std()
+    return(x_standard)
+
 
 def apply_dropout(m):
     if type(m) == nn.Dropout:
