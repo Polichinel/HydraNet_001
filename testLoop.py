@@ -121,11 +121,11 @@ latitudes = ucpd_vol[0 ,  :  ,  : , 2].reshape(-1)
 # longitudes_norm = torch.tensor(unit_norm(longitudes), dtype = torch.float).to(device)#.detach()
 # latitudes_norm = torch.tensor(unit_norm(latitudes), dtype = torch.float).to(device)#.detach()
 
-longitudes_norm = torch.tensor(standard(longitudes), dtype = torch.float).to(device)#.detach()
-latitudes_norm = torch.tensor(standard(latitudes), dtype = torch.float).to(device)#.detach()
+#longitudes_norm = torch.tensor(standard(longitudes), dtype = torch.float).to(device)#.detach()
+#latitudes_norm = torch.tensor(standard(latitudes), dtype = torch.float).to(device)#.detach()
 
-# longitudes_norm = torch.tensor(unit_norm(longitudes, noise= True), dtype = torch.float).to(device)#.detach()
-# latitudes_norm = torch.tensor(unit_norm(latitudes, noise= True), dtype = torch.float).to(device)#.detach()
+longitudes_norm = torch.tensor(unit_norm(longitudes, noise= True), dtype = torch.float).to(device)#.detach()
+latitudes_norm = torch.tensor(unit_norm(latitudes, noise= True), dtype = torch.float).to(device)#.detach()
 
 
 # NxD
