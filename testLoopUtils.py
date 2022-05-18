@@ -26,7 +26,7 @@ def unit_norm(x, noise = False):
     x_unit_norm = x / np.linalg.norm(x)
 
     if noise == True:
-        x_unit_norm += np.random.standard_normal(len(x_unit_norm))
+        x_unit_norm += np.random.normal(1, x_unit_norm.std(), len(x_unit_norm))
 
     return(x_unit_norm)
 
