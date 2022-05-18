@@ -13,7 +13,7 @@ def norm(x, a = 0, b = 1):
 def unit_norm(x, noise = False):
 
     """Return a normalized x (unit vector)"""
-    x_unit_norm = x / np.linalg.norm(x)
+    x_unit_norm = x / torch.linalg.norm(x)
 
     if noise == True:
         x_unit_norm += np.random.normal(loc = 0, scale = 2*x_unit_norm.std(), size = len(x_unit_norm))
