@@ -47,9 +47,9 @@ optimizer = torch.optim.Adam(unet.parameters(), lr = learning_rate, weight_decay
 if loss_arg == 'a':
     PATH = 'unet_sinkhorn.pth'
     # New:
-    criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+    criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
     #criterion_reg = nn.MSELoss().to(device) # works
-    criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+    criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
     #criterion_class = nn.BCELoss().to(device) # works
 
 # set higer reach: ex 64
