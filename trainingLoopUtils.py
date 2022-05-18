@@ -16,6 +16,7 @@ def unit_norm(x, noise = False):
     x_unit_norm = x / torch.linalg.norm(x)
 
     if noise == True:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         #x_unit_norm += torch.tensor(np.random.normal(1, 2*x_unit_norm.std(), len(x_unit_norm)), dtype = torch.float).to(device)
         x_unit_norm += torch.randn(len(x_unit_norm), dtype=torch.float, requires_grad=False, device = device) * x_unit_norm.std()
 
