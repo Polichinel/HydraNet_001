@@ -26,7 +26,7 @@ def unit_norm(x, noise = False):
     x_unit_norm = x / torch.linalg.norm(x)
 
     if noise == True:
-        x_unit_norm += torch.tensor(np.random.normal(1, 2*x_unit_norm.std(), len(x_unit_norm)), dtype = torch.float)
+        x_unit_norm += torch.tensor(np.random.normal(1, 2*x_unit_norm.std(), len(x_unit_norm)), dtype = torch.float).to(device)
 
     return(x_unit_norm)
 
