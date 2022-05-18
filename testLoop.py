@@ -101,8 +101,8 @@ print(roc_auc_score(y_true_binary, y_score_prob))
 print(brier_score_loss(y_true_binary, y_score_prob))
 
 # ------------------------------------------------------------------
-criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = None, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = None, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = None, backend = 'multiscale', p = 2, blur= 0.01, verbose=False).to(device)
+criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = None, backend = 'multiscale', p = 2, blur= 0.01, verbose=False).to(device)
 
 #criterion_reg = geomloss.ImagesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
 #criterion_class = geomloss.ImagesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
