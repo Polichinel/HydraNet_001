@@ -47,14 +47,15 @@ optimizer = torch.optim.Adam(unet.parameters(), lr = learning_rate, weight_decay
 if loss_arg == 'a':
     PATH = 'unet_sinkhorn.pth'
     # New:
-    criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+    criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
     #criterion_reg = nn.MSELoss().to(device) # works
-    criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+    criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
     #criterion_class = nn.BCELoss().to(device) # works
 
+# But scaling does a big difference so woth trying 0.3-0.7
 # set higer reach: ex 64
-# scaling 0.1 much worse performance..
-# set highet scaling = 0.9 # slower but not better...
+# set highet scaling = 0.9
+# Scaling 0.1 worse, scaking 0.9 worse
 # try p = 1
 # Needs to set reach: "[...] if reach is None (balanced Optimal Transport), the resulting routine will expect measures whose total masses are equal with each other."
 # Needs to set backend explicitly: online or multiscale
