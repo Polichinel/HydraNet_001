@@ -10,16 +10,24 @@ def norm(x, a = 0, b = 1):
     x_norm = (b-a)*(x - x.min())/(x.max()-x.min())+a
     return(x_norm)
 
-def unit_norm(x):
+def unit_norm(x, noise = False):
 
     """Return a normalized x (unit vector)"""
     x_unit_norm = x / np.linalg.norm(x)
+
+    if noise == True:
+        x_unit_norm += np.random.normal(loc = 0, scale = x_unit_norm.std(), size = len(x_unit_norm))
+
     return(x_unit_norm)
 
-def standard(x):
+def standard(x, noise = False):
 
     """Return a standardnized x """
     x_standard = (x - x.mean()) / x.std()
+
+    if noise == True:
+        x_unit_norm += np.random.normal(loc = 0, scale = x_standard.std(), size = len(x_standard))
+
     return(x_standard)
 
 def draw_window(ucpd_vol, min_events = 10):
