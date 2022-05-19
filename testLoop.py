@@ -135,13 +135,13 @@ coords = torch.column_stack([longitudes_norm, latitudes_norm])
 
 # weights
 y_true_t = torch.tensor(y_true, dtype = torch.float).to(device) 
-#y_score_t = torch.tensor(y_score, dtype = torch.float).to(device) 
+y_score_t = torch.tensor(y_score, dtype = torch.float).to(device) 
 y_true_binary_t = torch.tensor(y_true_binary, dtype = torch.float).to(device) 
-#y_score_prob_t = torch.tensor(y_score_prob, dtype = torch.float).to(device)
+y_score_prob_t = torch.tensor(y_score_prob, dtype = torch.float).to(device)
 
 # weights
-y_score_t = torch.tensor(np.round(y_score,1), dtype = torch.float).to(device) 
-y_score_prob_t = torch.tensor(np.round(y_score_prob,1), dtype = torch.float).to(device)
+#y_score_t = torch.tensor(np.round(y_score,1), dtype = torch.float).to(device) 
+#y_score_prob_t = torch.tensor(np.round(y_score_prob,1), dtype = torch.float).to(device)
 
 
 sinkhorn_reg = criterion_reg(y_true_t, coords, y_score_t, coords)
