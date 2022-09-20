@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import random
-import geomloss
+#import geomloss
 import wandb
 
 from recurrentUnet import *

@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
 
-import geomloss # New loss. also needs: pip install pykeops 
+#import geomloss # New loss. also needs: pip install pykeops 
 
 import wandb
 
