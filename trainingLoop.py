@@ -11,11 +11,11 @@ from torchvision import transforms
 
 #import geomloss # New loss. also needs: pip install pykeops 
 
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import average_precision_score
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import brier_score_loss
+# from sklearn.preprocessing import MinMaxScaler
+# from sklearn.metrics import average_precision_score
+# from sklearn.metrics import roc_auc_score
+# from sklearn.metrics import mean_squared_error
+# from sklearn.metrics import brier_score_loss
 
 
 import wandb
@@ -140,15 +140,18 @@ def test(unet, ucpd_vol):
 
     print('Unet')
 
-    mse = mean_squared_error(y_true, y_score)
-    ap = average_precision_score(y_true_binary, y_score_prob)
-    auc = roc_auc_score(y_true_binary, y_score_prob)
-    brier = brier_score_loss(y_true_binary, y_score_prob)
+    loss = nn.MSELoss()
+    mse = loss(y_true, y_score)
+
+    # mse = mean_squared_error(y_true, y_score)
+    # ap = average_precision_score(y_true_binary, y_score_prob)
+    # auc = roc_auc_score(y_true_binary, y_score_prob)
+    # brier = brier_score_loss(y_true_binary, y_score_prob)
 
     wandb.log({"mean_squared_error": mse})
-    wandb.log({"average_precision_score": ap})
-    wandb.log({"roc_auc_score": auc})
-    wandb.log({"brier_score_loss": brier})
+    # wandb.log({"average_precision_score": ap})
+    # wandb.log({"roc_auc_score": auc})
+    # wandb.log({"brier_score_loss": brier})
 
 
 
