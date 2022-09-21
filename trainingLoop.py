@@ -160,7 +160,7 @@ def get_posterior(unet, ucpd_vol, device, n=100):
     pred_list_class.append(tn_pred_class_np)
 
     if i % 10 == 0: # print steps 10
-        print(f'{i}')
+        print(f'{i}/{n}', end = '\r')
 
   return pred_list, pred_list_class
 
@@ -195,10 +195,12 @@ def end_test(unet, ucpd_vol):
 
     y_true_binary = (y_true > 0) * 1
 
-    print('Unet')
+    #print('Unet')
 
-    loss = nn.MSELoss()
-    mse = loss(y_true, y_score)
+    #loss = nn.MSELoss()
+    #mse = loss(y_true, y_score)
+
+    mse = 1 #just a dummy..
 
     # mse = mean_squared_error(y_true, y_score)
     # ap = average_precision_score(y_true_binary, y_score_prob)
