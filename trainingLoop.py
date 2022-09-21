@@ -237,11 +237,10 @@ def model_pipeline(hyperparameters):
         #print(unet)
 
         training_loop(config, unet, criterion, optimizer, ucpd_vol)
-        
-        print('Testing')
-        end_test(unet, ucpd_vol, config)
-
         print('Done training')
+        
+        end_test(unet, ucpd_vol, config)
+        print('Done testing')
 
         return(unet)
 
@@ -255,7 +254,7 @@ if __name__ == "__main__":
     "hidden_channels" : 64,
     "input_channels" : 1,
     "output_channels": 1,
-    "dropout_rate" : 0.05,
+    "dropout_rate" : 0.1, #0.05
     'learning_rate' :  0.0001,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
