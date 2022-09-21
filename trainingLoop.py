@@ -239,7 +239,7 @@ def model_pipeline(hyperparameters):
         training_loop(config, unet, criterion, optimizer, ucpd_vol)
         
         print('Testing')
-        end_test(unet, ucpd_vol)
+        end_test(unet, ucpd_vol, config)
 
         print('Done training')
 
