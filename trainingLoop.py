@@ -146,7 +146,7 @@ def test(model, input_tensor, device):
   return tn_pred_np, tn_pred_class_np
 
 
-def get_posterior(unet, ucpd_vol, device, n=10):
+def get_posterior(unet, ucpd_vol, device, n):
 
   #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #7 not 4 when you do sinkhorn
@@ -165,12 +165,19 @@ def get_posterior(unet, ucpd_vol, device, n=10):
   return pred_list, pred_list_class
 
 
+def mse(actual, predicted):
+    actual = np.array(actual)
+    predicted = np.array(predicted)
+    differences = np.subtract(actual, predicted)
+    squared_differences = np.square(differences)
+    return squared_differences.mean()
 
-def end_test(unet, ucpd_vol):
+
+def end_test(unet, ucpd_vol, config):
 
     print('Testing initiated...')
 
-    pred_list, pred_list_class = get_posterior(unet, ucpd_vol, device, n=10)
+    pred_list, pred_list_class = get_posterior(unet, ucpd_vol, device, n=config.test_samples)
 
     # reg statistics
     t31_pred_np = np.array(pred_list)
@@ -200,14 +207,14 @@ def end_test(unet, ucpd_vol):
     #loss = nn.MSELoss()
     #mse = loss(y_true, y_score)
 
-    mse = 1 #just a dummy..
+    mean_se = mse(y_true, y_score) #just a dummy..
 
     # mse = mean_squared_error(y_true, y_score)
     # ap = average_precision_score(y_true_binary, y_score_prob)
     # auc = roc_auc_score(y_true_binary, y_score_prob)
     # brier = brier_score_loss(y_true_binary, y_score_prob)
 
-    wandb.log({"mean_squared_error": mse})
+    wandb.log({"mean_squared_error": mean_se})
     # wandb.log({"average_precision_score": ap})
     # wandb.log({"roc_auc_score": auc})
     # wandb.log({"brier_score_loss": brier})
@@ -253,7 +260,8 @@ if __name__ == "__main__":
     "weight_decay" :  0.01,
     "epochs": 2,
     "batch_size": 8,
-    "samples" : 16} #64 is prob fine..
+    "samples" : 16,
+    "test_samples": 10} #64 is prob fine..
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
