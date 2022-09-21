@@ -293,7 +293,7 @@ if __name__ == "__main__":
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.2, #0.05
-    'learning_rate' :  0.0001,
+    'learning_rate' :  0.0005,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
