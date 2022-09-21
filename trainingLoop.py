@@ -113,8 +113,10 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
         # if i % 100 == 0: # print steps 100
         #     print(f'{i} {avg_loss:.4f}') # could plot ap instead...
 
-    torch.onnx.export(unet, ucpd_vol, "RUnet.onnx")
-    wandb.save("RUnet.onnx")
+    print('training done...')
+
+    # torch.onnx.export(unet, ucpd_vol, "RUnet.onnx")
+    # wandb.save("RUnet.onnx")
 
 
 

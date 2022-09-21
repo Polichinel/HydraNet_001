@@ -100,10 +100,6 @@ def train_log(avg_loss, avg_loss_reg, avg_loss_class, sequence_step, sample):
     wandb.log({"epoch": sample, "avg_loss_reg": avg_loss_reg}, step = sequence_step)
     wandb.log({"epoch": sample, "avg_loss_class": avg_loss_class}, step = sequence_step)
 
-    # wandb.log({"epoch": epoch, "loss": loss}, step=example_ct)
-    # wandb.log({"epoch": epoch, "val_loss": val_loss}, step=example_ct)
-    # print(f"Loss after " + str(example_ct).zfill(5) + f" examples: {loss:.3f}. val: {val_loss:.3f}")
-
 
 def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, sample, plot = False):
 
@@ -130,10 +126,6 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         t0 = input_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
         t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
 
-        # NEW THING!
-        # t1_binary = (input_tensor[:, i+1, :, :] > 0).float().reshape(1, 1 , window_dim, window_dim).to(device)
-        #t1_binary = torch.tensor((t1 > 0) * 1, dtype = torch.float32) # avoid long error.
-        #t1_binary = torch.tensor((t1 > 0) * 1, dtype = torch.float32) # avoid long error.
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         
         # UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True),rather than torch.tensor(sourceTensor).
@@ -148,63 +140,6 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         # backwards    
         optimizer.zero_grad()
 
-# Regarding sinkhorn. Right now you are not wiegthing the tensors or feeding the coordinates. you just give it tensor maps...
-# not sure that works.
-
-        # #if type(criterion_reg) == geomloss.samples_loss.SamplesLoss:
-        # if type(criterion_class) == geomloss.samples_loss.SamplesLoss:
-
-        #     #print('Using sinkhorn loss')
-
-        #     # TESTING GEOLOSS!!!! Should prob detach... 
-        #     # (you should be able to just put al  this in a big if statement)
-        #     # Label
-        #     # gids = meta_tensor_dict['gids'].to(device).reshape(-1).argsort() # unique ID for each grid cell.
-
-        #     # Coordinates
-        #     longitudes = meta_tensor_dict['longitudes'].to(device).reshape(-1).detach()
-        #     latitudes= meta_tensor_dict['latitudes'].to(device).reshape(-1).detach()
-
-        #     # norm to between 0 and 1
-        #     #longitudes_norm = (longitudes - longitudes.min())/(longitudes.max()-longitudes.min())
-        #     #latitudes_norm = (latitudes - latitudes.min())/(latitudes.max()-latitudes.min())
-
-        #     longitudes_norm = norm(longitudes, 0 ,1).detach() # detaching helped!
-        #     latitudes_norm = norm(latitudes, 0 ,1).detach()
-
-
-        #     #longitudes_norm = unit_norm(longitudes, noise= True).detach() # detaching helped!
-        #     #latitudes_norm = unit_norm(latitudes, noise= True).detach()
-            
-        #     # NxD
-        #     coords = torch.column_stack([longitudes_norm, latitudes_norm])
-
-        #     # 1d
-        #     t1_pred_1d = t1_pred.reshape(-1)
-        #     t1_1d = t1.reshape(-1)
-        #     t1_pred_class_1d = t1_pred_class.reshape(-1)
-        #     t1_binary_1d = t1_binary.reshape(-1)
-
-        #     #sinkhornLoss = loss(labels0, weights0, coords0, labels1, weights1, coords1)
-        #     # Apprently you can do with no labels...
-        #     # loss_reg = criterion_reg(gids, t1_pred_1d, coords, gids, t1_1d, coords)
-        #     # loss_class = criterion_class(gids, t1_pred_class_1d, coords, gids, t1_binary_1d, coords)
-
-        #     # Apprently you can do with no labels... # with unique weights, no wieghts makes no difference
-        #     loss_reg = criterion_reg(t1_pred_1d, coords, t1_1d, coords)
-        #     loss_class = criterion_class(t1_pred_class_1d, coords, t1_binary_1d, coords)
-
-        #     # Just testing----
-        #     #loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. # correct and working!!!
-        #     #loss_class = criterion_class(t1_pred_class, t1_binary)
-        #     # ---------------------------------------------------------
-
-
-        # elif type(criterion_class) == torch.nn.modules.loss.BCELoss:
-        # #elif type(criterion_reg) == torch.nn.modules.loss.MSELoss:
-
-
-            #print('Using BCE/MSE loss')
 
         # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
         # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
