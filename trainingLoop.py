@@ -292,7 +292,7 @@ if __name__ == "__main__":
     "hidden_channels" : 64, # 64 # you like do not have mem for more than 64
     "input_channels" : 1,
     "output_channels": 1,
-    "dropout_rate" : 0.5, #0.05
+    "dropout_rate" : 0.32, #0.05
     'learning_rate' :  0.0001,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
