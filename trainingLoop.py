@@ -22,7 +22,7 @@ import wandb
 
 
 from trainingLoopUtils import *
-from testLoopUtils import *
+# from testLoopUtils import *
 from recurrentUnet import *
 
 
@@ -110,6 +110,26 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
         #     print(f'{i} {avg_loss:.4f}') # could plot ap instead...
 
 
+
+def get_posterior(model, ucpd_vol, device, n=100):
+
+  #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
+  ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #7 not 4 when you do sinkhorn
+  
+  pred_list = []
+  pred_list_class = []
+
+  for i in range(n):
+    t31_pred_np, tn_pred_class_np = test(model, ttime_tensor, device)
+    pred_list.append(t31_pred_np)
+    pred_list_class.append(tn_pred_class_np)
+
+    if i % 10 == 0: # print steps 10
+        print(f'{i}')
+
+  return pred_list, pred_list_class
+
+  
 
 def test(unet, ucpd_vol):
 
