@@ -173,6 +173,43 @@ def mse(actual, predicted):
     return squared_differences.mean()
 
 
+
+#----------------
+def true_false_positive(threshold_vector, y_test):
+    true_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 1)
+    true_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 0)
+    false_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 0)
+    false_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 1)
+
+    tpr = true_positive.sum() / (true_positive.sum() + false_negative.sum())
+    fpr = false_positive.sum() / (false_positive.sum() + true_negative.sum())
+
+    return tpr, fpr
+
+
+def roc(probabilities, y_test, partitions=100):
+    roc = np.array([])
+    for i in range(partitions + 1):
+        
+        threshold_vector = np.greater_equal(probabilities, i / partitions).astype(int)
+        tpr, fpr = true_false_positive(threshold_vector, y_test)
+        roc = np.append(roc, [fpr, tpr])
+        
+    return roc.reshape(-1, 2)
+
+
+def auc(probabilities, y_test, partitions=100):
+    
+    ROC = roc(probabilities, y_test, partitions=100)
+    fpr, tpr = ROC[:, 0], ROC[:, 1]
+    rectangle_roc = 0
+    for k in range(partitions):
+            rectangle_roc = rectangle_roc + (fpr[k]- fpr[k + 1]) * tpr[k]
+    
+    return rectangle_roc
+# ---------------------
+
+
 def end_test(unet, ucpd_vol, config):
 
     print('Testing initiated...')
@@ -208,6 +245,7 @@ def end_test(unet, ucpd_vol, config):
     #mse = loss(y_true, y_score)
 
     mean_se = mse(y_true, y_score) #just a dummy..
+    area_uc = auc(y_score_prob, y_true_binary)
 
     # mse = mean_squared_error(y_true, y_score)
     # ap = average_precision_score(y_true_binary, y_score_prob)
@@ -216,7 +254,7 @@ def end_test(unet, ucpd_vol, config):
 
     wandb.log({"mean_squared_error": mean_se})
     # wandb.log({"average_precision_score": ap})
-    # wandb.log({"roc_auc_score": auc})
+    wandb.log({"roc_auc_score": area_uc})
     # wandb.log({"brier_score_loss": brier})
 
 
@@ -261,8 +299,7 @@ if __name__ == "__main__":
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
     "samples" : 32,
-    "test_samples": 32} #64 is prob fine..
-
+    "test_samples": 128}
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
 
