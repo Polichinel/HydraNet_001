@@ -94,11 +94,15 @@ def get_input_tensors(ucpd_vol):
 
 
 def train_log(avg_loss, avg_loss_reg, avg_loss_class, sequence_step, sample):
-    # Where the magic happens
+    # # Where the magic happens
+    
+    # wandb.log({"epoch": sample, "avg_loss": avg_loss}, step= sequence_step)
+    # wandb.log({"epoch": sample, "avg_loss_reg": avg_loss_reg}, step = sequence_step)
+    # wandb.log({"epoch": sample, "avg_loss_class": avg_loss_class}, step = sequence_step)
 
-    wandb.log({"epoch": sample, "avg_loss": avg_loss}, step= sequence_step)
-    wandb.log({"epoch": sample, "avg_loss_reg": avg_loss_reg}, step = sequence_step)
-    wandb.log({"epoch": sample, "avg_loss_class": avg_loss_class}, step = sequence_step)
+    wandb.log({"avg_loss": avg_loss})
+    wandb.log({"avg_loss_reg": avg_loss_reg})
+    wandb.log({"avg_loss_class": avg_loss_class})
 
 
 def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, sample, plot = False):
@@ -106,6 +110,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     # Tell wandb to watch what the model gets up to: gradients, weights, and more!
     #wandb.watch(model, [criterion_reg, criterion_class], log="all", log_freq=128)
     
+    wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=128)
+
+
     avg_loss_reg = 0
     avg_loss_class = 0
     avg_loss = 0
