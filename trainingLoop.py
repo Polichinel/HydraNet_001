@@ -11,6 +11,13 @@ from torchvision import transforms
 
 #import geomloss # New loss. also needs: pip install pykeops 
 
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import brier_score_loss
+
+
 import wandb
 
 
