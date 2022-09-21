@@ -65,7 +65,7 @@ def get_ucdp():
     
     if os.path.isfile(path_ucdp) == True:
         print('file already downloaded')
-        ucdp = pd.read_csv(path_ucdp)
+        ucdp = pd.read_csv(path_ucdp, low_memory=False) # see if this removes dtype warning
 
 
     else: 
@@ -74,7 +74,7 @@ def get_ucdp():
         url_ucdp = 'https://ucdp.uu.se/downloads/ged/ged201-csv.zip'
     
         urllib.request.urlretrieve(url_ucdp, path_ucdp)
-        ucdp = pd.read_csv(path_ucdp)
+        ucdp = pd.read_csv(path_ucdp, low_memory=False)
 
     return ucdp
 
@@ -161,7 +161,10 @@ def get_prio_ucdp():
     gwno = get_gwno()
     ucdp = get_ucdp()
 
-    world_grid = prio_grid.merge(gwno, how = 'right', on = 'gid') # if you just merge this on outer I think you get the full grid needed for R-UNET
+    #world_grid = prio_grid.merge(gwno, how = 'right', on = 'gid') # if you just merge this on outer I think you get the full grid needed for R-UNET
+    world_grid = prio_grid.merge(gwno, how = 'outer', on = 'gid') # if you just merge this on outer I think you get the full grid needed for R-UNET
+    world_grid.fillna({'best' : 0, 'low' : 0, 'high' : 0, 'log_best' : 0, 'log_low' : 0, 'log_high' : 0}, inplace = True)
+
     world_grid_all_months = add_months(ucdp, world_grid)
     prio_ucdp = prio_ucdp_merge(ucdp, world_grid_all_months)
 
