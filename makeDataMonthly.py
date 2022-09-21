@@ -36,6 +36,8 @@ def get_prio_shape():
         urllib.request.urlretrieve(url_prio, path_prio)
         prio_grid = gpd.read_file('zip://' + path_prio)
 
+        prio_grid =  pd.DataFrame(prio_grid.drop(columns = ['geometry'])) #do not need the geom here.
+
     return prio_grid
 
 
@@ -160,8 +162,6 @@ def get_prio_ucdp():
     world_grid = prio_grid.merge(gwno, how = 'right', on = 'gid') # if you just merge this on outer I think you get the full grid needed for R-UNET
     world_grid_all_months = add_months(ucdp, world_grid)
     prio_ucdp = prio_ucdp_merge(ucdp, world_grid_all_months)
-
-    prio_ucdp =  pd.DataFrame(prio_ucdp.drop(columns = ['geometry'])) # let this go in some function...
 
     return prio_ucdp
 
