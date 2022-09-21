@@ -82,13 +82,16 @@ def make(config):
 
 def training_loop(config, unet, criterion, optimizer, ucpd_vol):
 
-    wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=128)
+    #wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=128)
 
     # add spatail transformer
     transformer = transforms.Compose([transforms.RandomRotation((0,360)), transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
     avg_losses = []
 
     criterion_reg, criterion_class = criterion
+
+    wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=128)
+
 
     print('Training initiated...')
 
