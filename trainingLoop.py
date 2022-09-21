@@ -260,8 +260,8 @@ if __name__ == "__main__":
     "weight_decay" :  0.01,
     "epochs": 2,
     "batch_size": 8,
-    "samples" : 16,
-    "test_samples": 10} #64 is prob fine..
+    "samples" : 32,
+    "test_samples": 32} #64 is prob fine..
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
