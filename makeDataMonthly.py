@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import geopandas as gpd
+from shapely.geometry import Point
+
 import pickle
 import urllib.request
 import os
