@@ -289,7 +289,7 @@ if __name__ == "__main__":
 
     # Hyper parameters.
     hyperparameters = {
-    "hidden_channels" : 164, # 64 # you like do not have mem for more than 64
+    "hidden_channels" : 64, # 64 # you like do not have mem for more than 64
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.2, #0.05
