@@ -1,3 +1,4 @@
+from msilib import sequence
 import numpy as np
 import torch
 import random
@@ -93,7 +94,19 @@ def get_input_tensors(ucpd_vol):
     return(input_tensor, meta_tensor_dict)
 
 
-def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, plot = False):
+def train_log(avg_loss, avg_loss_reg, avg_loss_class, sequence_step, sample):
+    # Where the magic happens
+
+    wandb.log({"epoch": sample, "avg_loss": avg_loss}, step= sequence_step)
+    wandb.log({"epoch": sample, "avg_loss_reg": avg_loss_reg}, step = sequence_step)
+    wandb.log({"epoch": sample, "avg_loss_class": avg_loss_class}, step = sequence_step)
+
+    # wandb.log({"epoch": epoch, "loss": loss}, step=example_ct)
+    # wandb.log({"epoch": epoch, "val_loss": val_loss}, step=example_ct)
+    # print(f"Loss after " + str(example_ct).zfill(5) + f" examples: {loss:.3f}. val: {val_loss:.3f}")
+
+
+def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, sample, plot = False):
 
     # Tell wandb to watch what the model gets up to: gradients, weights, and more!
     #wandb.watch(model, [criterion_reg, criterion_class], log="all", log_freq=128)
@@ -219,11 +232,13 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         avg_loss_reg += loss_reg / (seq_len-1)
         avg_loss_class += loss_class / (seq_len-1)
 
+        train_log(avg_loss, avg_loss_reg, avg_loss_class, i, sample)
+
         #pred_list.append(t1_pred)
         #observed_list.append(t1)
 
-        wandb.log({"avg_loss": avg_loss})
-        wandb.log({"avg_loss_reg": avg_loss_reg})
-        wandb.log({"avg_loss_class": avg_loss_class})
+        # wandb.log({"avg_loss": avg_loss})
+        # wandb.log({"avg_loss_reg": avg_loss_reg})
+        # wandb.log({"avg_loss_class": avg_loss_class})
 
     #return(pred_list, observed_list)    
