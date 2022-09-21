@@ -257,8 +257,8 @@ if __name__ == "__main__":
     "output_channels": 1,
     "dropout_rate" : 0.05,
     'learning_rate' :  0.0001,
-    "weight_decay" :  0.01,
-    "epochs": 2,
+    "weight_decay" :  0.05,
+    "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
     "samples" : 32,
     "test_samples": 32} #64 is prob fine..
