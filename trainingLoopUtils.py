@@ -102,6 +102,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     avg_loss_class = 0
     avg_loss = 0
 
+    #pred_list = []
+    #observed_list = []
+
     model.train()  # train mode
     
     seq_len = input_tensor.shape[1] 
@@ -216,9 +219,11 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         avg_loss_reg += loss_reg / (seq_len-1)
         avg_loss_class += loss_class / (seq_len-1)
 
+        #pred_list.append(t1_pred)
+        #observed_list.append(t1)
 
         wandb.log({"avg_loss": avg_loss})
         wandb.log({"avg_loss_reg": avg_loss_reg})
         wandb.log({"avg_loss_class": avg_loss_class})
 
-    #return(avg_loss)    
+    #return(pred_list, observed_list)    

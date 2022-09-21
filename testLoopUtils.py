@@ -14,6 +14,9 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import brier_score_loss
 
+import wandb
+
+
 def norm(x, a = 0, b = 1):
 
     """Return a normalized x in range [a:b]. Default is [0:1]. Used for coordinates"""

@@ -15,6 +15,7 @@ import wandb
 
 
 from trainingLoopUtils import *
+from testLoopUtils import *
 from recurrentUnet import *
 
 
@@ -81,6 +82,8 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
 
     print('Training initiated...')
 
+
+
     for i in range(config.samples):
 
         print(f'{i+1}/{config.samples}', end = '\r')
@@ -100,6 +103,48 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
         #     print(f'{i} {avg_loss:.4f}') # could plot ap instead...
 
 
+
+def test(unet, ucpd_vol):
+
+    pred_list, pred_list_class = get_posterior(unet, ucpd_vol, device, n=100)
+
+    # reg statistics
+    t31_pred_np = np.array(pred_list)
+    t31_pred_np_mean = t31_pred_np.mean(axis=0)
+    t31_pred_np_std = t31_pred_np.std(axis=0)
+
+    # Class statistics - right noe this does not get updated through backprob..
+    t31_pred_class_np = np.array(pred_list_class)
+    t31_pred_class_np_mean = t31_pred_class_np.mean(axis=0)
+    t31_pred_class_np_std = t31_pred_class_np.std(axis=0)
+
+    # Classification results
+    y_var = t31_pred_np_std.reshape(360*720)
+    y_score = t31_pred_np_mean.reshape(360*720)
+
+    # HERE
+    #y_score_prob = torch.sigmoid(torch.tensor(y_score)) # old trick..
+    y_score_prob = t31_pred_class_np_mean.reshape(360*720) # way better brier!
+
+    # y_true = ucpd_vol[30,:,:,4].reshape(360*720) # 7 not 4 when you do sinkhorn and have coords 
+    y_true = ucpd_vol[30,:,:,7].reshape(360*720)
+
+    y_true_binary = (y_true > 0) * 1
+
+    print('Unet')
+
+    mse = mean_squared_error(y_true, y_score)
+    ap = average_precision_score(y_true_binary, y_score_prob)
+    auc = roc_auc_score(y_true_binary, y_score_prob)
+    brier = brier_score_loss(y_true_binary, y_score_prob)
+
+    wandb.log({"mean_squared_error": mse})
+    wandb.log({"average_precision_score": ap})
+    wandb.log({"roc_auc_score": auc})
+    wandb.log({"brier_score_loss": brier})
+
+
+
 def model_pipeline(hyperparameters):
 
     # tell wandb to get started
@@ -116,6 +161,11 @@ def model_pipeline(hyperparameters):
         print(unet)
 
         training_loop(config, unet, criterion, optimizer, ucpd_vol)
+        test(unet, ucpd_vol)
+
+        torch.onnx.export(unet, ucpd_vol, "RUnet.onnx")
+        wandb.save("RUnet.onnx")
+
         print('Done training')
 
         return(unet)
@@ -135,7 +185,7 @@ if __name__ == "__main__":
     "weight_decay" :  0.01,
     "epochs": 2,
     "batch_size": 8,
-    "samples" : 128}
+    "samples" : 64}
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
@@ -163,3 +213,10 @@ if __name__ == "__main__":
     end_t = time.time()
     minutes = (end_t - start_t)/60
     print(f'Done. Runtime: {minutes:.3f} minutes')
+
+
+
+
+
+# -------------------------
+

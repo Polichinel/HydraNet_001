@@ -14,10 +14,12 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import brier_score_loss
 
+import wandb
+
 from testLoopUtils import *
 from recurrentUnet import *
 
-import geomloss
+#import geomloss
 
 start_t = time.time()
 
@@ -100,72 +102,11 @@ print(average_precision_score(y_true_binary, y_score_prob))
 print(roc_auc_score(y_true_binary, y_score_prob))
 print(brier_score_loss(y_true_binary, y_score_prob))
 
-# ------------------------------------------------------------------
-criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.9, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-
-#criterion_reg = geomloss.ImagesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-#criterion_class = geomloss.ImagesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-
-# f loss is "sinkhorn" and reach is None (balanced Optimal Transport), the resulting routine will expect measures whose total masses are equal with each other.
-
-longitudes = ucpd_vol[0 ,  :  ,  : , 1].reshape(-1)
-latitudes = ucpd_vol[0 ,  :  ,  : , 2].reshape(-1) 
-
-# norm to between 0 and 1 - does another norm change the result?
-#longitudes_norm = torch.tensor((longitudes - longitudes.min())/(longitudes.max()-longitudes.min()), dtype = torch.float).to(device)#.detach()
-#latitudes_norm = torch.tensor((latitudes - latitudes.min())/(latitudes.max()-latitudes.min()), dtype = torch.float).to(device)#.detach()
-
-# longitudes_norm = torch.tensor(norm(longitudes, 0 ,1), dtype = torch.float).to(device)#.detach()
-# latitudes_norm = torch.tensor(norm(latitudes, 0 ,1), dtype = torch.float).to(device)#.detach()
-
-# longitudes_norm = torch.tensor(unit_norm(longitudes), dtype = torch.float).to(device)#.detach()
-# latitudes_norm = torch.tensor(unit_norm(latitudes), dtype = torch.float).to(device)#.detach()
-
-# NAN sinkhorn distances... you divide by 0?
-#longitudes_norm = torch.tensor(standard(longitudes), dtype = torch.float).to(device)#.detach()
-#latitudes_norm = torch.tensor(standard(latitudes), dtype = torch.float).to(device)#.detach()
-
-longitudes_norm = torch.tensor(unit_norm(longitudes, noise= True), dtype = torch.float).to(device)#.detach()
-latitudes_norm = torch.tensor(unit_norm(latitudes, noise= True), dtype = torch.float).to(device)#.detach()
-
-
-# NxD
-coords = torch.column_stack([longitudes_norm, latitudes_norm])
-
-# weights
-y_true_t = torch.tensor(y_true, dtype = torch.float).to(device) 
-y_score_t = torch.tensor(y_score, dtype = torch.float).to(device) 
-y_true_binary_t = torch.tensor(y_true_binary, dtype = torch.float).to(device) 
-y_score_prob_t = torch.tensor(y_score_prob, dtype = torch.float).to(device)
-
-# weights
-#y_score_t = torch.tensor(np.round(y_score,1), dtype = torch.float).to(device) 
-#y_score_prob_t = torch.tensor(np.round(y_score_prob,1), dtype = torch.float).to(device)
-
-
-sinkhorn_reg = criterion_reg(y_true_t, coords, y_score_t, coords)
-sinkhorn_class = criterion_class(y_true_binary_t, coords, y_score_prob_t, coords)
-
-
-# softmax to get prob dens TEST!
-#softmax = torch.nn.Softmax(dim = 0)
-
-#sinkhorn_reg = criterion_reg(softmax(y_true_t), coords, softmax(y_score_t), coords)
-#sinkhorn_class = criterion_class(softmax(y_true_binary_t), coords, softmax(y_score_prob_t), coords)
-# -----------------------------------------------------------------------
-
-print(np.sqrt(sinkhorn_reg.item()))
-print(np.sqrt(sinkhorn_class.item()))
-
-#print(sinkhorn_reg.item())
-#print(sinkhorn_class.item())
-
 end_t = time.time()
 minutes = (end_t - start_t)/60
 
 print(f'Done. Runtime: {minutes:.3f} minutes')
 
 
-#TODO:
+# TODO:
 # Ppersitance model should go back in and yo should output in a .txt fil.
