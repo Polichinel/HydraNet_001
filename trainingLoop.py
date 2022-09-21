@@ -298,7 +298,7 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
-    "samples" : 32,
+    "samples" : 64,
     "test_samples": 128}
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
