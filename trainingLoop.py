@@ -73,8 +73,8 @@ def make(config):
 
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
 
-    optimizer = torch.optim.Adam(unet.parameters(), lr = config.learning_rate, weight_decay = config.weight_decay)
-    # optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = config.betas)
+    #optimizer = torch.optim.Adam(unet.parameters(), lr = config.learning_rate, weight_decay = config.weight_decay)
+    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = config.betas)
 
     return(unet, criterion, optimizer) #, dataloaders, dataset_sizes)
 
@@ -258,6 +258,7 @@ if __name__ == "__main__":
     "dropout_rate" : 0.05,
     'learning_rate' :  0.0001,
     "weight_decay" :  0.05,
+    'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
     "samples" : 32,
