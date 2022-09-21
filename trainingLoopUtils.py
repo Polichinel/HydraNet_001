@@ -96,10 +96,10 @@ def get_input_tensors(ucpd_vol):
 def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, plot = False):
 
     # Tell wandb to watch what the model gets up to: gradients, weights, and more!
-    wandb.watch(model, [criterion_reg, criterion_class], log="all", log_freq=10)
+    wandb.watch(model, [criterion_reg, criterion_class], log="all", log_freq=128)
     
-    avg_reg_loss = 0
-    avg_class_loss = 0
+    avg_loss_reg = 0
+    avg_loss_class = 0
     avg_loss = 0
 
     model.train()  # train mode
@@ -213,11 +213,11 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         
         # Reporting 
         avg_loss += loss / (seq_len-1)
-        avg_loss_reg = loss_reg / (seq_len-1)
-        avg_loss_class = loss_class / (seq_len-1)
+        avg_loss_reg += loss_reg / (seq_len-1)
+        avg_loss_class += loss_class / (seq_len-1)
 
 
-        wandb.log({"avg_loss":avg_loss})
+        wandb.log({"avg_loss": avg_loss})
         wandb.log({"avg_loss_reg": avg_loss_reg})
         wandb.log({"avg_loss_class": avg_loss_class})
 

@@ -83,6 +83,8 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
 
     for i in range(config.samples):
 
+        print(f'{i+1}/{config.sample}', end = '\r')
+
         #input_tensor = torch.tensor(train_ucpd_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
         input_tensor, meta_tensor_dict = get_input_tensors(ucpd_vol)
         # data augmentation (can be turned of for final experiments)
@@ -133,7 +135,7 @@ if __name__ == "__main__":
     "weight_decay" :  0.01,
     "epochs": 2,
     "batch_size": 8,
-    "samples" : 1000}
+    "samples" : 250}
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
