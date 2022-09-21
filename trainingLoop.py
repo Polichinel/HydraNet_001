@@ -146,7 +146,7 @@ def test(model, input_tensor, device):
   return tn_pred_np, tn_pred_class_np
 
 
-def get_posterior(unet, ucpd_vol, device, n=100):
+def get_posterior(unet, ucpd_vol, device, n=10):
 
   #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #7 not 4 when you do sinkhorn
@@ -159,8 +159,8 @@ def get_posterior(unet, ucpd_vol, device, n=100):
     pred_list.append(t31_pred_np)
     pred_list_class.append(tn_pred_class_np)
 
-    if i % 10 == 0: # print steps 10
-        print(f'{i}/{n}', end = '\r')
+    #if i % 10 == 0: # print steps 10
+    print(f'{i}/{n}', end = '\r')
 
   return pred_list, pred_list_class
 
@@ -170,7 +170,7 @@ def end_test(unet, ucpd_vol):
 
     print('Testing initiated...')
 
-    pred_list, pred_list_class = get_posterior(unet, ucpd_vol, device, n=100)
+    pred_list, pred_list_class = get_posterior(unet, ucpd_vol, device, n=10)
 
     # reg statistics
     t31_pred_np = np.array(pred_list)
