@@ -94,7 +94,11 @@ def get_input_tensors(ucpd_vol):
     return(input_tensor, meta_tensor_dict)
 
 
-def train_log(avg_loss, avg_loss_reg, avg_loss_class, sequence_step, sample):
+def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
+
+    avg_loss = np.mean(avg_loss_list)
+    avg_loss_reg = np.mean(avg_loss_reg_list)
+    avg_loss_class = np.mean(avg_loss_class_list)
     # # Where the magic happens
     
     # wandb.log({"epoch": sample, "avg_loss": avg_loss}, step= sequence_step)
@@ -114,9 +118,13 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=1024)# 128 need to change this for monthly!!!!!!!
 
 
-    avg_loss_reg = 0
-    avg_loss_class = 0
-    avg_loss = 0
+    # avg_loss_reg = 0
+    # avg_loss_class = 0
+    # avg_loss = 0
+
+    avg_loss_reg_list = []
+    avg_loss_class_list = []
+    avg_loss_list = []
 
     #pred_list = []
     #observed_list = []
@@ -170,11 +178,15 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         optimizer.step()  # update weights
         
         # Reporting 
-        avg_loss += loss / (seq_len-1)
-        avg_loss_reg += loss_reg / (seq_len-1)
-        avg_loss_class += loss_class / (seq_len-1)
+        # avg_loss += loss / (seq_len-1)
+        # avg_loss_reg += loss_reg / (seq_len-1)
+        # avg_loss_class += loss_class / (seq_len-1)
 
-        train_log(avg_loss, avg_loss_reg, avg_loss_class, i, sample)
+        avg_loss_reg_list.append(loss_class.detach().cpu().numpy().item())
+        avg_loss_class_list.append(loss_reg.detach().cpu().numpy().item())
+        avg_loss_list.append(loss.detach().cpu().numpy().item())
+
+    train_log(avg_loss_reg_list, avg_loss_class_list, avg_loss_list, i, sample)
 
         #pred_list.append(t1_pred)
         #observed_list.append(t1)
