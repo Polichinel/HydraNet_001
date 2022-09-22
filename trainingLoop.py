@@ -201,7 +201,9 @@ def end_test(unet, ucpd_vol, config):
     y_score_prob = t31_pred_class_np_mean.reshape(360*720) # way better brier!
 
     # y_true = ucpd_vol[30,:,:,4].reshape(360*720) # 7 not 4 when you do sinkhorn and have coords 
-    y_true = ucpd_vol[30,:,:,7].reshape(360*720)
+#    y_true = ucpd_vol[30,:,:,7].reshape(360*720)
+    y_true = ucpd_vol[-1,:,:,7].reshape(360*720)
+
 
     y_true_binary = (y_true > 0) * 1
 
