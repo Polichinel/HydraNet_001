@@ -133,15 +133,21 @@ def test(model, input_tensor, device):
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
     seq_len = input_tensor.shape[1] # og nu køre eden bare helt til roden
+
+    #print(f'seq_len: {seq_len}') #!!!!!!!!!!!!!!!!!!!!!!!!
+
     H = input_tensor.shape[2]
     W = input_tensor.shape[3] 
 
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
         t0 = input_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device) 
-    #t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
+        # t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
 
         t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+
+        # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
+        # print(f'ap: {running_ap}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
   # You only want the last one
     tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
@@ -267,7 +273,7 @@ def get_posterior(unet, ucpd_vol, device, n):
 def model_pipeline(hyperparameters):
 
     # tell wandb to get started
-    with wandb.init(project="RUNET_monthly_experiments", entity="nornir", config=hyperparameters): #new projrct name!!!
+    with wandb.init(project="RUNET_monthly_experiments", entity="nornir", config=hyperparameters): 
         
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
@@ -304,7 +310,7 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
-    "samples" : 128,
+    "samples" : 64,
     "test_samples": 128,
     "min_events": 24}
 
