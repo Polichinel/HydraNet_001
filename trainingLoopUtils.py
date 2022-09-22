@@ -90,8 +90,13 @@ def get_input_tensors(ucpd_vol, config):
     # It is now 7, not 4, since you keep coords.
 #    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx , 4].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
 #    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim']) 
-    input_window = train_ucpd_vol[ start_temp: end_temp , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, -1, window_dict['dim'], window_dict['dim']) 
+    
+    # id it is monthly
+    if train_ucpd_vol[:,:,:,:].shape[0] > 32:
+        input_window = train_ucpd_vol[ start_temp: end_temp , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, -1, window_dict['dim'], window_dict['dim']) 
 
+    else: # it must be yearly
+        input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
 
     # 0 since this is constant across years. 1 dim for batch and one dim for time.
     gids = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 0].reshape(1, 1, window_dict['dim'], window_dict['dim'])
