@@ -77,15 +77,6 @@ def get_input_tensors(ucpd_vol, config):
     max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
 
-    # --------------------------------------------
-    min_temp_idx = 0
-    max_temp_idx = train_ucpd_vol[:,:,:,:].shape[0] - window_dict['temporal_dim']
-
-    start_temp = np.random.choice(np.arange(min_temp_idx, max_temp_idx+1, 1))
-    end_temp = start_temp + window_dict['temporal_dim']
-    # -------------------------------------------------
-
-
     # if you want a fixe temporal window, this is here.
     # It is now 7, not 4, since you keep coords.
 #    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx , 4].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
@@ -93,6 +84,15 @@ def get_input_tensors(ucpd_vol, config):
     
     # id it is monthly
     if train_ucpd_vol[:,:,:,:].shape[0] > 32:
+
+        # --------------------------------------------
+        min_temp_idx = 0
+        max_temp_idx = train_ucpd_vol[:,:,:,:].shape[0] - window_dict['temporal_dim']
+
+        start_temp = np.random.choice(np.arange(min_temp_idx, max_temp_idx+1, 1))
+        end_temp = start_temp + window_dict['temporal_dim']
+        # -------------------------------------------------
+
         input_window = train_ucpd_vol[ start_temp: end_temp , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, -1, window_dict['dim'], window_dict['dim']) 
 
     else: # it must be yearly
