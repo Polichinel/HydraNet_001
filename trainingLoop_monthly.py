@@ -310,7 +310,7 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
-    "samples" : 140,
+    "samples" : 100,
     "test_samples": 128,
     "min_events": 22}
 
