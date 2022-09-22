@@ -176,42 +176,6 @@ def mse(actual, predicted):
 
 
 
-#----------------
-# def true_false_positive(threshold_vector, y_test):
-#     true_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 1)
-#     true_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 0)
-#     false_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 0)
-#     false_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 1)
-
-#     tpr = true_positive.sum() / (true_positive.sum() + false_negative.sum())
-#     fpr = false_positive.sum() / (false_positive.sum() + true_negative.sum())
-
-#     return tpr, fpr
-
-
-# def roc(probabilities, y_test, partitions=100):
-#     roc = np.array([])
-#     for i in range(partitions + 1):
-        
-#         threshold_vector = np.greater_equal(probabilities, i / partitions).astype(int)
-#         tpr, fpr = true_false_positive(threshold_vector, y_test)
-#         roc = np.append(roc, [fpr, tpr])
-        
-#     return roc.reshape(-1, 2)
-
-
-# def auc(probabilities, y_test, partitions=100):
-    
-#     ROC = roc(probabilities, y_test, partitions=100)
-#     fpr, tpr = ROC[:, 0], ROC[:, 1]
-#     rectangle_roc = 0
-#     for k in range(partitions):
-#             rectangle_roc = rectangle_roc + (fpr[k]- fpr[k + 1]) * tpr[k]
-    
-#     return rectangle_roc
-# ---------------------
-
-
 def end_test(unet, ucpd_vol, config):
 
     print('Testing initiated...')
@@ -302,7 +266,7 @@ if __name__ == "__main__":
     "batch_size": 8,
     "samples" : 64,
     "test_samples": 128,
-    "min_events": 5}
+    "min_events": 8}
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
 
