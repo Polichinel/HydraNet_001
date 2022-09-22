@@ -301,7 +301,7 @@ if __name__ == "__main__":
 
     # Hyper parameters.
     hyperparameters = {
-    "hidden_channels" : 12, # might nee to be smaller for monthly # you like do not have mem for more than 64
+    "hidden_channels" : 10, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.1, #0.05
@@ -310,7 +310,7 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
-    "samples" : 128,
+    "samples" : 200,
     "test_samples": 128,
     "min_events": 32}
 
