@@ -52,7 +52,7 @@ def draw_window(ucpd_vol, min_events = 10):
     #dim = 16 # if truble, start by hard coding this to 16
     dim = np.random.choice([8, 16, 32, 64]) # 8, 64
 
-    window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim}
+    window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} # if you wnat a random temporal window, it is here.
 
     return(window_dict)
 
@@ -74,6 +74,7 @@ def get_input_tensors(ucpd_vol):
     min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
     max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
+    # if you want a fixe temporal window, this is here.
     # It is now 7, not 4, since you keep coords.
 #    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx , 4].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
     input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim']) 
@@ -110,7 +111,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     # Tell wandb to watch what the model gets up to: gradients, weights, and more!
     #wandb.watch(model, [criterion_reg, criterion_class], log="all", log_freq=128)
     
-    wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=128)
+    wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=1024)# 128 need to change this for monthly!!!!!!!
 
 
     avg_loss_reg = 0
