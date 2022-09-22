@@ -129,7 +129,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     # Tell wandb to watch what the model gets up to: gradients, weights, and more!
     #wandb.watch(model, [criterion_reg, criterion_class], log="all", log_freq=128)
     
-    wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=2048)# 128 need to change this for monthly!!!!!!!
+    wandb.watch(unet, [criterion_reg, criterion_class], log= None, log_freq=2048)# 128 need to change this for monthly!!!!!!!
 
 
     # avg_loss_reg = 0
