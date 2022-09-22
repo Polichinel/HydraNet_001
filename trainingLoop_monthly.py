@@ -291,11 +291,11 @@ if __name__ == "__main__":
 
     # Hyper parameters.
     hyperparameters = {
-    "hidden_channels" : 8, # might nee to be smaller for monthly # you like do not have mem for more than 64
+    "hidden_channels" : 10, # might nee to be smaller for monthly # you like do not have mem for more than 64
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.2, #0.05
-    'learning_rate' :  0.0003,
+    'learning_rate' :  0.0001,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...

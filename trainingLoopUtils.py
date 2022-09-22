@@ -50,7 +50,7 @@ def draw_window(ucpd_vol, min_events): # yearly 10# try to set lower for monthly
     
     indx = random.choice(min_events_indx)
     #dim = 16 # if truble, start by hard coding this to 16
-    dim = np.random.choice([8, 16, 32, 64]) # 8, 64
+    dim = np.random.choice([8, 16, 32, 64]) # 8, 64 # also do 128
 
     window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} # if you wnat a random temporal window, it is here.
 
