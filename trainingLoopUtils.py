@@ -89,11 +89,17 @@ def get_input_tensors(ucpd_vol, config):
         min_temp_idx = 0
         max_temp_idx = train_ucpd_vol[:,:,:,:].shape[0] - window_dict['temporal_dim']
 
-        start_temp = np.random.choice(np.arange(min_temp_idx, max_temp_idx+1, 1))
-        end_temp = start_temp + window_dict['temporal_dim']
+        # dump hack to make sure there is somthing in here
+        
+        input_window = torch.zeros(train_ucpd_vol[:,:,:,:].shape[0], dtype=torch.int32, requires_grad=False)
+        
+        while input_window.sum() < 1:
+
+            start_temp = np.random.choice(np.arange(min_temp_idx, max_temp_idx+1, 1))
+            end_temp = start_temp + window_dict['temporal_dim']
+            input_window = train_ucpd_vol[start_temp: end_temp , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, -1, window_dict['dim'], window_dict['dim'])
         # -------------------------------------------------
 
-        input_window = train_ucpd_vol[ start_temp: end_temp , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, -1, window_dict['dim'], window_dict['dim']) 
 
     else: # it must be yearly
         input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
