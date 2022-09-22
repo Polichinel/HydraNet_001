@@ -175,38 +175,38 @@ def mse(actual, predicted):
 
 
 #----------------
-def true_false_positive(threshold_vector, y_test):
-    true_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 1)
-    true_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 0)
-    false_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 0)
-    false_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 1)
+# def true_false_positive(threshold_vector, y_test):
+#     true_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 1)
+#     true_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 0)
+#     false_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 0)
+#     false_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 1)
 
-    tpr = true_positive.sum() / (true_positive.sum() + false_negative.sum())
-    fpr = false_positive.sum() / (false_positive.sum() + true_negative.sum())
+#     tpr = true_positive.sum() / (true_positive.sum() + false_negative.sum())
+#     fpr = false_positive.sum() / (false_positive.sum() + true_negative.sum())
 
-    return tpr, fpr
+#     return tpr, fpr
 
 
-def roc(probabilities, y_test, partitions=100):
-    roc = np.array([])
-    for i in range(partitions + 1):
+# def roc(probabilities, y_test, partitions=100):
+#     roc = np.array([])
+#     for i in range(partitions + 1):
         
-        threshold_vector = np.greater_equal(probabilities, i / partitions).astype(int)
-        tpr, fpr = true_false_positive(threshold_vector, y_test)
-        roc = np.append(roc, [fpr, tpr])
+#         threshold_vector = np.greater_equal(probabilities, i / partitions).astype(int)
+#         tpr, fpr = true_false_positive(threshold_vector, y_test)
+#         roc = np.append(roc, [fpr, tpr])
         
-    return roc.reshape(-1, 2)
+#     return roc.reshape(-1, 2)
 
 
-def auc(probabilities, y_test, partitions=100):
+# def auc(probabilities, y_test, partitions=100):
     
-    ROC = roc(probabilities, y_test, partitions=100)
-    fpr, tpr = ROC[:, 0], ROC[:, 1]
-    rectangle_roc = 0
-    for k in range(partitions):
-            rectangle_roc = rectangle_roc + (fpr[k]- fpr[k + 1]) * tpr[k]
+#     ROC = roc(probabilities, y_test, partitions=100)
+#     fpr, tpr = ROC[:, 0], ROC[:, 1]
+#     rectangle_roc = 0
+#     for k in range(partitions):
+#             rectangle_roc = rectangle_roc + (fpr[k]- fpr[k + 1]) * tpr[k]
     
-    return rectangle_roc
+#     return rectangle_roc
 # ---------------------
 
 
@@ -293,7 +293,7 @@ if __name__ == "__main__":
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.2, #0.05
-    'learning_rate' :  0.0003,
+    'learning_rate' :  0.0008,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
