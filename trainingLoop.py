@@ -260,7 +260,7 @@ if __name__ == "__main__":
     "output_channels": 1,
     "dropout_rate" : 0.2, #0.05
     'learning_rate' :  0.0007,
-    "weight_decay" :  0.01,
+    "weight_decay" :  0.1,
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
