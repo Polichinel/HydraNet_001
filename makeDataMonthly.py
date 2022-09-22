@@ -201,3 +201,7 @@ def compile():
     output.close()
 
     print('Done')
+
+
+if __name__ == '__main__':
+    compile()
