@@ -128,17 +128,15 @@ def test(model, input_tensor, device):
   # but there was also something else that you neede to acount for when doing this..?
 
 # ---------------------------------------------------------------------------------------------------------------------
-    input_tensor = input_tensor[:,-48:,:,:] # b, c, h, w # just the last 4 years.
+#input_tensor = input_tensor[:,-48:,:,:] # b, c, h, w # just the last 4 years.
 # ---------------------------------------------------------------------------------------------------------------------
 
-
-
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
-    seq_len = input_tensor.shape[1] 
+    seq_len = input_tensor.shape[1] # og nu køre eden bare helt til roden
     H = input_tensor.shape[2]
     W = input_tensor.shape[3] 
 
-    for i in range(seq_len-1): # need to get hidden state...
+    for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
         t0 = input_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device) 
     #t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
@@ -153,76 +151,23 @@ def test(model, input_tensor, device):
 
 
 def get_posterior(unet, ucpd_vol, device, n):
+    print('Testing initiated...')
 
   #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
 #   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
-  ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    # And you reshape to get a batch dim
 
+    pred_list = []
+    pred_list_class = []
 
-  pred_list = []
-  pred_list_class = []
+    for i in range(n):
+        t31_pred_np, tn_pred_class_np = test(unet, ttime_tensor, device)
+        pred_list.append(t31_pred_np)
+        pred_list_class.append(tn_pred_class_np)
 
-  for i in range(n):
-    t31_pred_np, tn_pred_class_np = test(unet, ttime_tensor, device)
-    pred_list.append(t31_pred_np)
-    pred_list_class.append(tn_pred_class_np)
-
-    #if i % 10 == 0: # print steps 10
-    print(f'{i}/{n}', end = '\r')
-
-  return pred_list, pred_list_class
-
-
-# def mse(actual, predicted):
-#     actual = np.array(actual)
-#     predicted = np.array(predicted)
-#     differences = np.subtract(actual, predicted)
-#     squared_differences = np.square(differences)
-#     return squared_differences.mean()
-
-
-
-#----------------
-# def true_false_positive(threshold_vector, y_test):
-#     true_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 1)
-#     true_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 0)
-#     false_positive = np.equal(threshold_vector, 1) & np.equal(y_test, 0)
-#     false_negative = np.equal(threshold_vector, 0) & np.equal(y_test, 1)
-
-#     tpr = true_positive.sum() / (true_positive.sum() + false_negative.sum())
-#     fpr = false_positive.sum() / (false_positive.sum() + true_negative.sum())
-
-#     return tpr, fpr
-
-
-# def roc(probabilities, y_test, partitions=100):
-#     roc = np.array([])
-#     for i in range(partitions + 1):
-        
-#         threshold_vector = np.greater_equal(probabilities, i / partitions).astype(int)
-#         tpr, fpr = true_false_positive(threshold_vector, y_test)
-#         roc = np.append(roc, [fpr, tpr])
-        
-#     return roc.reshape(-1, 2)
-
-
-# def auc(probabilities, y_test, partitions=100):
-    
-#     ROC = roc(probabilities, y_test, partitions=100)
-#     fpr, tpr = ROC[:, 0], ROC[:, 1]
-#     rectangle_roc = 0
-#     for k in range(partitions):
-#             rectangle_roc = rectangle_roc + (fpr[k]- fpr[k + 1]) * tpr[k]
-    
-#     return rectangle_roc
-# ---------------------
-
-
-def end_test(unet, ucpd_vol, config):
-
-    print('Testing initiated...')
-
-    pred_list, pred_list_class = get_posterior(unet, ucpd_vol, device, n=config.test_samples)
+        #if i % 10 == 0: # print steps 10
+        print(f'{i}/{n}', end = '\r')
 
     # reg statistics
     t31_pred_np = np.array(pred_list)
@@ -266,6 +211,58 @@ def end_test(unet, ucpd_vol, config):
     wandb.log({"brier_score_loss": brier})
 
 
+  #return pred_list, pred_list_class
+
+
+
+# def end_test(unet, ucpd_vol, config):
+
+#     print('Testing initiated...')
+
+#     pred_list, pred_list_class = get_posterior(unet, ucpd_vol, device, n=config.test_samples)
+
+#     # reg statistics
+#     t31_pred_np = np.array(pred_list)
+#     t31_pred_np_mean = t31_pred_np.mean(axis=0)
+#     t31_pred_np_std = t31_pred_np.std(axis=0)
+
+#     # Class statistics - right noe this does not get updated through backprob..
+#     t31_pred_class_np = np.array(pred_list_class)
+#     t31_pred_class_np_mean = t31_pred_class_np.mean(axis=0)
+#     t31_pred_class_np_std = t31_pred_class_np.std(axis=0)
+
+#     # Classification results
+#     y_var = t31_pred_np_std.reshape(360*720)
+#     y_score = t31_pred_np_mean.reshape(360*720)
+
+#     # HERE
+#     #y_score_prob = torch.sigmoid(torch.tensor(y_score)) # old trick..
+#     y_score_prob = t31_pred_class_np_mean.reshape(360*720) # way better brier!
+
+#     # y_true = ucpd_vol[30,:,:,4].reshape(360*720) # 7 not 4 when you do sinkhorn and have coords 
+#     y_true = ucpd_vol[-1,:,:,7].reshape(360*720)
+
+#     y_true_binary = (y_true > 0) * 1
+
+#     #print('Unet')
+
+#     #loss = nn.MSELoss()
+#     #mse = loss(y_true, y_score)
+
+#     # mean_se = mse(y_true, y_score) #just a dummy..
+#     # area_uc = auc(y_score_prob, y_true_binary)
+
+#     mean_se = mean_squared_error(y_true, y_score)
+#     ap = average_precision_score(y_true_binary, y_score_prob)
+#     area_uc = roc_auc_score(y_true_binary, y_score_prob)
+#     brier = brier_score_loss(y_true_binary, y_score_prob)
+
+#     wandb.log({"mean_squared_error": mean_se})
+#     wandb.log({"average_precision_score": ap})
+#     wandb.log({"roc_auc_score": area_uc})
+#     wandb.log({"brier_score_loss": brier})
+
+
 
 def model_pipeline(hyperparameters):
 
@@ -285,7 +282,8 @@ def model_pipeline(hyperparameters):
         training_loop(config, unet, criterion, optimizer, ucpd_vol)
         print('Done training')
         
-        end_test(unet, ucpd_vol, config)
+        get_posterior(unet, ucpd_vol, device, n=config.test_samples)
+        #end_test(unet, ucpd_vol, config)
         print('Done testing')
 
         return(unet)
