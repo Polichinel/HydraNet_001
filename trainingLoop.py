@@ -266,7 +266,7 @@ if __name__ == "__main__":
     "batch_size": 8,
     "samples" : 64,
     "test_samples": 128,
-    "min_events": 8}
+    "min_events": 10}
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
 
