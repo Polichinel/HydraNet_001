@@ -162,7 +162,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     # initialize a hidden state
     h = unet.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
 
-    for i in range(seq_len-1): # so your sequnce is the full time len
+    for i in range(seq_len-1): # so your sequnce is the full time len - last month.
          
         t0 = input_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
         t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
