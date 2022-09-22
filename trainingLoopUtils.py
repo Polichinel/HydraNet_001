@@ -182,8 +182,8 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
         # avg_loss_reg += loss_reg / (seq_len-1)
         # avg_loss_class += loss_class / (seq_len-1)
 
-        avg_loss_reg_list.append(loss_class.detach().cpu().numpy().item())
-        avg_loss_class_list.append(loss_reg.detach().cpu().numpy().item())
+        avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
+        avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
         avg_loss_list.append(loss.detach().cpu().numpy().item())
 
     train_log(avg_loss_reg_list, avg_loss_class_list, avg_loss_list)
