@@ -123,27 +123,33 @@ def apply_dropout(m):
         m.train()
 
 def test(model, input_tensor, device):
-  model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
-  model.apply(apply_dropout)
+    model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
+    model.apply(apply_dropout)
   # but there was also something else that you neede to acount for when doing this..?
 
-  h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
-  seq_len = input_tensor.shape[1] 
-  H = input_tensor.shape[2]
-  W = input_tensor.shape[3] 
+# ---------------------------------------------------------------------------------------------------------------------
+    input_tensor = input_tensor[:,-48:,:,:] # b, c, h, w # just the last 4 years.
+# ---------------------------------------------------------------------------------------------------------------------
 
-  for i in range(seq_len-1): # need to get hidden state...
 
-    t0 = input_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device) 
+
+    h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
+    seq_len = input_tensor.shape[1] 
+    H = input_tensor.shape[2]
+    W = input_tensor.shape[3] 
+
+    for i in range(seq_len-1): # need to get hidden state...
+
+        t0 = input_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device) 
     #t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
 
-    t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+        t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
   # You only want the last one
-  tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
-  tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
+    tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
+    tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
 
-  return tn_pred_np, tn_pred_class_np
+    return tn_pred_np, tn_pred_class_np
 
 
 def get_posterior(unet, ucpd_vol, device, n):
