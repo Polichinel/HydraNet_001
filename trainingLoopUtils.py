@@ -34,7 +34,7 @@ def standard(x, noise = False):
 
     return(x_standard)
 
-def draw_window(ucpd_vol, min_events = 2): # try to set lower for monthly !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+def draw_window(ucpd_vol, min_events): # yearly 10# try to set lower for monthly !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Should be in config....
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..
 
@@ -57,7 +57,7 @@ def draw_window(ucpd_vol, min_events = 2): # try to set lower for monthly !!!!!!
     return(window_dict)
 
 
-def get_input_tensors(ucpd_vol):
+def get_input_tensors(ucpd_vol, config):
   
     # ...
     train_ucpd_vol = ucpd_vol[:-1] # all except the last year
@@ -67,7 +67,7 @@ def get_input_tensors(ucpd_vol):
     seq_len = train_ucpd_vol.shape[0]
 
     # ...
-    window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = 5)
+    window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = config.min_events)
     
     min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
     max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
