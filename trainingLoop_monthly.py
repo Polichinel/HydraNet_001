@@ -300,7 +300,7 @@ if __name__ == "__main__":
     "hidden_channels" : 64, # might nee to be smaller for monthly # you like do not have mem for more than 64
     "input_channels" : 1,
     "output_channels": 1,
-    "dropout_rate" : 0.2, #0.05
+    "dropout_rate" : 0.01, #0.05
     'learning_rate' :  0.0001,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
@@ -308,7 +308,7 @@ if __name__ == "__main__":
     "batch_size": 8,
     "samples" : 128,
     "test_samples": 128,
-    "min_events": 5*12}
+    "min_events": 24}
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
