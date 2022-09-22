@@ -52,7 +52,9 @@ def draw_window(ucpd_vol, min_events): # yearly 10# try to set lower for monthly
     #dim = 16 # if truble, start by hard coding this to 16
     dim = np.random.choice([8, 16, 32, 64]) # 8, 64 # also do 128
 
-    window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} # if you wnat a random temporal window, it is here.
+    temporal_dim = np.random.choice([6, 12, 24, 48, 96, 192]) 
+
+    window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim, 'temporal_dim': temporal_dim} # if you wnat a random temporal window, it is here.
 
     return(window_dict)
 
@@ -115,7 +117,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     # Tell wandb to watch what the model gets up to: gradients, weights, and more!
     #wandb.watch(model, [criterion_reg, criterion_class], log="all", log_freq=128)
     
-    wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=1024)# 128 need to change this for monthly!!!!!!!
+    wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=2048)# 128 need to change this for monthly!!!!!!!
 
 
     # avg_loss_reg = 0
