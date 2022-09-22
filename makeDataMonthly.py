@@ -60,8 +60,8 @@ def get_gwno():
 
 def get_ucdp():
 
-    #location = '/home/projects/ku_00017/data/raw/UCDP'
-    location = '/home/simon/Documents/Bodies/data/UCDP' #local
+    location = '/home/projects/ku_00017/data/raw/UCDP'
+    #location = '/home/simon/Documents/Bodies/data/UCDP' #local
     path_ucdp = location + "/ged201-csv.zip"
     
     if os.path.isfile(path_ucdp) == True:
