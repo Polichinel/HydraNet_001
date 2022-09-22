@@ -34,7 +34,7 @@ def standard(x, noise = False):
 
     return(x_standard)
 
-def draw_window(ucpd_vol, min_events = 10):
+def draw_window(ucpd_vol, min_events = 2): # try to set lower for monthly !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..
 
