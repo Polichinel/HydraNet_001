@@ -135,7 +135,7 @@ def test(model, input_tensor, device):
   for i in range(seq_len-1): # need to get hidden state...
 
     t0 = input_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device) 
-    t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device)
+    #t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
 
     t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
@@ -167,12 +167,12 @@ def get_posterior(unet, ucpd_vol, device, n):
   return pred_list, pred_list_class
 
 
-def mse(actual, predicted):
-    actual = np.array(actual)
-    predicted = np.array(predicted)
-    differences = np.subtract(actual, predicted)
-    squared_differences = np.square(differences)
-    return squared_differences.mean()
+# def mse(actual, predicted):
+#     actual = np.array(actual)
+#     predicted = np.array(predicted)
+#     differences = np.subtract(actual, predicted)
+#     squared_differences = np.square(differences)
+#     return squared_differences.mean()
 
 
 
