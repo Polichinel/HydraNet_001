@@ -238,10 +238,17 @@ def compile():
     location = '/home/projects/ku_00017/data/raw/conflictNet'
     #location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
 
-    print('Saving pickle')
-    file_name = "/ucpd_monthly_vol.pkl"
+
+    print('Saving pickle1')
+    file_name = "/views_monthly_vol.pkl"
     output = open(location + file_name, 'wb')
-    pickle.dump(ucpd_vol, output)
+    pickle.dump(views_vol, output)
+    output.close()
+
+    print('Saving pickle2')
+    file_name = "/views_world_monthly_vol.pkl"
+    output = open(location + file_name, 'wb')
+    pickle.dump(worlds_vol, output)
     output.close()
 
     print('Done')
