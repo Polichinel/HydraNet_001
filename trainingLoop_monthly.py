@@ -141,7 +141,7 @@ def test(model, input_tensor, device):
 
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
-        t0 = input_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device) 
+        t0 = input_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
         # t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
 
         t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
@@ -163,6 +163,9 @@ def get_posterior(unet, ucpd_vol, device, n):
 #   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     # And you reshape to get a batch dim
+
+
+    # SO YOU ARE LOADING THE FULL VOLUMN INTO DEVICE AT ONCE. TRY IF YOU CAN JUST DO THE TWO t's (t and t+1) WHICH YOU NEED!
 
     pred_list = []
     pred_list_class = []
