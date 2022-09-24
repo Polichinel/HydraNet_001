@@ -161,7 +161,7 @@ def get_posterior(unet, ucpd_vol, device, n):
 
   #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
 #   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
-    ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     # And you reshape to get a batch dim
 
 
