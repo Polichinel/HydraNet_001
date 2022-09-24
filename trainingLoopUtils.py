@@ -166,6 +166,9 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 
     for i in range(seq_len-1): # so your sequnce is the full time len - last month.
          
+
+        # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
+        # ACTUALLY I DO NOT THINK YOU DO HERE!!! IT IS ONLY FOR TESTING...... STOP THAT
         t0 = input_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
         t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
 
