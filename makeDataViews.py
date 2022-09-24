@@ -244,12 +244,15 @@ def compile():
     output = open(location + file_name, 'wb')
     pickle.dump(views_vol, output)
     output.close()
+    print(f'Pickled {file_name}')
 
     print('Saving pickle2')
     file_name = "/views_world_monthly_vol.pkl"
     output = open(location + file_name, 'wb')
     pickle.dump(worlds_vol, output)
     output.close()
+    print(f'Pickled {file_name}')
+
 
     print('Done')
 
