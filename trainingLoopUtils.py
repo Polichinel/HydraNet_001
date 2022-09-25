@@ -59,7 +59,7 @@ def draw_window(ucpd_vol, min_events):
     return(window_dict)
 
 
-def get_input_tensors(ucpd_vol, config):
+def get_train_tensors(ucpd_vol, config):
   
     # ...
     train_ucpd_vol = ucpd_vol[:-1] # all except the last year
@@ -82,29 +82,10 @@ def get_input_tensors(ucpd_vol, config):
 #    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx , 4].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
 #    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim']) 
     
-    # id it is monthly
-    if train_ucpd_vol[:,:,:,:].shape[0] > 32:
 
-        input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
+    # HERE YOU MAKE SO THAT DIM 1 IS MONTH
+    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
 
-        # --------------------------------------------
-        # min_temp_idx = 0
-        # max_temp_idx = train_ucpd_vol[:,:,:,:].shape[0] - window_dict['temporal_dim']
-
-        # # dump hack to make sure there is somthing in here
-        
-        # input_window = torch.zeros(train_ucpd_vol[:,:,:,:].shape[0], dtype=torch.int32, requires_grad=False)
-        
-        # while input_window.sum() < 1:
-
-        #     start_temp = np.random.choice(np.arange(min_temp_idx, max_temp_idx+1, 1))
-        #     end_temp = start_temp + window_dict['temporal_dim']
-        #     input_window = train_ucpd_vol[start_temp: end_temp , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, -1, window_dict['dim'], window_dict['dim'])
-        # # -------------------------------------------------
-
-
-    else: # it must be yearly
-        input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
 
     # 0 since this is constant across years. 1 dim for batch and one dim for time.
     gids = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 0].reshape(1, 1, window_dict['dim'], window_dict['dim'])
@@ -116,9 +97,9 @@ def get_input_tensors(ucpd_vol, config):
     latitudes_tensor = torch.tensor(latitudes, dtype=torch.float)
 
     meta_tensor_dict = {'gids' : gids_tensor, 'longitudes' : longitudes_tensor, 'latitudes' : latitudes_tensor }
-    input_tensor = torch.tensor(input_window).float()
+    train_tensor = torch.tensor(input_window).float()
 
-    return(input_tensor, meta_tensor_dict)
+    return(train_tensor, meta_tensor_dict)
 
 
 def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
@@ -137,7 +118,7 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
     wandb.log({"avg_loss_class": avg_loss_class})
 
 
-def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, sample, plot = False):
+def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, device, unet, sample, plot = False):
 
     # Tell wandb to watch what the model gets up to: gradients, weights, and more!
     #wandb.watch(model, [criterion_reg, criterion_class], log="all", log_freq=128)
@@ -145,11 +126,11 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     wandb.watch(unet, [criterion_reg, criterion_class], log= None, log_freq=2048)# 128 need to change this for monthly!!!!!!!
 
     # TRY THIS TO TEST:
-    train_tensor = input_tensor[:, :-1, :, :]
-    test_tensor  = input_tensor[:, -1:, :, :] # just to see the shape
-    print(f'shape input tensor: {input_tensor.shape}')
-    print(f'shape train tensor: {train_tensor.shape}')
-    print(f'shape test tensor: {test_tensor.shape}')
+    # train_tensor = input_tensor[:, :-1, :, :]
+    # test_tensor  = input_tensor[:, -1:, :, :] # just to see the shape
+    # print(f'shape input tensor: {input_tensor.shape}')
+    # print(f'shape train tensor: {train_tensor.shape}')
+    # print(f'shape test tensor: {test_tensor.shape}')
 
     # avg_loss_reg = 0
     # avg_loss_class = 0
@@ -172,12 +153,15 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 
     #for i in range(seq_len-1): # so your sequnce is the full time len - last month.
     for i in range(seq_len-1): # so your sequnce is the full time len - last month.
+        print(f'month: {i+1}/{seq_len+1}', end='\r')
      
 
         # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
         # ACTUALLY I DO NOT THINK YOU DO HERE!!! IT IS ONLY FOR TESTING...... STOP THAT
         t0 = train_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
         t1 = train_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
+
+        # is this the right dime?
 
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         

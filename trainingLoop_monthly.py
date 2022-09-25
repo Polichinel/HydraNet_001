@@ -100,11 +100,11 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
         print(f'{sample+1}/{config.samples}', end = '\r')
 
         #input_tensor = torch.tensor(train_ucpd_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
-        input_tensor, meta_tensor_dict = get_input_tensors(ucpd_vol, config)
+        train_tensor, meta_tensor_dict = get_train_tensors(ucpd_vol, config)
         # data augmentation (can be turned of for final experiments)
-        input_tensor = transformer(input_tensor) # rotations and flips
+        train_tensor = transformer(train_tensor) # rotations and flips
 
-        train(unet, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, sample, plot = False)
+        train(unet, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, device, unet, sample, plot = False)
 
         #avg_loss = train(unet, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, plot = False)
         #avg_losses.append(avg_loss.cpu().detach().numpy())
@@ -122,7 +122,7 @@ def apply_dropout(m):
     if type(m) == nn.Dropout:
         m.train()
 
-def test(model, input_tensor, device):
+def test(model, test_tensor, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
   # but there was also something else that you neede to acount for when doing this..?
@@ -132,16 +132,16 @@ def test(model, input_tensor, device):
 # ---------------------------------------------------------------------------------------------------------------------
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
-    seq_len = input_tensor.shape[1] # og nu køre eden bare helt til roden
+    seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
 
     #print(f'seq_len: {seq_len}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
-    H = input_tensor.shape[2]
-    W = input_tensor.shape[3] 
+    H = test_tensor.shape[2]
+    W = test_tensor.shape[3] 
 
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
-        t0 = input_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+        t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
         # t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
 
         t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
@@ -159,9 +159,13 @@ def test(model, input_tensor, device):
 def get_posterior(unet, ucpd_vol, device, n):
     print('Testing initiated...')
 
+
+    # HERE YOU MAKE DIM 1 TIME
   #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
 #   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
-    ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    test_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    print(f'test tensor size: {test_tensor}')
+    
     # And you reshape to get a batch dim
 
 
@@ -171,7 +175,7 @@ def get_posterior(unet, ucpd_vol, device, n):
     pred_list_class = []
 
     for i in range(n):
-        t31_pred_np, tn_pred_class_np = test(unet, ttime_tensor, device)
+        t31_pred_np, tn_pred_class_np = test(unet, test_tensor, device)
         pred_list.append(t31_pred_np)
         pred_list_class.append(tn_pred_class_np)
 
