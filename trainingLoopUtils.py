@@ -171,7 +171,7 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     h = unet.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
 
     #for i in range(seq_len-1): # so your sequnce is the full time len - last month.
-    for i in range(seq_len): # so your sequnce is the full time len - last month.
+    for i in range(seq_len-1): # so your sequnce is the full time len - last month.
      
 
         # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
