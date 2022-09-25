@@ -65,7 +65,7 @@ def draw_window(ucpd_vol, min_events, sample):
     # ----------------------------------
 
     #dim = np.random.choice([8, 16, 32, 64]) 
-    dim = np.random.choice([16, 32, 64]) 
+    dim = np.random.choice([16, 32, 64, 128]) 
 
     window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} # if you wnat a random temporal window, it is here.
 
