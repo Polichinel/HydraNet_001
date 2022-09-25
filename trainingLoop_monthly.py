@@ -136,6 +136,9 @@ def test(model, test_tensor, device):
 
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
+
+        # HERE - IF WE GO BEYOUND -36 THEN USE t1_pred AS t0
+
         t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
         # t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
 
@@ -264,7 +267,7 @@ if __name__ == "__main__":
     "batch_size": 8,
     "samples" : 150,
     "test_samples": 16, # go 128, but this is tj́sut to see is there is a collaps
-    "min_events": 22}
+    "min_events": 24}
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
