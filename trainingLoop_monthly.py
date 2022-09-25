@@ -229,7 +229,7 @@ def get_posterior(unet, ucpd_vol, device, n):
         y_var = std_array[i].reshape(-1)  #  360*720
         y_var_prob = std_class_array[i].reshape(-1)  #  360*720
     
-        y_true = out_of_sample_tensor[i].reshape(-1)  #  360*720. dim 0 is time
+        y_true = out_of_sample_tensor[:,i].reshape(-1)  #  360*720. dim 0 is time
         y_true_binary = (y_true > 0) * 1
 
         print(y_true.shape)
