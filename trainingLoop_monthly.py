@@ -192,8 +192,10 @@ def get_posterior(unet, ucpd_vol, device, n):
 
     # SIZE NEED TO CHANGE WITH VIEWS
     test_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.    
-    out_of_sample = test_tensor[-36:]
-
+    print(test_tensor.shape)
+    
+    out_of_sample_tensor = test_tensor[-36:]
+    print(out_of_sample_tensor.shape)
 
     posterior_list = []
     posterior_list_class = []
@@ -227,7 +229,7 @@ def get_posterior(unet, ucpd_vol, device, n):
         y_var = std_array[i].reshape(-1)  #  360*720
         y_var_prob = std_class_array[i].reshape(-1)  #  360*720
     
-        y_true = out_of_sample[i].reshape(-1)  #  360*720. dim 0 is time
+        y_true = out_of_sample_tensor[i].reshape(-1)  #  360*720. dim 0 is time
         y_true_binary = (y_true > 0) * 1
 
         print(y_true.shape)
