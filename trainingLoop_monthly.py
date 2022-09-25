@@ -148,27 +148,27 @@ def test(model, test_tensor, device):
             print(f'in sample. month: {i+1}')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
-            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+            # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
             print(f'Out of sample. month: {i+1}')
             t0 = t1_pred
-            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+            # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
             # But teh nyou also need to store results for all 36 months here.
             # You only want the last one
-            tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
-            tn_pred_class_np = t1_pred_class.cpu().detach().numpy
+            # tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
+            # tn_pred_class_np = t1_pred_class.cpu().detach().numpy
 
-        #t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+        t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
         # print(f'ap: {running_ap}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
         # THIS NEEDS TO BE WORSE
         
-#   # You only want the last one
-#     tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
-#     tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
+  # You only want the last one
+    tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
+    tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
 
     return tn_pred_np, tn_pred_class_np
 
