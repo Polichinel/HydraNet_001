@@ -134,7 +134,7 @@ def test(model, test_tensor, device):
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
-    print(f'\t\t\t sequence length: {seq_len}', end= '\r')
+    print(f'\t\t\t\t sequence length: {seq_len}', end= '\r')
 
     #print(f'seq_len: {seq_len}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -146,7 +146,7 @@ def test(model, test_tensor, device):
         # HERE - IF WE GO BEYOUND -36 THEN USE t1_pred AS t0
 
         if i < seq_len-1-36: # take form the test set
-            print(f'\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
+            print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
@@ -155,7 +155,7 @@ def test(model, test_tensor, device):
 
 
         else: # take the last t1_pred
-            print(f'\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
+            print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
             out_of_sampel = 1
@@ -351,9 +351,9 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8, # this also you do not ues
-    "samples" : 140,
+    "samples" : 150,
     "test_samples": 128, # go 128, but this is tj́sut to see is there is a collaps
-    "min_events": 20}
+    "min_events": 22}
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
