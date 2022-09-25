@@ -126,6 +126,11 @@ def test(model, test_tensor, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
 
+    # wait until you know if this work as usually
+    pred_dict = {}
+    pred_class_np_dict = {}
+
+
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
 
@@ -141,24 +146,26 @@ def test(model, test_tensor, device):
         if i < seq_len-1-12: # take form the test set
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
-        # t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
+            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
             t0 = t1_pred
+            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
             # But teh nyou also need to store results for all 36 months here.
+            # You only want the last one
+            tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
+            tn_pred_class_np = t1_pred_class.cpu().detach().numpy
 
-        t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+        #t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
         # print(f'ap: {running_ap}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
-
         # THIS NEEDS TO BE WORSE
         
-
-  # You only want the last one
-    tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
-    tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
+#   # You only want the last one
+#     tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
+#     tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
 
     return tn_pred_np, tn_pred_class_np
 
