@@ -105,7 +105,7 @@ def get_train_tensors(ucpd_vol, config, sample):
             break
 
         except:
-            print('RE-sample edge-window...', end = '\r')
+            print('RE-sample edge-window...')
             continue
 
     # ---------------------------------
