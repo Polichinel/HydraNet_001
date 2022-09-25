@@ -150,7 +150,7 @@ def test(model, test_tensor, device):
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
-            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+            #t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
 
         else: # take the last t1_pred
@@ -162,10 +162,10 @@ def test(model, test_tensor, device):
             # tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
             # tn_pred_class_np = t1_pred_class.cpu().detach().numpy
 
-            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+        t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
-            pred_list.append(t1_pred)
-            pred_class_np_list.append(t1_pred_class)
+            #pred_list.append(t1_pred)
+            #pred_class_np_list.append(t1_pred_class)
 
 
         # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
