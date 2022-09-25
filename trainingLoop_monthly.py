@@ -82,15 +82,12 @@ def make(config):
 
 def training_loop(config, unet, criterion, optimizer, ucpd_vol):
 
-    #wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=128)
 
     # add spatail transformer
     transformer = transforms.Compose([transforms.RandomRotation((0,360)), transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
     avg_losses = []
 
     criterion_reg, criterion_class = criterion
-
-    #wandb.watch(unet, [criterion_reg, criterion_class], log="all", log_freq=128)
 
 
     print('Training initiated...')
@@ -106,12 +103,6 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
 
         train(unet, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, device, unet, sample, plot = False)
 
-        #avg_loss = train(unet, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, plot = False)
-        #avg_losses.append(avg_loss.cpu().detach().numpy())
-
-
-        # if i % 100 == 0: # print steps 100
-        #     print(f'{i} {avg_loss:.4f}') # could plot ap instead...
 
     print('training done...')
 
@@ -136,7 +127,6 @@ def test(model, test_tensor, device):
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
     print(f'\t\t\t\t sequence length: {seq_len}', end= '\r')
 
-    #print(f'seq_len: {seq_len}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
     H = test_tensor.shape[2]
     W = test_tensor.shape[3]
@@ -149,21 +139,13 @@ def test(model, test_tensor, device):
             print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
-            # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
-
-            #t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
-
 
         else: # take the last t1_pred
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
             out_of_sampel = 1
-            # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
-            # But teh nyou also need to store results for all 36 months here.
-            # You only want the last one
-            # tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
-            # tn_pred_class_np = t1_pred_class.cpu().detach().numpy
+
 
         t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
@@ -173,16 +155,6 @@ def test(model, test_tensor, device):
             pred_class_np_list.append(t1_pred_class.cpu().detach().numpy().squeeze())
 
 
-        # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
-        # print(f'ap: {running_ap}') #!!!!!!!!!!!!!!!!!!!!!!!!
-
-        # THIS NEEDS TO BE WORSE
-
-#   # You only want the last one
-#     tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
-#     tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
-
-#     return tn_pred_np, tn_pred_class_np
     return pred_np_list, pred_class_np_list
 
 
@@ -232,8 +204,6 @@ def get_posterior(unet, ucpd_vol, device, n):
         y_true = out_of_sample_tensor[:,i].reshape(-1)  #  360*720. dim 0 is time
         y_true_binary = (y_true > 0) * 1
 
-        #print(y_true.shape)
-        #print(y_score.shape)
 
         mse = mean_squared_error(y_true, y_score)
         ap = average_precision_score(y_true_binary, y_score_prob)
@@ -253,13 +223,6 @@ def get_posterior(unet, ucpd_vol, device, n):
         ap_list.append(ap) # add to list.
         auc_list.append(auc)
         brier_list.append(brier)
-
-    # Works
-    # wandb.log({"monthly_mean_squared_error": mse_list})
-    # wandb.log({"monthly_average_precision_score": ap_list})
-    # wandb.log({"monthly_roc_auc_score": auc_list})
-    # wandb.log({"monthly_brier_score_loss":brier_list})
-
     
 
     wandb.log({"36month_mean_squared_error": np.mean(mse_list)})
@@ -267,42 +230,6 @@ def get_posterior(unet, ucpd_vol, device, n):
     wandb.log({"36month_roc_auc_score": np.mean(auc_list)})
     wandb.log({"36month_brier_score_loss":np.mean(brier_list)})
 
-
-# -----------------------------------
-
-
-    # # reg statistics
-    # t31_pred_np = np.array(____pred_list)
-    # t31_pred_np_mean = t31_pred_np.mean(axis=0)
-    # t31_pred_np_std = t31_pred_np.std(axis=0)
-
-    # # Class statistics - right noe this does not get updated through backprob..
-    # t31_pred_class_np = np.array(___pred_list_class)
-    # t31_pred_class_np_mean = t31_pred_class_np.mean(axis=0)
-    # t31_pred_class_np_std = t31_pred_class_np.std(axis=0)
-
-    # # Classification results
-    # y_var = t31_pred_np_std.reshape(360*720)
-    # y_score = t31_pred_np_mean.reshape(360*720)
-
-    # y_score_prob = t31_pred_class_np_mean.reshape(360*720) # way better brier!
-
-    # y_true = ucpd_vol[-1,:,:,7].reshape(360*720)
-
-    # y_true_binary = (y_true > 0) * 1
-
-    # mean_se = mean_squared_error(y_true, y_score)
-    # ap = average_precision_score(y_true_binary, y_score_prob)
-    # area_uc = roc_auc_score(y_true_binary, y_score_prob)
-    # brier = brier_score_loss(y_true_binary, y_score_prob)
-
-    # wandb.log({"mean_squared_error": mean_se})
-    # wandb.log({"average_precision_score": ap})
-    # wandb.log({"roc_auc_score": area_uc})
-    # wandb.log({"brier_score_loss": brier})
-
-
-  #return pred_list, pred_list_class
 
 
 def model_pipeline(hyperparameters):
@@ -382,9 +309,4 @@ if __name__ == "__main__":
     minutes = (end_t - start_t)/60
     print(f'Done. Runtime: {minutes:.3f} minutes')
 
-
-
-
-
-# -------------------------
 
