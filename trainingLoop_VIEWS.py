@@ -34,7 +34,7 @@ def get_data():
     location = '/home/projects/ku_00017/data/raw/conflictNet'
     #file_name = "/ucpd_monthly_vol.pkl"
 
-    file_name = "views_monthly_vol.pkl"
+    file_name = "/views_monthly_vol.pkl"
 
     #file_name2 = "views_world_monthly_vol.pkl" # if you want to train on the whole world.
 
