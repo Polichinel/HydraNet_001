@@ -97,7 +97,7 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
 
     for sample in range(config.samples):
 
-        print(f'{sample+1}/{config.samples}', end = '\r')
+        print(f'Sample: {sample+1}/{config.samples}', end = '\r')
 
         #input_tensor = torch.tensor(train_ucpd_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
         train_tensor, meta_tensor_dict = get_train_tensors(ucpd_vol, config, sample)
@@ -127,8 +127,8 @@ def test(model, test_tensor, device):
     model.apply(apply_dropout)
 
     # wait until you know if this work as usually
-    pred_dict = {}
-    pred_class_np_dict = {}
+    pred_list = []
+    pred_class_np_list = []
 
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
@@ -145,7 +145,7 @@ def test(model, test_tensor, device):
         # HERE - IF WE GO BEYOUND -36 THEN USE t1_pred AS t0
 
         if i < seq_len-1-12: # take form the test set
-            print(f'in sample. month: {i+1}', end= '\r')
+            print(f'\t \t in sample. month: {i+1}', end= '\r')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
@@ -154,7 +154,7 @@ def test(model, test_tensor, device):
 
 
         else: # take the last t1_pred
-            print(f'Out of sample. month: {i+1}', end= '\r')
+            print(f'\t \t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred
             # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
             # But teh nyou also need to store results for all 36 months here.
@@ -163,6 +163,10 @@ def test(model, test_tensor, device):
             # tn_pred_class_np = t1_pred_class.cpu().detach().numpy
 
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+
+            pred_list.append(t1_pred)
+            pred_class_np_list.append(t1_pred_class)
+
 
         # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
         # print(f'ap: {running_ap}') #!!!!!!!!!!!!!!!!!!!!!!!!
@@ -184,7 +188,7 @@ def get_posterior(unet, ucpd_vol, device, n):
   #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
 #   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     test_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
-    print(f'test tensor size: {test_tensor.shape}')
+    #print(f'test tensor size: {test_tensor.shape}')
     
     # And you reshape to get a batch dim
 
@@ -200,7 +204,7 @@ def get_posterior(unet, ucpd_vol, device, n):
         pred_list_class.append(tn_pred_class_np)
 
         #if i % 10 == 0: # print steps 10
-        print(f'{i}/{n}', end = '\r')
+        print(f'Posterior sample: {i}/{n}', end = '\r')
 
     # reg statistics
     t31_pred_np = np.array(pred_list)
