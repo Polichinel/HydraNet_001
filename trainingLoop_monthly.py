@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
 
-#import geomloss # New loss. also needs: pip install pykeops 
+#import geomloss # New loss. also needs: pip install pykeops
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import average_precision_score
@@ -109,7 +109,7 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
         #avg_loss = train(unet, optimizer, criterion_reg, criterion_class, input_tensor, meta_tensor_dict, device, unet, plot = False)
         #avg_losses.append(avg_loss.cpu().detach().numpy())
 
-        
+
         # if i % 100 == 0: # print steps 100
         #     print(f'{i} {avg_loss:.4f}') # could plot ap instead...
 
@@ -139,7 +139,7 @@ def test(model, test_tensor, device):
     #print(f'seq_len: {seq_len}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
     H = test_tensor.shape[2]
-    W = test_tensor.shape[3] 
+    W = test_tensor.shape[3]
 
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
@@ -177,7 +177,7 @@ def test(model, test_tensor, device):
         # print(f'ap: {running_ap}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
         # THIS NEEDS TO BE WORSE
-        
+
 #   # You only want the last one
 #     tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
 #     tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
@@ -191,9 +191,9 @@ def get_posterior(unet, ucpd_vol, device, n):
     print('Testing initiated...')
 
     # SIZE NEED TO CHANGE WITH VIEWS
-    test_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.    
+    test_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     print(test_tensor.shape)
-    
+
     out_of_sample_tensor = test_tensor[:,-36:,:,:]
     print(out_of_sample_tensor.shape)
 
@@ -213,14 +213,14 @@ def get_posterior(unet, ucpd_vol, device, n):
     std_array = np.array(posterior_list).std(axis = 0)
 
     mean_class_array = np.array(posterior_list_class).mean(axis = 0) # get mean for each month!
-    std_class_array = np.array(posterior_list_class).std(axis = 0)    
+    std_class_array = np.array(posterior_list_class).std(axis = 0)
 
     ap_list = []
     mse_list = []
     auc_list = []
     brier_list = []
 
-    for i in range(mean_array.shape[0]): #  0 of mean array is the temporal dim 
+    for i in range(mean_array.shape[0]): #  0 of mean array is the temporal dim
 
         y_score = mean_array[i].reshape(-1) # make it 1d  #  360*720
         y_score_prob = mean_class_array[i].reshape(-1) #  360*720
@@ -228,7 +228,7 @@ def get_posterior(unet, ucpd_vol, device, n):
         # do not really know what to do with these yet.
         y_var = std_array[i].reshape(-1)  #  360*720
         y_var_prob = std_class_array[i].reshape(-1)  #  360*720
-    
+
         y_true = out_of_sample_tensor[:,i].reshape(-1)  #  360*720. dim 0 is time
         y_true_binary = (y_true > 0) * 1
 
@@ -239,14 +239,14 @@ def get_posterior(unet, ucpd_vol, device, n):
         ap = average_precision_score(y_true_binary, y_score_prob)
         auc = roc_auc_score(y_true_binary, y_score_prob)
         brier = brier_score_loss(y_true_binary, y_score_prob)
-        
+
         # Works?
-        log_dict = ({"train/out_sample_month": i,
-                     "monthly/mean_squared_error": mse, 
-                     "monthly/average_precision_score": ap, 
-                     "monthly/roc_auc_score": auc, 
+        log_dict = ({"monthly/out_sample_month": i,
+                     "monthly/mean_squared_error": mse,
+                     "monthly/average_precision_score": ap,
+                     "monthly/roc_auc_score": auc,
                      "monthly/brier_score_loss":brier})
-        
+
         mse_list.append(mse)
         ap_list.append(ap) # add to list.
         auc_list.append(auc)
@@ -307,7 +307,7 @@ def model_pipeline(hyperparameters):
 
     # tell wandb to get started
     with wandb.init(project="RUNET_monthly_experiments36", entity="nornir", config=hyperparameters): #monthly36 when you get there--
-        
+
         # NEW ------------------------------------------------------------------
         wandb.define_metric("monthly/out_sample_month")
         wandb.define_metric("monthly/*", step_metric="monthly/out_sample_month")
@@ -326,7 +326,7 @@ def model_pipeline(hyperparameters):
 
         training_loop(config, unet, criterion, optimizer, ucpd_vol)
         print('Done training')
-        
+
         get_posterior(unet, ucpd_vol, device, n=config.test_samples)
         #end_test(unet, ucpd_vol, config)
         print('Done testing')
