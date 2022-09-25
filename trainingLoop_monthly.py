@@ -129,6 +129,7 @@ def test(model, test_tensor, device):
     # wait until you know if this work as usually
     pred_list = []
     pred_class_np_list = []
+    out_of_sampel = 0
 
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
@@ -156,6 +157,8 @@ def test(model, test_tensor, device):
         else: # take the last t1_pred
             print(f'\t \t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
+
+            out_of_sampel = 1
             # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
             # But teh nyou also need to store results for all 36 months here.
             # You only want the last one
@@ -164,8 +167,10 @@ def test(model, test_tensor, device):
 
         t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
-            #pred_list.append(t1_pred)
-            #pred_class_np_list.append(t1_pred_class)
+        if out_of_sampel == 1:
+
+            pred_list.append(t1_pred.cpu().detach().numpy())
+            pred_class_np_list.append(t1_pred_class.cpu().detach().numpy())
 
 
         # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
