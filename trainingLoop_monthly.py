@@ -169,8 +169,8 @@ def test(model, test_tensor, device):
 
         if out_of_sampel == 1:
 
-            pred_np_list.append(t1_pred.cpu().detach().numpy())
-            pred_class_np_list.append(t1_pred_class.cpu().detach().numpy())
+            pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze())
+            pred_class_np_list.append(t1_pred_class.cpu().detach().numpy().squeeze())
 
 
         # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
@@ -229,6 +229,9 @@ def get_posterior(unet, ucpd_vol, device, n):
     
         y_true = out_of_sample[i].reshape(-1)  #  360*720. dim 0 is time
         y_true_binary = (y_true > 0) * 1
+
+        print(y_true.shape)
+        print(y_score.shape)
 
         mse = mean_squared_error(y_true, y_score)
         ap = average_precision_score(y_true_binary, y_score_prob)
@@ -324,7 +327,7 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8, # this also you do not ues
-    "samples" : 20,
+    "samples" : 10,
     "test_samples": 16, # go 128, but this is tj́sut to see is there is a collaps
     "min_events": 24}
 
