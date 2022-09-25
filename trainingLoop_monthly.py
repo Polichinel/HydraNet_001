@@ -353,7 +353,7 @@ if __name__ == "__main__":
     "batch_size": 8, # this also you do not ues
     "samples" : 160,
     "test_samples": 128, # go 128, but this is tj́sut to see is there is a collaps
-    "min_events": 24}
+    "min_events": 18}
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
