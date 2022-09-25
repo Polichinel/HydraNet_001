@@ -164,7 +164,7 @@ def get_posterior(unet, ucpd_vol, device, n):
   #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
 #   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     test_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
-    print(f'test tensor size: {test_tensor}')
+    print(f'test tensor size: {test_tensor.shape}')
     
     # And you reshape to get a batch dim
 
@@ -317,9 +317,9 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
-    "samples" : 100,
-    "test_samples": 128,
-    "min_events": 16}
+    "samples" : 160,
+    "test_samples": 16, # go 128, but this is tj́sut to see is there is a collaps
+    "min_events": 22}
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
