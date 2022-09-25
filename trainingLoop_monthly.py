@@ -127,7 +127,7 @@ def test(model, test_tensor, device):
     model.apply(apply_dropout)
 
     # wait until you know if this work as usually
-    pred_list = []
+    pred_np_list = []
     pred_class_np_list = []
     out_of_sampel = 0
 
@@ -169,7 +169,7 @@ def test(model, test_tensor, device):
 
         if out_of_sampel == 1:
 
-            pred_list.append(t1_pred.cpu().detach().numpy())
+            pred_np_list.append(t1_pred.cpu().detach().numpy())
             pred_class_np_list.append(t1_pred_class.cpu().detach().numpy())
 
 
@@ -178,79 +178,107 @@ def test(model, test_tensor, device):
 
         # THIS NEEDS TO BE WORSE
         
-  # You only want the last one
-    tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
-    tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
+#   # You only want the last one
+#     tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
+#     tn_pred_class_np = t1_pred_class.cpu().detach().numpy() # so yuo take the final pred..
 
-    return tn_pred_np, tn_pred_class_np
+#     return tn_pred_np, tn_pred_class_np
+    return pred_np_list, pred_class_np_list
+
 
 
 def get_posterior(unet, ucpd_vol, device, n):
     print('Testing initiated...')
 
-
-    # HERE YOU MAKE DIM 1 TIME
-  #ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 4].reshape(1, 31, 360, 720)).float().to(device) #Why not do this in funciton?
-#   ttime_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, 31, 360, 720)).float().to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
-    test_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
-    #print(f'test tensor size: {test_tensor.shape}')
-    
-    # And you reshape to get a batch dim
+    # SIZE NEED TO CHANGE WITH VIEWS
+    test_tensor = torch.tensor(ucpd_vol[:, :, : , 7].reshape(1, -1, 360, 720)).float()#.to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.    
+    out_of_sample = test_tensor[-36:]
 
 
-    # SO YOU ARE LOADING THE FULL VOLUMN INTO DEVICE AT ONCE. TRY IF YOU CAN JUST DO THE TWO t's (t and t+1) WHICH YOU NEED!
-
-    pred_list = []
-    pred_list_class = []
+    posterior_list = []
+    posterior_list_class = []
 
     for i in range(n):
-        t31_pred_np, tn_pred_class_np = test(unet, test_tensor, device)
-        pred_list.append(t31_pred_np)
-        pred_list_class.append(tn_pred_class_np)
+        pred_np_list, pred_class_np_list = test(unet, test_tensor, device)
+        posterior_list.append(pred_np_list)
+        posterior_list_class.append(pred_class_np_list)
 
         #if i % 10 == 0: # print steps 10
         print(f'Posterior sample: {i}/{n}', end = '\r')
 
-    # reg statistics
-    t31_pred_np = np.array(pred_list)
-    t31_pred_np_mean = t31_pred_np.mean(axis=0)
-    t31_pred_np_std = t31_pred_np.std(axis=0)
 
-    # Class statistics - right noe this does not get updated through backprob..
-    t31_pred_class_np = np.array(pred_list_class)
-    t31_pred_class_np_mean = t31_pred_class_np.mean(axis=0)
-    t31_pred_class_np_std = t31_pred_class_np.std(axis=0)
+    mean_array = np.array(posterior_list).mean(axis = 0) # get mean for each month!
+    std_array = np.array(posterior_list).std(axis = 0)
 
-    # Classification results
-    y_var = t31_pred_np_std.reshape(360*720)
-    y_score = t31_pred_np_mean.reshape(360*720)
+    mean_class_array = np.array(posterior_list_class).mean(axis = 0) # get mean for each month!
+    std_class_array = np.array(posterior_list_class).std(axis = 0)    
 
-    # HERE
-    #y_score_prob = torch.sigmoid(torch.tensor(y_score)) # old trick..
-    y_score_prob = t31_pred_class_np_mean.reshape(360*720) # way better brier!
+    ap_list = []
+    mse_list = []
+    auc_list = []
+    brier_list = []
 
-    # y_true = ucpd_vol[30,:,:,4].reshape(360*720) # 7 not 4 when you do sinkhorn and have coords 
-    y_true = ucpd_vol[-1,:,:,7].reshape(360*720)
+    for i in range(mean_array.shape[0]): #  0 of mean array is the temporal dim 
 
-    y_true_binary = (y_true > 0) * 1
+        y_score = mean_array[i].reshape(-1) # make it 1d  #  360*720
+        y_score_prob = mean_class_array[i].reshape(-1) #  360*720
 
-    #print('Unet')
+        # do not really know what to do with these yet.
+        y_var = std_array[i].reshape(-1)  #  360*720
+        y_var_prob = std_class_array[i].reshape(-1)  #  360*720
+    
+        y_true = out_of_sample[i].reshape(-1)  #  360*720. dim 0 is time
+        y_true_binary = (y_true > 0) * 1
 
-    #loss = nn.MSELoss()
-    #mse = loss(y_true, y_score)
+        mse = mean_squared_error(y_true, y_score)
+        ap = average_precision_score(y_true_binary, y_score_prob)
+        auc = roc_auc_score(y_true_binary, y_score_prob)
+        brier = brier_score_loss(y_true_binary, y_score_prob)
+        
+        
+        mse_list.append(mse)
+        ap_list.append(ap) # add to list.
+        auc_list.append(auc)
+        brier_list.append(brier)
 
-    # mean_se = mse(y_true, y_score) #just a dummy..
-    # area_uc = auc(y_score_prob, y_true_binary)
+    wandb.log({"36month_mean_squared_error": np.mean(mse_list)})
+    wandb.log({"36month_average_precision_score": np.mean(ap_list)})
+    wandb.log({"36month_roc_auc_score": np.mean(auc_list)})
+    wandb.log({"36month_brier_score_loss":np.mean(brier_list)})
 
-    mean_se = mean_squared_error(y_true, y_score)
-    ap = average_precision_score(y_true_binary, y_score_prob)
-    area_uc = roc_auc_score(y_true_binary, y_score_prob)
-    brier = brier_score_loss(y_true_binary, y_score_prob)
 
-    wandb.log({"mean_squared_error": mean_se})
-    wandb.log({"average_precision_score": ap})
-    wandb.log({"roc_auc_score": area_uc})
-    wandb.log({"brier_score_loss": brier})
+# -----------------------------------
+
+
+    # # reg statistics
+    # t31_pred_np = np.array(____pred_list)
+    # t31_pred_np_mean = t31_pred_np.mean(axis=0)
+    # t31_pred_np_std = t31_pred_np.std(axis=0)
+
+    # # Class statistics - right noe this does not get updated through backprob..
+    # t31_pred_class_np = np.array(___pred_list_class)
+    # t31_pred_class_np_mean = t31_pred_class_np.mean(axis=0)
+    # t31_pred_class_np_std = t31_pred_class_np.std(axis=0)
+
+    # # Classification results
+    # y_var = t31_pred_np_std.reshape(360*720)
+    # y_score = t31_pred_np_mean.reshape(360*720)
+
+    # y_score_prob = t31_pred_class_np_mean.reshape(360*720) # way better brier!
+
+    # y_true = ucpd_vol[-1,:,:,7].reshape(360*720)
+
+    # y_true_binary = (y_true > 0) * 1
+
+    # mean_se = mean_squared_error(y_true, y_score)
+    # ap = average_precision_score(y_true_binary, y_score_prob)
+    # area_uc = roc_auc_score(y_true_binary, y_score_prob)
+    # brier = brier_score_loss(y_true_binary, y_score_prob)
+
+    # wandb.log({"mean_squared_error": mean_se})
+    # wandb.log({"average_precision_score": ap})
+    # wandb.log({"roc_auc_score": area_uc})
+    # wandb.log({"brier_score_loss": brier})
 
 
   #return pred_list, pred_list_class
