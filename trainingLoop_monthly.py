@@ -262,7 +262,7 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
-    "samples" : 160,
+    "samples" : 150,
     "test_samples": 16, # go 128, but this is tj́sut to see is there is a collaps
     "min_events": 22}
 
