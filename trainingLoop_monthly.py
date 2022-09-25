@@ -309,12 +309,8 @@ def model_pipeline(hyperparameters):
     with wandb.init(project="RUNET_monthly_experiments36", entity="nornir", config=hyperparameters): #monthly36 when you get there--
         
         # NEW ------------------------------------------------------------------
-        wandb.define_metric("monthly/mean_squared_error", 
-                     "monthly/average_precision_score", 
-                     "monthly/roc_auc_score", 
-                     "monthly/brier_score_loss")
-
-        wandb.define_metric("monthly/*", step_metric="train/out_sample_month")
+        wandb.define_metric("monthly/out_sample_month")
+        wandb.define_metric("monthly/*", step_metric="monthly/out_sample_month")
         # -----------------------------------------------------------------------
 
 
