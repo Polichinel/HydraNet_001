@@ -155,7 +155,7 @@ def test(model, test_tensor, device):
 
         else: # take the last t1_pred
             print(f'\t \t Out of sample. month: {i+1}', end= '\r')
-            t0 = t1_pred
+            t0 = t1_pred.detach()
             # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
             # But teh nyou also need to store results for all 36 months here.
             # You only want the last one
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8, # this also you do not ues
-    "samples" : 140,
+    "samples" : 20,
     "test_samples": 16, # go 128, but this is tj́sut to see is there is a collaps
     "min_events": 24}
 
