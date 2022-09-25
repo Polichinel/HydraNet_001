@@ -276,7 +276,7 @@ def get_posterior(unet, ucpd_vol, device, n):
 def model_pipeline(hyperparameters):
 
     # tell wandb to get started
-    with wandb.init(project="RUNET_monthly_experiments", entity="nornir", config=hyperparameters): 
+    with wandb.init(project="RUNET_monthly_experiments", entity="nornir", config=hyperparameters): #monthly36 when you get there--
         
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
@@ -313,7 +313,7 @@ if __name__ == "__main__":
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8,
-    "samples" : 200,
+    "samples" : 80,
     "test_samples": 128,
     "min_events": 18}
 

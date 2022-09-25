@@ -34,7 +34,7 @@ def standard(x, noise = False):
 
     return(x_standard)
 
-def draw_window(ucpd_vol, min_events): # yearly 10# try to set lower for monthly !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Should be in config....
+def draw_window(ucpd_vol, min_events):
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..
 
@@ -50,7 +50,7 @@ def draw_window(ucpd_vol, min_events): # yearly 10# try to set lower for monthly
     
     indx = random.choice(min_events_indx)
     #dim = 16 # if truble, start by hard coding this to 16
-    dim = np.random.choice([8, 16, 32, 64]) # 8, 64 # also do 128
+    dim = np.random.choice([8, 16, 32, 64]) #
 
     temporal_dim = np.random.choice([6, 12, 24, 48, 96, 192]) 
 
@@ -144,6 +144,12 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
     
     wandb.watch(unet, [criterion_reg, criterion_class], log= None, log_freq=2048)# 128 need to change this for monthly!!!!!!!
 
+    # TRY THIS TO TEST:
+    train_tensor = input_tensor[:, :-1, :, :]
+    test_tensor  = input_tensor[:, -1:, :, :] # just to see the shape
+    print(f'shape input tensor: {input_tensor.shape}')
+    print(f'shape train tensor: {train_tensor.shape}')
+    print(f'shape test tensor: {test_tensor.shape}')
 
     # avg_loss_reg = 0
     # avg_loss_class = 0
@@ -158,19 +164,20 @@ def train(model, optimizer, criterion_reg, criterion_class, input_tensor, meta_t
 
     model.train()  # train mode
     
-    seq_len = input_tensor.shape[1] 
-    window_dim = input_tensor.shape[2]
+    seq_len = train_tensor.shape[1] 
+    window_dim = train_tensor.shape[2]
     
     # initialize a hidden state
     h = unet.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
 
-    for i in range(seq_len-1): # so your sequnce is the full time len - last month.
-         
+    #for i in range(seq_len-1): # so your sequnce is the full time len - last month.
+    for i in range(seq_len): # so your sequnce is the full time len - last month.
+     
 
         # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
         # ACTUALLY I DO NOT THINK YOU DO HERE!!! IT IS ONLY FOR TESTING...... STOP THAT
-        t0 = input_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
-        t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
+        t0 = train_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
+        t1 = train_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
 
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         
