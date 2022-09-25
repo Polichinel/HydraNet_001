@@ -136,16 +136,25 @@ def test(model, test_tensor, device):
 
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
-
         # HERE - IF WE GO BEYOUND -36 THEN USE t1_pred AS t0
 
-        t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+        if i < seq_len-1-36: # take form the test set
+
+            t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
         # t1 = input_tensor[:, i+1, :, :].reshape(1, 1 , H, W).to(device) # you don't use this under test time...
+
+        else: # take the last t1_pred
+            t0 = t1_pred
+            # But teh nyou also need to store results for all 36 months here.
 
         t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         # running_ap = average_precision_score((t1.cpu().detach().numpy() > 0) * 1, t1_pred_class.cpu().detach().numpy()) #!!!!!!!!!!!!!!!!!!!!!!!!
         # print(f'ap: {running_ap}') #!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+        # THIS NEEDS TO BE WORSE
+        
 
   # You only want the last one
     tn_pred_np = t1_pred.cpu().detach().numpy() # so yuo take the final pred..
@@ -260,11 +269,11 @@ if __name__ == "__main__":
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.05, #0.05
-    'learning_rate' :  0.00005,
+    'learning_rate' :  0.0001,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
-    "batch_size": 8,
+    "batch_size": 8, # this also you do not ues
     "samples" : 150,
     "test_samples": 16, # go 128, but this is tj́sut to see is there is a collaps
     "min_events": 24}
