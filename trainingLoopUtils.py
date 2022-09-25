@@ -19,7 +19,6 @@ def unit_norm(x, noise = False):
 
     if noise == True:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        #x_unit_norm += torch.tensor(np.random.normal(1, 2*x_unit_norm.std(), len(x_unit_norm)), dtype = torch.float).to(device)
         x_unit_norm += torch.randn(len(x_unit_norm), dtype=torch.float, requires_grad=False, device = device) * x_unit_norm.std()
 
     return(x_unit_norm)
@@ -43,7 +42,6 @@ def draw_window(ucpd_vol, min_events, sample):
     #     min_events = min_events*2
     # ----------------------------------
 
-    #ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,4], axis = 0) # with coordinates in vol, log best is 7
     ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,7], axis = 0) # with coordinates in vol, log best is 7
 
     min_events_index = np.where(ucpd_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
@@ -81,7 +79,7 @@ def get_train_tensors(ucpd_vol, config, sample):
     # The lenght of a whole time lime.
     seq_len = train_ucpd_vol.shape[0]
 
-    # ...
+    # why not train_ucpd_vol here? It does not really matter does it?
     window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = config.min_events, sample= sample)
     
     min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
@@ -89,10 +87,23 @@ def get_train_tensors(ucpd_vol, config, sample):
     min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
     max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
+    # WORKS
+    # input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
+
 
     # HERE YOU MAKE SO THAT DIM 1 IS MONTH
-    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
 
+    # NEW -------------------------------------
+    input_window = 0
+    while input_window != (1, seq_len, window_dict['dim'], window_dict['dim']):
+        try:
+            input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
+
+        except:
+            print('RE-sample edge-window...', end = '\r')
+            pass
+
+    # ---------------------------------
 
     # 0 since this is constant across years. 1 dim for batch and one dim for time.
     gids = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 0].reshape(1, 1, window_dict['dim'], window_dict['dim'])
@@ -116,10 +127,6 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
     avg_loss_class = np.mean(avg_loss_class_list)
     # # Where the magic happens
     
-    # wandb.log({"epoch": sample, "avg_loss": avg_loss}, step= sequence_step)
-    # wandb.log({"epoch": sample, "avg_loss_reg": avg_loss_reg}, step = sequence_step)
-    # wandb.log({"epoch": sample, "avg_loss_class": avg_loss_class}, step = sequence_step)
-
     wandb.log({"avg_loss": avg_loss})
     wandb.log({"avg_loss_reg": avg_loss_reg})
     wandb.log({"avg_loss_class": avg_loss_class})
@@ -127,7 +134,7 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
 
 def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, device, unet, sample, plot = False):
     
-    wandb.watch(unet, [criterion_reg, criterion_class], log= None, log_freq=2048)# 128 need to change this for monthly!!!!!!!
+    wandb.watch(unet, [criterion_reg, criterion_class], log= None, log_freq=2048)
 
     avg_loss_reg_list = []
     avg_loss_class_list = []
