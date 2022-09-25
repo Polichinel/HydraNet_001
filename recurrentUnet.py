@@ -89,6 +89,6 @@ class UNet(nn.Module):
 
         return torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64) # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
 
-    def init_hTtime(self, hidden_channels = 64):
+    def init_hTtime(self, hidden_channels = 64, H = 360, W = 720):
 
-        return torch.zeros((1,hidden_channels,360,720), dtype= torch.float64)
+        return torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
