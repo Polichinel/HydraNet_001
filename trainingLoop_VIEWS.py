@@ -127,8 +127,8 @@ def test(model, test_tensor, device):
     pred_class_np_list = []
     out_of_sampel = 0
 
-
-    h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
+    #!!!!!!!
+    h_tt = model.init_hTtime(hidden_channels = model.base, H = 175, W  = 184).float().to(device) # coul auto the...
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
     print(f'\t\t\t\t sequence length: {seq_len}', end= '\r')
 
