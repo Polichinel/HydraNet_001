@@ -70,7 +70,7 @@ def draw_window(ucpd_vol, min_events, sample):
 def get_train_tensors(ucpd_vol, config, sample):
   
     # CHANGE THIS TO -36
-    train_ucpd_vol = ucpd_vol[:-1] # all except the last year
+    train_ucpd_vol = ucpd_vol[:-36] # not tha last 36 months - these ar for test set
     #print(f'train data shape: {train_ucpd_vol.shape}') # debug.
 
     # The lenght of a whole time lime.

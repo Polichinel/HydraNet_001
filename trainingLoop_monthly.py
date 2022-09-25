@@ -225,7 +225,7 @@ def get_posterior(unet, ucpd_vol, device, n):
 def model_pipeline(hyperparameters):
 
     # tell wandb to get started
-    with wandb.init(project="RUNET_monthly_experiments", entity="nornir", config=hyperparameters): #monthly36 when you get there--
+    with wandb.init(project="RUNET_monthly_experiments36", entity="nornir", config=hyperparameters): #monthly36 when you get there--
         
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
