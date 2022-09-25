@@ -134,7 +134,7 @@ def test(model, test_tensor, device):
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
-    print(seq_len)
+    print(f'\t \t sequence length: {seq_len}', end= '\r')
 
     #print(f'seq_len: {seq_len}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
