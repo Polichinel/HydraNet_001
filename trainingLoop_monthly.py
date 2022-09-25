@@ -134,7 +134,7 @@ def test(model, test_tensor, device):
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
-    print(f'\t \t sequence length: {seq_len}', end= '\r')
+    print(f'\t\t sequence length: {seq_len}', end= '\r')
 
     #print(f'seq_len: {seq_len}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -146,7 +146,7 @@ def test(model, test_tensor, device):
         # HERE - IF WE GO BEYOUND -36 THEN USE t1_pred AS t0
 
         if i < seq_len-1-36: # take form the test set
-            print(f'\t\t\t in sample. month: {i+1}', end= '\r')
+            print(f'\t\t\t\t in sample. month: {i+1}', end= '\r')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             # t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
@@ -155,7 +155,7 @@ def test(model, test_tensor, device):
 
 
         else: # take the last t1_pred
-            print(f'\t\t\t Out of sample. month: {i+1}', end= '\r')
+            print(f'\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
             out_of_sampel = 1
@@ -240,16 +240,25 @@ def get_posterior(unet, ucpd_vol, device, n):
         auc = roc_auc_score(y_true_binary, y_score_prob)
         brier = brier_score_loss(y_true_binary, y_score_prob)
         
+        # Works?
+        log_dict = ({"train/out_sample_month": i,
+                     "monthly/mean_squared_error": mse, 
+                     "monthly/average_precision_score": ap, 
+                     "monthly/roc_auc_score": auc, 
+                     "monthly/brier_score_loss":brier})
         
         mse_list.append(mse)
         ap_list.append(ap) # add to list.
         auc_list.append(auc)
         brier_list.append(brier)
 
-    wandb.log({"monthly_mean_squared_error": mse_list})
-    wandb.log({"monthly_average_precision_score": ap_list})
-    wandb.log({"monthly_roc_auc_score": auc_list})
-    wandb.log({"monthly_brier_score_loss":brier_list})
+    # Works
+    # wandb.log({"monthly_mean_squared_error": mse_list})
+    # wandb.log({"monthly_average_precision_score": ap_list})
+    # wandb.log({"monthly_roc_auc_score": auc_list})
+    # wandb.log({"monthly_brier_score_loss":brier_list})
+
+    wandb.log(log_dict)
 
     wandb.log({"36month_mean_squared_error": np.mean(mse_list)})
     wandb.log({"36month_average_precision_score": np.mean(ap_list)})
@@ -299,6 +308,16 @@ def model_pipeline(hyperparameters):
     # tell wandb to get started
     with wandb.init(project="RUNET_monthly_experiments36", entity="nornir", config=hyperparameters): #monthly36 when you get there--
         
+        # NEW ------------------------------------------------------------------
+        wandb.define_metric("monthly/mean_squared_error", 
+                     "monthly/average_precision_score", 
+                     "monthly/roc_auc_score", 
+                     "monthly/brier_score_loss")
+
+        wandb.define_metric("monthly/*", step_metric="train/out_sample_month")
+        # -----------------------------------------------------------------------
+
+
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
 
