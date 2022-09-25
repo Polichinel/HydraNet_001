@@ -125,11 +125,6 @@ def apply_dropout(m):
 def test(model, test_tensor, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
-  # but there was also something else that you neede to acount for when doing this..?
-
-# ---------------------------------------------------------------------------------------------------------------------
-#input_tensor = input_tensor[:,-48:,:,:] # b, c, h, w # just the last 4 years.
-# ---------------------------------------------------------------------------------------------------------------------
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
@@ -227,56 +222,6 @@ def get_posterior(unet, ucpd_vol, device, n):
   #return pred_list, pred_list_class
 
 
-
-# def end_test(unet, ucpd_vol, config):
-
-#     print('Testing initiated...')
-
-#     pred_list, pred_list_class = get_posterior(unet, ucpd_vol, device, n=config.test_samples)
-
-#     # reg statistics
-#     t31_pred_np = np.array(pred_list)
-#     t31_pred_np_mean = t31_pred_np.mean(axis=0)
-#     t31_pred_np_std = t31_pred_np.std(axis=0)
-
-#     # Class statistics - right noe this does not get updated through backprob..
-#     t31_pred_class_np = np.array(pred_list_class)
-#     t31_pred_class_np_mean = t31_pred_class_np.mean(axis=0)
-#     t31_pred_class_np_std = t31_pred_class_np.std(axis=0)
-
-#     # Classification results
-#     y_var = t31_pred_np_std.reshape(360*720)
-#     y_score = t31_pred_np_mean.reshape(360*720)
-
-#     # HERE
-#     #y_score_prob = torch.sigmoid(torch.tensor(y_score)) # old trick..
-#     y_score_prob = t31_pred_class_np_mean.reshape(360*720) # way better brier!
-
-#     # y_true = ucpd_vol[30,:,:,4].reshape(360*720) # 7 not 4 when you do sinkhorn and have coords 
-#     y_true = ucpd_vol[-1,:,:,7].reshape(360*720)
-
-#     y_true_binary = (y_true > 0) * 1
-
-#     #print('Unet')
-
-#     #loss = nn.MSELoss()
-#     #mse = loss(y_true, y_score)
-
-#     # mean_se = mse(y_true, y_score) #just a dummy..
-#     # area_uc = auc(y_score_prob, y_true_binary)
-
-#     mean_se = mean_squared_error(y_true, y_score)
-#     ap = average_precision_score(y_true_binary, y_score_prob)
-#     area_uc = roc_auc_score(y_true_binary, y_score_prob)
-#     brier = brier_score_loss(y_true_binary, y_score_prob)
-
-#     wandb.log({"mean_squared_error": mean_se})
-#     wandb.log({"average_precision_score": ap})
-#     wandb.log({"roc_auc_score": area_uc})
-#     wandb.log({"brier_score_loss": brier})
-
-
-
 def model_pipeline(hyperparameters):
 
     # tell wandb to get started
@@ -312,7 +257,7 @@ if __name__ == "__main__":
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.05, #0.05
-    'learning_rate' :  0.0001,
+    'learning_rate' :  0.00005,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
