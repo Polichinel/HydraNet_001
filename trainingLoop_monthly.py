@@ -144,7 +144,7 @@ def test(model, test_tensor, device):
 
         # HERE - IF WE GO BEYOUND -36 THEN USE t1_pred AS t0
 
-        if i < seq_len-1-12: # take form the test set
+        if i < seq_len-1-36: # take form the test set
             print(f'\t \t in sample. month: {i+1}', end= '\r')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
