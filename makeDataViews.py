@@ -180,17 +180,20 @@ def check_month_id(prio_grid):
 def get_views_sub(prio_grid, df_views):
 
     africa_gids = df_views['pg_id'].unique()
-    views_months = df_views['month_id'].unique()
+    #views_months = df_views['month_id'].unique()
+
+    #Last month in test is dec 2017
+    views_month_last = df_views[(df_views['year'] == 2017) & (df_views['month'] == 12)]['month_id'].unique()
 
     max_coords = prio_grid[prio_grid['gid'].isin(africa_gids)][['xcoord', 'ycoord']].max() + 2 # +1 just for some room
     min_coords = prio_grid[prio_grid['gid'].isin(africa_gids)][['xcoord', 'ycoord']].min() - 2
-    mask1 = ((prio_grid['xcoord'] < max_coords[0]) & (prio_grid['xcoord'] > min_coords[0]) & (prio_grid['ycoord'] < max_coords[1]) & (prio_grid['ycoord'] > min_coords[1]) & (prio_grid['month_id'].isin(views_months)))
+    mask1 = ((prio_grid['xcoord'] < max_coords[0]) & (prio_grid['xcoord'] > min_coords[0]) & (prio_grid['ycoord'] < max_coords[1]) & (prio_grid['ycoord'] > min_coords[1]) & (prio_grid['month_id'] <= views_month_last))
     views_subset = prio_grid[mask1].copy()
     col_to_change = views_subset.columns[7:18]
     views_subset.loc[~views_subset['gid'].isin(africa_gids), col_to_change] = 0
     views_subset.reset_index(inplace=True, drop = True)
 
-    world_subset = prio_grid[prio_grid['month_id'].isin(views_months)].copy()
+    world_subset = prio_grid[prio_grid['month_id'] <= views_month_last].copy()
 
     return views_subset, world_subset
 
