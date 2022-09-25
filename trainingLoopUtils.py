@@ -34,9 +34,13 @@ def standard(x, noise = False):
 
     return(x_standard)
 
-def draw_window(ucpd_vol, min_events):
+def draw_window(ucpd_vol, min_events, sample):
 # dim should be in some range and not fixed to 16..
 # Make sure you do not go over the edge..
+
+    # NEW!
+    if sample == 0:
+        min_events = min_events*2
 
     #ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,4], axis = 0) # with coordinates in vol, log best is 7
     ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,7], axis = 0) # with coordinates in vol, log best is 7
@@ -50,18 +54,22 @@ def draw_window(ucpd_vol, min_events):
     
     indx = random.choice(min_events_indx)
     #dim = 16 # if truble, start by hard coding this to 16
-    dim = np.random.choice([8, 16, 32, 64]) #
+    
+    # NEW!
+    if sample == 0:
+        dim = 8
 
-    temporal_dim = np.random.choice([6, 12, 24, 48, 96, 192]) 
+    else:
+        dim = np.random.choice([8, 16, 32, 64]) #
 
-    window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim, 'temporal_dim': temporal_dim} # if you wnat a random temporal window, it is here.
+    window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} # if you wnat a random temporal window, it is here.
 
     return(window_dict)
 
 
-def get_train_tensors(ucpd_vol, config):
+def get_train_tensors(ucpd_vol, config, sample):
   
-    # ...
+    # CHANGE THIS TO -36
     train_ucpd_vol = ucpd_vol[:-1] # all except the last year
     #print(f'train data shape: {train_ucpd_vol.shape}') # debug.
 
@@ -69,19 +77,13 @@ def get_train_tensors(ucpd_vol, config):
     seq_len = train_ucpd_vol.shape[0]
 
     # ...
-    window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = config.min_events)
+    window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = config.min_events, sample= sample)
     
     min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
     max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
     min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
     max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
-
-    # if you want a fixe temporal window, this is here.
-    # It is now 7, not 4, since you keep coords.
-#    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx , 4].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
-#    input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim']) 
-    
 
     # HERE YOU MAKE SO THAT DIM 1 IS MONTH
     input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])

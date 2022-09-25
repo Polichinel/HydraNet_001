@@ -100,7 +100,7 @@ def training_loop(config, unet, criterion, optimizer, ucpd_vol):
         print(f'{sample+1}/{config.samples}', end = '\r')
 
         #input_tensor = torch.tensor(train_ucpd_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
-        train_tensor, meta_tensor_dict = get_train_tensors(ucpd_vol, config)
+        train_tensor, meta_tensor_dict = get_train_tensors(ucpd_vol, config, sample)
         # data augmentation (can be turned of for final experiments)
         train_tensor = transformer(train_tensor) # rotations and flips
 
