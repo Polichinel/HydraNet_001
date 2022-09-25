@@ -155,7 +155,7 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
 
     #for i in range(seq_len-1): # so your sequnce is the full time len - last month.
     for i in range(seq_len-1): # so your sequnce is the full time len - last month.
-        print(f'\t \t \t month: {i+1}/{seq_len}...', end='\r')
+        print(f'\t \t month: {i+1}/{seq_len}...', end='\r')
      
 
         # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
