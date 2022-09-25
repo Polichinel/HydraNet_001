@@ -39,8 +39,9 @@ def draw_window(ucpd_vol, min_events, sample):
 # Make sure you do not go over the edge..
 
     # NEW!
-    if sample == 0:
-        min_events = min_events*2
+    # if sample == 0:
+    #     min_events = min_events*2
+    # ----------------------------------
 
     #ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,4], axis = 0) # with coordinates in vol, log best is 7
     ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,7], axis = 0) # with coordinates in vol, log best is 7
@@ -56,11 +57,15 @@ def draw_window(ucpd_vol, min_events, sample):
     #dim = 16 # if truble, start by hard coding this to 16
     
     # NEW!
-    if sample == 0:
-        dim = 8
+    # if sample == 0:
+    #     dim = 8
 
-    else:
-        dim = np.random.choice([8, 16, 32, 64]) #
+    # else:
+    #     dim = np.random.choice([8, 16, 32, 64]) #
+    # ----------------------------------
+
+
+    dim = np.random.choice([8, 16, 32, 64]) 
 
     window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} # if you wnat a random temporal window, it is here.
 
