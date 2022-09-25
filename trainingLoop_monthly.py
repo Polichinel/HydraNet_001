@@ -133,6 +133,7 @@ def test(model, test_tensor, device):
 
     h_tt = model.init_hTtime(hidden_channels = model.base).float().to(device)
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
+    print(seq_len)
 
     #print(f'seq_len: {seq_len}') #!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -144,11 +145,13 @@ def test(model, test_tensor, device):
         # HERE - IF WE GO BEYOUND -36 THEN USE t1_pred AS t0
 
         if i < seq_len-1-12: # take form the test set
+            print(f'in sample. month: {i+1}')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
+            print(f'Out of sample. month: {i+1}')
             t0 = t1_pred
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
             # But teh nyou also need to store results for all 36 months here.
