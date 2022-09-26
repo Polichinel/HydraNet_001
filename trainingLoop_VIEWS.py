@@ -151,19 +151,18 @@ def test(model, test_tensor, device):
             print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
             out_of_sampel = 1
-            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
-
 
         #t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
-        if out_of_sampel == 1:
-
+        #if out_of_sampel == 1:
+            t1_pred, t1_pred_class, _ = model(t0, h_tt)
             pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze())
             pred_class_np_list.append(t1_pred_class.cpu().detach().numpy().squeeze())
             t1_pred, t1_pred_class, _ = model(t0, h_tt)
