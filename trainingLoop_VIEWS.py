@@ -282,18 +282,18 @@ if __name__ == "__main__":
 
     # Hyper parameters.
     hyperparameters = {
-    "hidden_channels" : 32, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
+    "hidden_channels" : 10, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.05, #0.05
-    'learning_rate' :  0.0001,
+    'learning_rate' :  0.00005,
     "weight_decay" :  0.05,
     'betas' : (0.9, 0.999),
     "epochs": 2, # as it is now, this is samples...
     "batch_size": 8, # this also you do not ues
     "samples" : 140,
     "test_samples": 128, # go 128, but this is tj́sut to see is there is a collaps
-    "min_events": 24}
+    "min_events": 22}
 
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
