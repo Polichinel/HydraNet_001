@@ -185,8 +185,8 @@ def get_views_sub(prio_grid, df_views):
     #Last month in test is dec 2017
     views_month_last = df_views[(df_views['year'] == 2017) & (df_views['month'] == 12)]['month_id'].unique().item()
 
-    max_coords = prio_grid[prio_grid['gid'].isin(africa_gids)][['xcoord', 'ycoord']].max() + 2 # +1 just for some room
-    min_coords = prio_grid[prio_grid['gid'].isin(africa_gids)][['xcoord', 'ycoord']].min() - 2
+    max_coords = prio_grid[prio_grid['gid'].isin(africa_gids)][['xcoord', 'ycoord']].max() + (1,3.25) #  get both dim to 180
+    min_coords = prio_grid[prio_grid['gid'].isin(africa_gids)][['xcoord', 'ycoord']].min() - (1,3)
     mask1 = ((prio_grid['xcoord'] < max_coords[0]) & (prio_grid['xcoord'] > min_coords[0]) & (prio_grid['ycoord'] < max_coords[1]) & (prio_grid['ycoord'] > min_coords[1]) & (prio_grid['month_id'] <= views_month_last))
     views_subset = prio_grid[mask1].copy()
     col_to_change = views_subset.columns[7:18]
