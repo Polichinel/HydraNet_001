@@ -128,7 +128,7 @@ def test(model, test_tensor, device):
     out_of_sampel = 0
 
     #!!!!!!!
-    h_tt = model.init_hTtime(hidden_channels = model.base, H = 175, W  = 184).float().to(device) # coul auto the...
+    h_tt = model.init_hTtime(hidden_channels = model.base, H = 180, W  = 180).float().to(device) # coul auto the...
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
     print(f'\t\t\t\t sequence length: {seq_len}', end= '\r')
 
@@ -168,7 +168,7 @@ def get_posterior(unet, views_vol, device, n):
     print('Testing initiated...')
 
     # SIZE NEED TO CHANGE WITH VIEWS
-    test_tensor = torch.tensor(views_vol[:, :, : , 7].reshape(1, -1, 175, 184)).float()#    175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    test_tensor = torch.tensor(views_vol[:, :, : , 7].reshape(1, -1, 180, 180)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     print(test_tensor.shape)
 
     out_of_sample_tensor = test_tensor[:,-36:,:,:]
@@ -199,14 +199,13 @@ def get_posterior(unet, views_vol, device, n):
 
     for i in range(mean_array.shape[0]): #  0 of mean array is the temporal dim
 
-        y_score = mean_array[i].reshape(-1) # make it 1d  #  175*184
-        y_score_prob = mean_class_array[i].reshape(-1) #  175*184
-
+        y_score = mean_array[i].reshape(-1) # make it 1d  # nu 180x180 
+        y_score_prob = mean_class_array[i].reshape(-1) # nu 180x180 
         # do not really know what to do with these yet.
-        y_var = std_array[i].reshape(-1)  #  175*184
-        y_var_prob = std_class_array[i].reshape(-1)  #  175*184
+        y_var = std_array[i].reshape(-1)  # nu 180x180  
+        y_var_prob = std_class_array[i].reshape(-1)  # nu 180x180 
 
-        y_true = out_of_sample_tensor[:,i].reshape(-1)  #  175*184. dim 0 is time
+        y_true = out_of_sample_tensor[:,i].reshape(-1)  # nu 180x180 . dim 0 is time
         y_true_binary = (y_true > 0) * 1
 
 
