@@ -246,7 +246,7 @@ def get_posterior(unet, views_vol, device, n):
 def model_pipeline(hyperparameters):
 
     # tell wandb to get started
-    with wandb.init(project="RUNET_VIEWS_experiments36", entity="nornir", config=hyperparameters): #monthly36 when you get there--
+    with wandb.init(project="RUNET_VIEWS_SB_experiments36", entity="nornir", config=hyperparameters): #monthly36 when you get there--
 
         # NEW ------------------------------------------------------------------
         wandb.define_metric("monthly/out_sample_month")
