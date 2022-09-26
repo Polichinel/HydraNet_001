@@ -42,7 +42,7 @@ def get_data():
     views_vol = pickle.load(pkl_file)
     pkl_file.close()
 
-    file_name2 = "views_world_monthly_vol.pkl" # if you want to train on the whole world.
+    file_name2 = "/views_world_monthly_vol.pkl" # if you want to train on the whole world.
 
     pkl_file2 = open(location + file_name2, 'rb')
     world_vol = pickle.load(pkl_file2)
