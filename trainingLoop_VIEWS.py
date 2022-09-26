@@ -42,7 +42,14 @@ def get_data():
     views_vol = pickle.load(pkl_file)
     pkl_file.close()
 
-    return(views_vol)
+    #file_name2 = "views_world_monthly_vol.pkl" # if you want to train on the whole world.
+
+    pkl_file2 = open(location + file_name, 'rb')
+    world_vol = pickle.load(pkl_file2)
+    pkl_file2.close()
+
+
+    return(views_vol, world_vol)
 
 
 def choose_loss(config):
@@ -251,16 +258,18 @@ def model_pipeline(hyperparameters):
         config = wandb.config
 
         # get the data
-        views_vol = get_data()
+        views_vol, world_vol = get_data()
 
         # make the model, data, and optimization problem
         unet, criterion, optimizer = make(config)
         #print(unet)
 
-        training_loop(config, unet, criterion, optimizer, views_vol)
+        training_loop(config, unet, criterion, optimizer, world_vol) # TRAIN ON WHOLE WORLD
         print('Done training')
 
-        get_posterior(unet, views_vol, device, n=config.test_samples)
+        # GET POSTERIOR CAN GET THE AFRICA ONE
+
+        get_posterior(unet, views_vol, device, n=config.test_samples) # TEST ON AFRICA (VIEWS SUBSET)
         #end_test(unet, views_vol, config)
         print('Done testing')
 
