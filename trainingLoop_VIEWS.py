@@ -157,15 +157,16 @@ def test(model, test_tensor, device):
             t0 = t1_pred.detach()
 
             out_of_sampel = 1
+            t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
 
-        t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+        #t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         if out_of_sampel == 1:
 
             pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze())
             pred_class_np_list.append(t1_pred_class.cpu().detach().numpy().squeeze())
-
+            t1_pred, t1_pred_class, _ = model(t0, h_tt)
 
     return pred_np_list, pred_class_np_list
 
