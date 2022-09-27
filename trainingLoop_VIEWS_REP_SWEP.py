@@ -304,7 +304,7 @@ def get_swep_config():
         'learning_rate' : { 'value' :  0.00005},
         'weight_decay' : { 'value' :  0.05},
         'loss' : { 'value' : 'b'},
-        'test_samples"': { 'value' : 128}       
+        'test_samples': { 'value' : 128}       
         }
 
     sweep_config['parameters'] = parameters_dict
