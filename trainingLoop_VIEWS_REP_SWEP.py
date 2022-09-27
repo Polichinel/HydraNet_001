@@ -302,15 +302,15 @@ def get_swep_config():
         'samples': {
             'values': [100, 120, 140, 160, 180, 200]
             },
-        'input_channels' : { 'values' : 1
+        'input_channels' : { 'value' : 1
             },
-        'output_channels': { 'values' : 1
+        'output_channels': { 'value' : 1
             },
-        'learning_rate' : { 'values' :  0.00005
+        'learning_rate' : { 'value' :  0.00005
             },
-        'weight_decay' : { 'values' :  0.05
+        'weight_decay' : { 'value' :  0.05
             },
-        'loss' : { 'values' : 'b'}       
+        'loss' : { 'value' : 'b'}       
         }
 
     sweep_config['parameters'] = parameters_dict
