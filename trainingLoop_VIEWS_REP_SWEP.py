@@ -293,23 +293,16 @@ def get_swep_config():
 
 
     parameters_dict = {
-        'hidden_channels': {
-            'values': [8, 10, 12, 14, 16, 18]
-            },
-        'min_events': {
-            'values': [16, 18, 20, 22, 24, 26]
-            },
-        'samples': {
-            'values': [100, 120, 140, 160, 180, 200]
-            },
-        'input_channels' : { 'value' : 1
-            },
-        'output_channels': { 'value' : 1
-            },
-        'learning_rate' : { 'value' :  0.00005
-            },
-        'weight_decay' : { 'value' :  0.05
-            },
+        'hidden_channels': {'values': [8, 10, 12, 14, 16, 18]},
+        'min_events': {'values': [16, 18, 20, 22, 24, 26]},
+        'samples': {'values': [100, 120, 140, 160, 180, 200]},
+        "dropout_rate" : {'value' : 0.05},
+        'learning_rate': {'value' : 0.00005},
+        "weight_decay" : {'value' : 0.05},
+        'input_channels' : {'value' : 1},
+        'output_channels': { 'value' : 1},
+        'learning_rate' : { 'value' :  0.00005},
+        'weight_decay' : { 'value' :  0.05},
         'loss' : { 'value' : 'b'}       
         }
 
