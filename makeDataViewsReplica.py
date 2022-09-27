@@ -9,7 +9,7 @@ import os
 def get_gwno():
 
     location = '/home/projects/ku_00017/data/raw/PRIO'
-    location = '/home/simon/Documents/Bodies/data/PRIO'#local
+    #location = '/home/simon/Documents/Bodies/data/PRIO'#local
     #path_gwno = location + '/PRIO-GRID Yearly Variables for 2003-2009 - 2022-06-16.csv' #https://grid.prio.org/#/download # need to figrue out the API
     path_gwno = location + '/PRIO-GRID Yearly Variables for 1989-2014 - 2022-06-16.csv' #https://grid.prio.org/#/download # need to figrue out the API
 
@@ -21,8 +21,8 @@ def get_gwno():
 
 def get_prio_shape():
 
-    #location = '/home/projects/ku_00017/data/raw/PRIO'
-    location = '/home/simon/Documents/Bodies/data/PRIO'#local
+    location = '/home/projects/ku_00017/data/raw/PRIO'
+    #location = '/home/simon/Documents/Bodies/data/PRIO'#local
     path_prio = location + '/priogrid_shapefiles.zip'
 
     if os.path.isfile(path_prio) == True:
@@ -46,8 +46,8 @@ def get_prio_shape():
 
 def get_gwno():
 
-    #location = '/home/projects/ku_00017/data/raw/PRIO'
-    location = '/home/simon/Documents/Bodies/data/PRIO' #local
+    location = '/home/projects/ku_00017/data/raw/PRIO'
+    #location = '/home/simon/Documents/Bodies/data/PRIO' #local
     #path_gwno = location + '/PRIO-GRID Yearly Variables for 2003-2009 - 2022-06-16.csv' #https://grid.prio.org/#/download # need to figrue out the API
     path_gwno = location + '/PRIO-GRID Yearly Variables for 1989-2014 - 2022-06-16.csv' #https://grid.prio.org/#/download # need to figrue out the API
 
@@ -60,8 +60,8 @@ def get_gwno():
 
 def get_ucdp():
 
-    #location = '/home/projects/ku_00017/data/raw/UCDP'
-    location = '/home/simon/Documents/Bodies/data/UCDP' #local
+    location = '/home/projects/ku_00017/data/raw/UCDP'
+    #location = '/home/simon/Documents/Bodies/data/UCDP' #local
     path_ucdp = location + "/ged201-csv.zip"
     
     if os.path.isfile(path_ucdp) == True:
@@ -105,8 +105,8 @@ def get_ucdp():
 
 def get_views_data():
 
-    path_views = '/home/simon/Documents/Articles/ConflictNet/data/raw/ucdp_views_priogrid_month.csv.zip'
-    #path_views = '/home/projects/ku_00017/data/raw/......./ucdp_views_priogrid_month.csv.zip'
+    #path_views = '/home/simon/Documents/Articles/ConflictNet/data/raw/ucdp_views_priogrid_month.csv.zip'
+    path_views = '/home/projects/ku_00017/data/raw/conflictNet/ucdp_views_priogrid_month.csv.zip'
 
     if os.path.isfile(path_views) == True:
 
@@ -128,8 +128,8 @@ def get_views_data():
 
 
     # just to save ram on local !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    sub_years = sorted(df_views['year'].unique())[:4]
-    df_views = df_views[df_views['year'].isin(sub_years)]
+    # sub_years = sorted(df_views['year'].unique())[:4]
+    # df_views = df_views[df_views['year'].isin(sub_years)]
     # -----------------------------------------------------------------------------------------------------
 
     return df_views
@@ -152,7 +152,6 @@ def monthly_grid(prio_grid, yearly_df):
     return prio_grid
 
 
-
 def merge_grid_views(prio_grid, df_views):
     
     merge_on = list(set.intersection(set(prio_grid.columns.unique()),set(df_views.columns.unique())))
@@ -164,7 +163,6 @@ def merge_grid_views(prio_grid, df_views):
     merged_df['log_best'] = np.log(merged_df['ged_best_sb'] + 1)
 
     return merged_df
-
 
 
 def add_month_id(prio_grid):
