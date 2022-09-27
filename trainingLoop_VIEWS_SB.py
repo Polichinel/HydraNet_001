@@ -264,7 +264,9 @@ def model_pipeline(hyperparameters):
         unet, criterion, optimizer = make(config)
         #print(unet)
 
-        training_loop(config, unet, criterion, optimizer, world_vol) # TRAIN ON WHOLE WORLD
+        training_loop(config, unet, criterion, optimizer, views_vol) # TRAIN ON africa
+
+        #training_loop(config, unet, criterion, optimizer, world_vol) # TRAIN ON WHOLE WORLD
         print('Done training')
 
         # GET POSTERIOR CAN GET THE AFRICA ONE
