@@ -159,7 +159,7 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
     
     # initialize a hidden state
 #    h = unet.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
-    h = unet.init_h(hidden_channels = model.base, dim = window_dim, train_tensor).float().to(device)
+    h = unet.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
 
     #for i in range(seq_len-1): # so your sequnce is the full time len - last month.
     for i in range(seq_len-1): # so your sequnce is the full time len - last month.
