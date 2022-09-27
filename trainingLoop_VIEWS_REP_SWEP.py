@@ -303,7 +303,8 @@ def get_swep_config():
         'output_channels': { 'value' : 1},
         'learning_rate' : { 'value' :  0.00005},
         'weight_decay' : { 'value' :  0.05},
-        'loss' : { 'value' : 'b'}       
+        'loss' : { 'value' : 'b'},
+        'test_samples"': { 'value' : 128}       
         }
 
     sweep_config['parameters'] = parameters_dict
