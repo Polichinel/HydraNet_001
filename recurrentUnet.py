@@ -85,10 +85,24 @@ class UNet(nn.Module):
         return d2_reg, d2_class, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
 
 
-    def init_h(self, hidden_channels = 64, dim = 16): # could have x as input and then take x.shape
+    # YOU CAN MAKE HIDDEN STATE TAKE THE FIRST INPUT AND JUST BROADCAT IT OUT..
 
-        return torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64) # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
+    def init_h(self, hidden_channels = 64, dim = 16, train_tensor): # could have x as input and then take x.shape
 
-    def init_hTtime(self, hidden_channels = 64, H = 360, W = 720):
+        # NEW -----------------------------------------------------------
+        hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64)
+        hs += train_tensor.detach().cpu()
+        return  # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
+        # NEW -----------------------------------------------------------
 
-        return torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+        # return torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64) # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
+
+    def init_hTtime(self, hidden_channels = 64, H = 360, W = 720, test_tenor):
+        
+        # NEW -----------------------------------------------------------
+        hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+        hs =+ test_tenor.detach().cpu() 
+        return hs
+        # NEW -----------------------------------------------------------
+        
+        # return torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
