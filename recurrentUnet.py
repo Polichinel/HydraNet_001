@@ -87,7 +87,7 @@ class UNet(nn.Module):
 
     # YOU CAN MAKE HIDDEN STATE TAKE THE FIRST INPUT AND JUST BROADCAT IT OUT..
 
-    def init_h(self, hidden_channels = 64, dim = 16, train_tensor): # could have x as input and then take x.shape
+    def init_h(self, hidden_channels = 64, dim = 16, train_tensor = train_tensor): # could have x as input and then take x.shape
 
         # NEW -----------------------------------------------------------
         hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64)
@@ -97,11 +97,11 @@ class UNet(nn.Module):
 
         # return torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64) # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
 
-    def init_hTtime(self, hidden_channels = 64, H = 360, W = 720, test_tenor):
+    def init_hTtime(self, hidden_channels = 64, H = 360, W = 720, test_tensor = test_tenor):
         
         # NEW -----------------------------------------------------------
         hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
-        hs =+ test_tenor.detach().cpu() 
+        hs =+ test_tensor.detach().cpu() 
         return hs
         # NEW -----------------------------------------------------------
         
