@@ -264,9 +264,8 @@ def model_pipeline(hyperparameters):
         unet, criterion, optimizer = make(config)
         #print(unet)
 
-        training_loop(config, unet, criterion, optimizer, views_vol) # TRAIN ON africa
-
-        #training_loop(config, unet, criterion, optimizer, world_vol) # TRAIN ON WHOLE WORLD
+        #training_loop(config, unet, criterion, optimizer, views_vol) # TRAIN ON africa
+        training_loop(config, unet, criterion, optimizer, world_vol) # TRAIN ON WHOLE WORLD
         print('Done training')
 
         # GET POSTERIOR CAN GET THE AFRICA ONE
@@ -284,7 +283,7 @@ if __name__ == "__main__":
 
     # Hyper parameters.
     hyperparameters = {
-    "hidden_channels" : 2, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
+    "hidden_channels" : 4, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
     "input_channels" : 1,
     "output_channels": 1,
     "dropout_rate" : 0.05, #0.05
