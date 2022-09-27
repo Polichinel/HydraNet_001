@@ -87,7 +87,7 @@ def get_ucdp():
     ucdp.rename(columns= {'priogrid_gid' : 'gid'}, inplace= True)
 
     # ONLY STATE BASED!
-    ucdp = ucdp[ucdp['type_of_violence'] == 2].copy()
+    ucdp = ucdp[ucdp['type_of_violence'] == 1].copy()
 
     feature_list = ['month','year', 'gid', 'deaths_a','deaths_b', 'deaths_civilians', 'deaths_unknown','best', 'high', 'low']
 
