@@ -91,22 +91,22 @@ class UNet(nn.Module):
 
         # NEW -----------------------------------------------------------
         hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64)
-        
-        print(hs.shape)
-        print(train_tensor.shape)
+        #torch.randn(2, 3, 20)
+        #print(hs.shape)
+        #print(train_tensor.shape)
 
-        hs_p = hs + train_tensor.detach().cpu()
-        return hs_p  # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
+        #hs_p = hs + train_tensor.detach().cpu()
+        return hs  # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
         # NEW -----------------------------------------------------------
 
-        #return torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64) # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
+        #eturn torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64) # the dims could just be infered... sp you donøt needd to funct or change if w siae changes.
 
     def init_hTtime(self, hidden_channels, H, W, test_tensor):
         
         # NEW -----------------------------------------------------------
-        #hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+        hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
         #hs_p = hs + test_tensor.detach().cpu() 
-        #return hs
+        return hs
         # NEW -----------------------------------------------------------
         
-        return torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+        #return torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
