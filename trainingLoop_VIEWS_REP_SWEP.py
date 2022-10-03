@@ -309,11 +309,28 @@ def get_swep_config():
     #     'test_samples': { 'value' : 128}       
     #     }
 
-# SWEP 2 (short)
+# # SWEP 2 (short)
+#     parameters_dict = {
+#         'hidden_channels': {'values': [16, 18, 20]},
+#         'min_events': {'values': [20, 22]},
+#         'samples': {'values': [220, 240]},
+#         "dropout_rate" : {'value' : 0.05},
+#         'learning_rate': {'value' : 0.00005},
+#         "weight_decay" : {'value' : 0.05},
+#         'input_channels' : {'value' : 1},
+#         'output_channels': { 'value' : 1},
+#         'learning_rate' : { 'value' :  0.00005},
+#         'weight_decay' : { 'value' :  0.05},
+#         'loss' : { 'value' : 'b'},
+#         'test_samples': { 'value' : 128}       
+#         }
+
+
+# SWEP 3 
     parameters_dict = {
-        'hidden_channels': {'values': [16, 18, 20]},
-        'min_events': {'values': [20, 22]},
-        'samples': {'values': [220, 240]},
+        'hidden_channels': {'values': [20, 22, 24]},
+        'min_events': {'values': [18, 20, 22]},
+        'samples': {'values': [220, 240, 260, 280]},
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.00005},
         "weight_decay" : {'value' : 0.05},
@@ -324,7 +341,6 @@ def get_swep_config():
         'loss' : { 'value' : 'b'},
         'test_samples': { 'value' : 128}       
         }
-
 
     sweep_config['parameters'] = parameters_dict
 
