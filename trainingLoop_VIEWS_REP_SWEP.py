@@ -342,18 +342,33 @@ def get_swep_config():
 #         'test_samples': { 'value' : 128}       
 #         }
 
-# SWEP 4
+# # SWEP 4
+#     parameters_dict = {
+#         'hidden_channels': {'values': [22, 24, 26, 28, 20, 32]},
+#         'min_events': {'values': [18, 20, 22]},
+#         'samples': {'values': [280, 300, 320, 340]},
+#         "dropout_rate" : {'value' : 0.05},
+#         'learning_rate': {'value' : 0.00005},
+#         "weight_decay" : {'value' : 0.05},
+#         'input_channels' : {'value' : 1},
+#         'output_channels': { 'value' : 1},
+#         'learning_rate' : { 'value' :  0.00005},
+#         'weight_decay' : { 'value' :  0.05},
+#         'loss' : { 'value' : 'b'},
+#         'test_samples': { 'value' : 128}       
+#         }
+
+
+    # SWEP 5
     parameters_dict = {
         'hidden_channels': {'values': [22, 24, 26, 28, 20, 32]},
         'min_events': {'values': [18, 20, 22]},
-        'samples': {'values': [280, 300, 320, 340]},
-        "dropout_rate" : {'value' : 0.05},
-        'learning_rate': {'value' : 0.00005},
-        "weight_decay" : {'value' : 0.05},
+        'samples': {'values': [240, 280, 300, 320]},
+        "dropout_rate" : {'values' : [0.05, 0.1]},
+        'learning_rate': {'values' : [0.00005, 0.0001 , 0.0005]},
+        "weight_decay" : {'values' : [0.1, 0.05, 0.01]},
         'input_channels' : {'value' : 1},
         'output_channels': { 'value' : 1},
-        'learning_rate' : { 'value' :  0.00005},
-        'weight_decay' : { 'value' :  0.05},
         'loss' : { 'value' : 'b'},
         'test_samples': { 'value' : 128}       
         }
