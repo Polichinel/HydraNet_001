@@ -131,7 +131,7 @@ def test(model, test_tensor, device):
     # wait until you know if this work as usually
     pred_np_list = []
     pred_class_np_list = []
-    out_of_sampel = 0
+    #out_of_sample = 0
 
     #!!!!!!!
     h_tt = model.init_hTtime(hidden_channels = model.base, H = 180, W  = 180, test_tensor = test_tensor).float().to(device) # coul auto the...
@@ -178,7 +178,7 @@ def get_posterior(unet, views_vol, device, n):
     test_tensor = torch.tensor(views_vol[:, :, : , 5].reshape(1, -1, 180, 180)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     print(test_tensor.shape)
 
-    out_of_sample_tensor = test_tensor[:,-36:,:,:]
+    out_of_sample_tensor = test_tensor[:,-36:,:,:] # nice also just to save the test tensor...
     print(out_of_sample_tensor.shape)
 
     posterior_list = []
@@ -249,8 +249,11 @@ def get_posterior(unet, views_vol, device, n):
     metric_dict = {'out_sample_month_list' : out_sample_month_list, 'mse_list': mse_list, 
                    'ap_list' : ap_list, 'auc_list': auc_list, 'brier_list' : brier_list}
 
-    with open(f'{dump_location}metrics.pkl', 'wb') as file:
+    with open(f'{dump_location}metric_dict.pkl', 'wb') as file:
         pickle.dump(metric_dict, file)
+
+    with open(f'{dump_location}test_tensor.pkl', 'wb') as file: # make it numpy
+        pickle.dump(test_tensor, file)
 
     # LOG
     wandb.log({"36month_mean_squared_error": np.mean(mse_list)})
