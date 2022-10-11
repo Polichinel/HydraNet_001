@@ -129,6 +129,89 @@ def get_train_tensors(ucpd_vol, config, sample):
     return(train_tensor, meta_tensor_dict)
 
 
+
+# --------------------------------------
+# --------------------------------------
+# --------------------------------------
+
+
+
+
+def ALT_get_train_tensors(ucpd_vol, config, sample):
+  
+    # CHANGE THIS TO -36
+    train_ucpd_vol = ucpd_vol[:-36] # not tha last 36 months - these ar for test set
+    #print(f'train data shape: {train_ucpd_vol.shape}') # debug.
+
+    # The lenght of a whole time lime.
+    seq_len = train_ucpd_vol.shape[0]
+
+    # # why not train_ucpd_vol here? It does not really matter does it?
+    # window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = config.min_events, sample= sample)
+    
+    # min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
+    # max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
+    # min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
+    # max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
+
+
+    # HERE YOU MAKE SO THAT DIM 1 IS MONTH
+
+    # NEW -------------------------------------
+    # To handle "edge windows"
+    while True:
+        try:
+            window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = config.min_events, sample= sample)
+            
+            min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
+            max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
+            min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
+            max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
+
+            HBL = np.random.randint(7,10,1).item()
+
+            input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, HBL].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
+            break
+
+        except:
+            print('RE-sample edge-window...')
+            continue
+
+    # ---------------------------------
+
+    # WORKS
+    # input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 7].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
+
+
+    # 0 since this is constant across years. 1 dim for batch and one dim for time.
+    gids = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 0].reshape(1, 1, window_dict['dim'], window_dict['dim'])
+    longitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 1].reshape(1, 1, window_dict['dim'], window_dict['dim'])
+    latitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 2].reshape(1, 1, window_dict['dim'], window_dict['dim']) 
+
+    gids_tensor = torch.tensor(gids, dtype=torch.int) # must be int. You don't use it any more.
+    longitudes_tensor = torch.tensor(longitudes, dtype=torch.float)
+    latitudes_tensor = torch.tensor(latitudes, dtype=torch.float)
+
+    meta_tensor_dict = {'gids' : gids_tensor, 'longitudes' : longitudes_tensor, 'latitudes' : latitudes_tensor }
+    train_tensor = torch.tensor(input_window).float()
+
+    return(train_tensor, meta_tensor_dict)
+
+
+
+
+
+
+
+
+
+
+
+# --------------------------------------
+# --------------------------------------
+# --------------------------------------
+
+
 def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
 
     avg_loss = np.mean(avg_loss_list)
