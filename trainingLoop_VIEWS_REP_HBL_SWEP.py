@@ -316,7 +316,7 @@ if __name__ == "__main__":
     wandb.login()
 
     sweep_config = get_swep_config()
-    sweep_id = wandb.sweep(sweep_config, project="RUNET_VIEWS_REP_experiments36") # and then you put in the right project name
+    sweep_id = wandb.sweep(sweep_config, project="RUNET_VIEWS_REP_experiments36_HBL") # and then you put in the right project name
 
     # Hyper parameters.
     # hyperparameters = {
