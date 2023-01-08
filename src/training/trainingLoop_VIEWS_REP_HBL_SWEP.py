@@ -20,10 +20,10 @@ from sklearn.metrics import brier_score_loss
 
 import wandb
 
-sys.path.insert(0, "/home/projects/ku_00017/data/raw/conflictNet/src/networks")
-#sys.path.insert(0, "/home/projects/ku_00017/data/raw/conflictNet/src/evaluation")
-#sys.path.insert(0, "/home/projects/ku_00017/data/raw/conflictNet/src/utils")
-#sys.path.insert(0, "/home/projects/ku_00017/data/raw/conflictNet/src/dataloaders")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/evaluation")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/dataloaders")
 
 
 from trainingLoopUtils import *
