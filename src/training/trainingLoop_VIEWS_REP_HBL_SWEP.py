@@ -17,44 +17,45 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import brier_score_loss
 
-
 import wandb
 
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/evaluation")
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/dataloaders")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
-
-from trainingLoopUtils import *
+#from trainingLoopUtils import *
 # from testLoopUtils import *
-from recurrentUnet import *
+from recurrentUnet import UNet
+from swep_config import *
+from utils import *
+
+# def get_data():
+
+#     """Function to load the volumes of conflict history. Currently load two volumes. 
+#     One which is based of the views 2019 replication data (views_monthly_REP_vol.pkl).
+#     And one based direct of UCDP and PRIO data, covering the whole globe (views_world_monthly_vol.pkl).
+#     The volumes should be changes to be based on data from viewser."""
+
+#     # Data
+#     print('loading data....')
+#     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
+
+#     # The views replication data only covering africa
+#     file_name = "/views_monthly_REP_vol.pkl"
+
+#     pkl_file = open(location + file_name, 'rb')
+#     views_vol = pickle.load(pkl_file)
+#     pkl_file.close()
 
 
-def get_data():
+#     # Even for the views sub suet you want to train on the whole world.
+#     file_name2 = "/views_world_monthly_vol.pkl" 
 
-    # Data
-    print('loading data....')
-    #location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
-    location = '/home/projects/ku_00017/data/raw/conflictNet'
-    #file_name = "/ucpd_monthly_vol.pkl"
+#     pkl_file2 = open(location + file_name2, 'rb')
+#     world_vol = pickle.load(pkl_file2)
+#     pkl_file2.close()
 
-    file_name = "/views_monthly_REP_vol.pkl"
-
-    #file_name2 = "views_world_monthly_vol.pkl" # if you want to train on the whole world.
-
-    pkl_file = open(location + file_name, 'rb')
-    views_vol = pickle.load(pkl_file)
-    pkl_file.close()
-
-    file_name2 = "/views_world_monthly_vol.pkl" # if you want to train on the whole world.
-
-    pkl_file2 = open(location + file_name2, 'rb')
-    world_vol = pickle.load(pkl_file2)
-    pkl_file2.close()
-
-
-    return(views_vol, world_vol)
+#     return(views_vol, world_vol)
 
 
 def choose_loss(config):
@@ -97,6 +98,84 @@ def make(config):
 
 
 
+# ----------------------------------------------------------------------------------------------------------------------------------
+
+
+
+def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, device, unet, sample, plot = False):
+    
+    wandb.watch(unet, [criterion_reg, criterion_class], log= None, log_freq=2048)
+
+    avg_loss_reg_list = []
+    avg_loss_class_list = []
+    avg_loss_list = []
+
+    #pred_list = []
+    #observed_list = []
+
+    model.train()  # train mode
+    
+    seq_len = train_tensor.shape[1] 
+    window_dim = train_tensor.shape[2]
+    
+    # initialize a hidden state
+#    h = unet.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
+    h = unet.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
+
+    #for i in range(seq_len-1): # so your sequnce is the full time len - last month.
+    for i in range(seq_len-1): # so your sequnce is the full time len - last month.
+        print(f'\t\t month: {i+1}/{seq_len}...', end='\r')
+     
+
+        # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
+        # ACTUALLY I DO NOT THINK YOU DO HERE!!! IT IS ONLY FOR TESTING...... STOP THAT
+        t0 = train_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
+        t1 = train_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
+
+        # is this the right dime?
+
+        t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
+        
+        # UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True),rather than torch.tensor(sourceTensor).
+
+        # forward
+        t1_pred, t1_pred_class, h = model(t0, h.detach())
+
+        # debug
+        # print(t1_pred_class.dtype)
+        # print(t1_binary.dtype)
+
+        # backwards    
+        optimizer.zero_grad()
+
+
+        # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
+        # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
+        loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. # correct and working!!!
+
+        # NEEDS DEBUGGING
+#        loss_class = criterion_class(t1_binary, t1_pred_class)  # forward-pass
+        loss_class = criterion_class(t1_pred_class, t1_binary)  # forward-pass # correct and working!!!
+        # ---------------------------------------------------
+
+        loss = loss_reg + loss_class # naive no weights und so weider
+
+
+        loss.backward()  # backward-pass
+        optimizer.step()  # update weights
+
+        avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
+        avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
+        avg_loss_list.append(loss.detach().cpu().numpy().item())
+
+    train_log(avg_loss_reg_list, avg_loss_class_list, avg_loss_list)
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 def training_loop(config, unet, criterion, optimizer, views_vol):
 
 
@@ -126,10 +205,13 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
     # torch.onnx.export(unet, views_vol, "RUnet.onnx")
     # wandb.save("RUnet.onnx")
 
-def apply_dropout(m):
-    if type(m) == nn.Dropout:
-        m.train()
+# def apply_dropout(m):
+#     if type(m) == nn.Dropout:
+#         m.train()
 
+
+
+# these need to stay, but it must be validatiion nad not test as such.
 def test(model, test_tensor, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
@@ -284,36 +366,36 @@ def model_pipeline(config=None):
         #return(unet)
 
 
-def get_swep_config():
-    sweep_config = {
-    'method': 'grid'
-    }
+# def get_swep_config():
+#     sweep_config = {
+#     'method': 'grid'
+#     }
 
-    metric = {
-        'name': '36month_mean_squared_error',
-        'goal': 'minimize'   
-        }
+#     metric = {
+#         'name': '36month_mean_squared_error',
+#         'goal': 'minimize'   
+#         }
 
-    sweep_config['metric'] = metric
-
-
-    parameters_dict = {
-        'hidden_channels': {'values': [28, 30]},
-        'min_events': {'values': [20, 22]},
-        'samples': {'values': [450, 550]},
-        "dropout_rate" : {'values' : [0.05, 0.1]},
-        'learning_rate': {'values' : [0.00001, 0.00005]},
-        "weight_decay" : {'values' : [0.1, 0.05]},
-        'input_channels' : {'value' : 1},
-        'output_channels': { 'value' : 1},
-        'loss' : { 'value' : 'b'},
-        'test_samples': { 'value' : 128}       
-        }
+#     sweep_config['metric'] = metric
 
 
-    sweep_config['parameters'] = parameters_dict
+#     parameters_dict = {
+#         'hidden_channels': {'values': [28, 30]},
+#         'min_events': {'values': [20, 22]},
+#         'samples': {'values': [450, 550]},
+#         "dropout_rate" : {'values' : [0.05, 0.1]},
+#         'learning_rate': {'values' : [0.00001, 0.00005]},
+#         "weight_decay" : {'values' : [0.1, 0.05]},
+#         'input_channels' : {'value' : 1},
+#         'output_channels': { 'value' : 1},
+#         'loss' : { 'value' : 'b'},
+#         'test_samples': { 'value' : 128}       
+#         }
 
-    return sweep_config
+
+#     sweep_config['parameters'] = parameters_dict
+
+#     return sweep_config
 
 
 if __name__ == "__main__":

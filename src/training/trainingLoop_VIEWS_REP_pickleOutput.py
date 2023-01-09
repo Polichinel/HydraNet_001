@@ -19,36 +19,40 @@ from sklearn.metrics import brier_score_loss
 
 import wandb
 
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
-from trainingLoopUtils import *
+#from trainingLoopUtils import *
 # from testLoopUtils import *
-from recurrentUnet import *
+from recurrentUnet import UNet
+from utils import *
+from hyperparameters_config import *
+
+# def get_data():
+
+#     # Data
+#     print('loading data....')
+#     #location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
+#     location = '/home/projects/ku_00017/data/raw/conflictNet'
+#     #file_name = "/ucpd_monthly_vol.pkl"
+
+#     file_name = "/views_monthly_REP_vol.pkl"
+
+#     #file_name2 = "views_world_monthly_vol.pkl" # if you want to train on the whole world.
+
+#     pkl_file = open(location + file_name, 'rb')
+#     views_vol = pickle.load(pkl_file)
+#     pkl_file.close()
+
+#     file_name2 = "/views_world_monthly_vol.pkl" # if you want to train on the whole world.
+
+#     pkl_file2 = open(location + file_name2, 'rb')
+#     world_vol = pickle.load(pkl_file2)
+#     pkl_file2.close()
 
 
-def get_data():
-
-    # Data
-    print('loading data....')
-    #location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
-    location = '/home/projects/ku_00017/data/raw/conflictNet'
-    #file_name = "/ucpd_monthly_vol.pkl"
-
-    file_name = "/views_monthly_REP_vol.pkl"
-
-    #file_name2 = "views_world_monthly_vol.pkl" # if you want to train on the whole world.
-
-    pkl_file = open(location + file_name, 'rb')
-    views_vol = pickle.load(pkl_file)
-    pkl_file.close()
-
-    file_name2 = "/views_world_monthly_vol.pkl" # if you want to train on the whole world.
-
-    pkl_file2 = open(location + file_name2, 'rb')
-    world_vol = pickle.load(pkl_file2)
-    pkl_file2.close()
-
-
-    return(views_vol, world_vol)
+#     return(views_vol, world_vol)
 
 
 def choose_loss(config):
@@ -91,6 +95,82 @@ def make(config):
 
 
 
+# ----------------------------------------------------------------------------------------------------------------------------------
+
+
+
+def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, device, unet, sample, plot = False):
+    
+    wandb.watch(unet, [criterion_reg, criterion_class], log= None, log_freq=2048)
+
+    avg_loss_reg_list = []
+    avg_loss_class_list = []
+    avg_loss_list = []
+
+    #pred_list = []
+    #observed_list = []
+
+    model.train()  # train mode
+    
+    seq_len = train_tensor.shape[1] 
+    window_dim = train_tensor.shape[2]
+    
+    # initialize a hidden state
+#    h = unet.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
+    h = unet.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
+
+    #for i in range(seq_len-1): # so your sequnce is the full time len - last month.
+    for i in range(seq_len-1): # so your sequnce is the full time len - last month.
+        print(f'\t\t month: {i+1}/{seq_len}...', end='\r')
+     
+
+        # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
+        # ACTUALLY I DO NOT THINK YOU DO HERE!!! IT IS ONLY FOR TESTING...... STOP THAT
+        t0 = train_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
+        t1 = train_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
+
+        # is this the right dime?
+
+        t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
+        
+        # UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True),rather than torch.tensor(sourceTensor).
+
+        # forward
+        t1_pred, t1_pred_class, h = model(t0, h.detach())
+
+        # debug
+        # print(t1_pred_class.dtype)
+        # print(t1_binary.dtype)
+
+        # backwards    
+        optimizer.zero_grad()
+
+
+        # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
+        # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
+        loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. # correct and working!!!
+
+        # NEEDS DEBUGGING
+#        loss_class = criterion_class(t1_binary, t1_pred_class)  # forward-pass
+        loss_class = criterion_class(t1_pred_class, t1_binary)  # forward-pass # correct and working!!!
+        # ---------------------------------------------------
+
+        loss = loss_reg + loss_class # naive no weights und so weider
+
+
+        loss.backward()  # backward-pass
+        optimizer.step()  # update weights
+
+        avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
+        avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
+        avg_loss_list.append(loss.detach().cpu().numpy().item())
+
+    train_log(avg_loss_reg_list, avg_loss_class_list, avg_loss_list)
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------
+
+
 def training_loop(config, unet, criterion, optimizer, views_vol):
 
 
@@ -108,7 +188,7 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
         print(f'Sample: {sample+1}/{config.samples}', end = '\r')
 
         #input_tensor = torch.tensor(train_views_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
-        train_tensor, meta_tensor_dict = get_train_tensors(views_vol, config, sample)
+        train_tensor, meta_tensor_dict = ALT_get_train_tensors(views_vol, config, sample)
         # data augmentation (can be turned of for final experiments)
         train_tensor = transformer(train_tensor) # rotations and flips
 
@@ -120,9 +200,9 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
     # torch.onnx.export(unet, views_vol, "RUnet.onnx")
     # wandb.save("RUnet.onnx")
 
-def apply_dropout(m):
-    if type(m) == nn.Dropout:
-        m.train()
+# def apply_dropout(m):
+#     if type(m) == nn.Dropout:
+#         m.train()
 
 def test(model, test_tensor, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
@@ -245,7 +325,7 @@ def get_posterior(unet, views_vol, device, n):
         brier_list.append(brier)
     
 
-    # DUMP
+    # DUMP - this should be en option if you do not do a swep!!!!!
     metric_dict = {'out_sample_month_list' : out_sample_month_list, 'mse_list': mse_list, 
                    'ap_list' : ap_list, 'auc_list': auc_list, 'brier_list' : brier_list}
 
@@ -304,18 +384,19 @@ if __name__ == "__main__":
     wandb.login()
 
     # Hyper parameters.
-    hyperparameters = {
-    "hidden_channels" : 20, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
-    "input_channels" : 1,
-    "output_channels": 1,
-    "dropout_rate" : 0.05, #0.05
-    'learning_rate' :  0.00005,
-    "weight_decay" :  0.05,
-    'betas' : (0.9, 0.999),
-    "samples" : 240,
-    "test_samples": 128, 
-    "min_events": 22}
+    # hyperparameters = {
+    # "hidden_channels" : 20, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
+    # "input_channels" : 1,
+    # "output_channels": 1,
+    # "dropout_rate" : 0.05, #0.05
+    # 'learning_rate' :  0.00005,
+    # "weight_decay" :  0.05,
+    # 'betas' : (0.9, 0.999),
+    # "samples" : 240,
+    # "test_samples": 128, 
+    # "min_events": 22}
 
+    hyperparameters = get_hp_config()
 
     loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
 
@@ -329,15 +410,15 @@ if __name__ == "__main__":
 
     unet = model_pipeline(hyperparameters)
 
-    print('Saving model...')
+    # print('Saving model...')
 
-    if hyperparameters['loss'] == 'a':
-        PATH = 'unet_monthly_sinkhorn.pth'
+    # if hyperparameters['loss'] == 'a':
+    #     PATH = 'unet_monthly_sinkhorn.pth'
 
-    elif hyperparameters['loss'] == 'b':
-        PATH = 'unet_monthly.pth'
+    # elif hyperparameters['loss'] == 'b':
+    #     PATH = 'unet_monthly.pth'
 
-    torch.save(unet.state_dict(), PATH)
+    # torch.save(unet.state_dict(), PATH)
 
     end_t = time.time()
     minutes = (end_t - start_t)/60
