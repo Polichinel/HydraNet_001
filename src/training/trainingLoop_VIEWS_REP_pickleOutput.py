@@ -27,6 +27,7 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 # from testLoopUtils import *
 from recurrentUnet import UNet
 from utils import *
+from swep_config import *
 from hyperparameters_config import *
 
 # def get_data():
@@ -203,6 +204,8 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
 # def apply_dropout(m):
 #     if type(m) == nn.Dropout:
 #         m.train()
+
+
 
 def test(model, test_tensor, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..

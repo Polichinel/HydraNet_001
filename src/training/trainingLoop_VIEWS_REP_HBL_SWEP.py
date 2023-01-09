@@ -26,8 +26,9 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 #from trainingLoopUtils import *
 # from testLoopUtils import *
 from recurrentUnet import UNet
-from swep_config import *
 from utils import *
+from swep_config import *
+from hyperparameters_config import *
 
 # def get_data():
 
@@ -261,6 +262,9 @@ def test(model, test_tensor, device):
 def get_posterior(unet, views_vol, device, n):
     print('Testing initiated...')
 
+    #from pickle version - when you wnat to dump the output, e.g. when not sweping  # *********************************
+    #dump_location = '/home/projects/ku_00017/data/generated/conflictNet/' # *********************************
+
     # SIZE NEED TO CHANGE WITH VIEWS
     test_tensor = torch.tensor(views_vol[:, :, : , 5].reshape(1, -1, 180, 180)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     print(test_tensor.shape)
@@ -280,6 +284,13 @@ def get_posterior(unet, views_vol, device, n):
         print(f'Posterior sample: {i}/{n}', end = '\r')
 
 
+    # #DUMP# *********************************
+    # posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_tensor' : out_of_sample_tensor}# *********************************
+
+    # with open(f'{dump_location}posterior_dict.pkl', 'wb') as file: # *********************************
+    #     pickle.dump(posterior_dict, file) # *********************************
+
+    # Get mean and std
     mean_array = np.array(posterior_list).mean(axis = 0) # get mean for each month!
     std_array = np.array(posterior_list).std(axis = 0)
 
