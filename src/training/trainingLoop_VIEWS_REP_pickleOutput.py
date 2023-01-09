@@ -89,7 +89,7 @@ def make(config):
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
 
     #optimizer = torch.optim.Adam(unet.parameters(), lr = config.learning_rate, weight_decay = config.weight_decay)
-    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = config.betas)
+    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
     return(unet, criterion, optimizer) #, dataloaders, dataset_sizes)
 
