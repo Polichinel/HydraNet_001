@@ -17,7 +17,7 @@ def get_swep_config():
         'samples': {'value' : 800}, #{'values': [800, 850]},
         "dropout_rate" : {'value' : 0.1}, #{'values' : [0.05, 0.1]},
         'learning_rate': {'values' : [0.00001, 0.00005]},
-        "weight_decay" : {'value' : 0.05}, #{'values' : [0.1, 0.05]},
+        "weight_decay" : {'value' : 0.01}, #{'values' : [0.1, 0.05]},
         'input_channels' : {'value' : 1},
         'output_channels': { 'value' : 1},
         'loss' : { 'value' : 'b'},
