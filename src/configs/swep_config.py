@@ -24,7 +24,6 @@ def get_swep_config():
         'test_samples': { 'value' : 128}       
         }
 
-
     sweep_config['parameters'] = parameters_dict
 
     return sweep_config
