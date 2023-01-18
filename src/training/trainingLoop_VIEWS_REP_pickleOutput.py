@@ -30,31 +30,6 @@ from utils import *
 from swep_config import *
 from hyperparameters_config import *
 
-# def get_data():
-
-#     # Data
-#     print('loading data....')
-#     #location = '/home/simon/Documents/Articles/ConflictNet/data/raw'
-#     location = '/home/projects/ku_00017/data/raw/conflictNet'
-#     #file_name = "/ucpd_monthly_vol.pkl"
-
-#     file_name = "/views_monthly_REP_vol.pkl"
-
-#     #file_name2 = "views_world_monthly_vol.pkl" # if you want to train on the whole world.
-
-#     pkl_file = open(location + file_name, 'rb')
-#     views_vol = pickle.load(pkl_file)
-#     pkl_file.close()
-
-#     file_name2 = "/views_world_monthly_vol.pkl" # if you want to train on the whole world.
-
-#     pkl_file2 = open(location + file_name2, 'rb')
-#     world_vol = pickle.load(pkl_file2)
-#     pkl_file2.close()
-
-
-#     return(views_vol, world_vol)
-
 
 def choose_loss(config):
 
@@ -198,15 +173,8 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
 
     print('training done...')
 
-    # torch.onnx.export(unet, views_vol, "RUnet.onnx")
-    # wandb.save("RUnet.onnx")
 
-# def apply_dropout(m):
-#     if type(m) == nn.Dropout:
-#         m.train()
-
-
-
+# these need to stay, but it must be validatiion nad not test as such.
 def test(model, test_tensor, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
@@ -385,19 +353,6 @@ def model_pipeline(hyperparameters):
 if __name__ == "__main__":
 
     wandb.login()
-
-    # Hyper parameters.
-    # hyperparameters = {
-    # "hidden_channels" : 20, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
-    # "input_channels" : 1,
-    # "output_channels": 1,
-    # "dropout_rate" : 0.05, #0.05
-    # 'learning_rate' :  0.00005,
-    # "weight_decay" :  0.05,
-    # 'betas' : (0.9, 0.999),
-    # "samples" : 240,
-    # "test_samples": 128, 
-    # "min_events": 22}
 
     hyperparameters = get_hp_config()
 

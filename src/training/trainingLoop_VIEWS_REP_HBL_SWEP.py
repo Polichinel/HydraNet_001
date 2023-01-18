@@ -30,34 +30,6 @@ from utils import *
 from swep_config import *
 from hyperparameters_config import *
 
-# def get_data():
-
-#     """Function to load the volumes of conflict history. Currently load two volumes. 
-#     One which is based of the views 2019 replication data (views_monthly_REP_vol.pkl).
-#     And one based direct of UCDP and PRIO data, covering the whole globe (views_world_monthly_vol.pkl).
-#     The volumes should be changes to be based on data from viewser."""
-
-#     # Data
-#     print('loading data....')
-#     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
-
-#     # The views replication data only covering africa
-#     file_name = "/views_monthly_REP_vol.pkl"
-
-#     pkl_file = open(location + file_name, 'rb')
-#     views_vol = pickle.load(pkl_file)
-#     pkl_file.close()
-
-
-#     # Even for the views sub suet you want to train on the whole world.
-#     file_name2 = "/views_world_monthly_vol.pkl" 
-
-#     pkl_file2 = open(location + file_name2, 'rb')
-#     world_vol = pickle.load(pkl_file2)
-#     pkl_file2.close()
-
-#     return(views_vol, world_vol)
-
 
 def choose_loss(config):
 
@@ -175,8 +147,6 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 
-
-
 def training_loop(config, unet, criterion, optimizer, views_vol):
 
 
@@ -194,7 +164,7 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
         print(f'Sample: {sample+1}/{config.samples}', end = '\r')
 
         #input_tensor = torch.tensor(train_views_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
-        train_tensor, meta_tensor_dict = ALT_get_train_tensors(views_vol, config, sample)
+        train_tensor, meta_tensor_dict = get_train_tensors(views_vol, config, sample)
         # data augmentation (can be turned of for final experiments)
         train_tensor = transformer(train_tensor) # rotations and flips
 
@@ -202,14 +172,6 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
 
 
     print('training done...')
-
-    # torch.onnx.export(unet, views_vol, "RUnet.onnx")
-    # wandb.save("RUnet.onnx")
-
-# def apply_dropout(m):
-#     if type(m) == nn.Dropout:
-#         m.train()
-
 
 
 # these need to stay, but it must be validatiion nad not test as such.
@@ -258,12 +220,8 @@ def test(model, test_tensor, device):
     return pred_np_list, pred_class_np_list
 
 
-
-def get_posterior(unet, views_vol, device, n):
+def get_posterior(unet, views_vol, is_sweep, device, n):
     print('Testing initiated...')
-
-    #from pickle version - when you wnat to dump the output, e.g. when not sweping  # *********************************
-    #dump_location = '/home/projects/ku_00017/data/generated/conflictNet/' # *********************************
 
     # SIZE NEED TO CHANGE WITH VIEWS
     test_tensor = torch.tensor(views_vol[:, :, : , 5].reshape(1, -1, 180, 180)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
@@ -283,12 +241,16 @@ def get_posterior(unet, views_vol, device, n):
         #if i % 10 == 0: # print steps 10
         print(f'Posterior sample: {i}/{n}', end = '\r')
 
+    if is_sweep == False:
+        dump_location = '/home/projects/ku_00017/data/generated/conflictNet/' 
+        posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_tensor' : out_of_sample_tensor}
+        with open(f'{dump_location}posterior_dict.pkl', 'wb') as file: 
+            pickle.dump(posterior_dict, file) 
 
-    # #DUMP# *********************************
-    # posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_tensor' : out_of_sample_tensor}# *********************************
+        print("Posterior pickle dumped!")
 
-    # with open(f'{dump_location}posterior_dict.pkl', 'wb') as file: # *********************************
-    #     pickle.dump(posterior_dict, file) # *********************************
+    else:
+        print('Running sweep. no posterior pickle dumped')
 
     # Get mean and std
     mean_array = np.array(posterior_list).mean(axis = 0) # get mean for each month!
@@ -297,6 +259,7 @@ def get_posterior(unet, views_vol, device, n):
     mean_class_array = np.array(posterior_list_class).mean(axis = 0) # get mean for each month!
     std_class_array = np.array(posterior_list_class).std(axis = 0)
 
+    out_sample_month_list = [] # only used for pickle...
     ap_list = []
     mse_list = []
     auc_list = []
@@ -328,11 +291,29 @@ def get_posterior(unet, views_vol, device, n):
 
         wandb.log(log_dict)
 
+        out_sample_month_list.append(i) # only used for pickle...
         mse_list.append(mse)
         ap_list.append(ap) # add to list.
         auc_list.append(auc)
         brier_list.append(brier)
     
+    if is_sweep == False: 
+    
+    # DUMP 
+        metric_dict = {'out_sample_month_list' : out_sample_month_list, 'mse_list': mse_list, 
+                    'ap_list' : ap_list, 'auc_list': auc_list, 'brier_list' : brier_list}
+
+        with open(f'{dump_location}metric_dict.pkl', 'wb') as file:
+            pickle.dump(metric_dict, file)
+
+        with open(f'{dump_location}test_tensor.pkl', 'wb') as file: # make it numpy
+            pickle.dump(test_tensor, file)
+
+        print('Metric and test pickle dumped!')
+
+    else:
+        print('Running sweep. no metric or test pickle dumped')
+
 
     wandb.log({"36month_mean_squared_error": np.mean(mse_list)})
     wandb.log({"36month_average_precision_score": np.mean(ap_list)})
@@ -343,14 +324,21 @@ def get_posterior(unet, views_vol, device, n):
 
 def model_pipeline(config=None):
 
+    if config == None:
+        project = "RUNET_VIEWS_REP_experiments36_HBL"
+        is_sweep = True
+    
+    else:
+        project = "RUNET_VIEWS_REP_pickeled"
+        is_sweep = False
+
     # tell wandb to get started
-    with wandb.init(project="RUNET_VIEWS_REP_experiments36_HBL", entity="nornir", config=config): #monthly36 when you get there--
+    with wandb.init(project=project, entity="nornir", config=config): # project and entity ignored when runnig a sweep
 
         # NEW ------------------------------------------------------------------
         wandb.define_metric("monthly/out_sample_month")
         wandb.define_metric("monthly/*", step_metric="monthly/out_sample_month")
         # -----------------------------------------------------------------------
-
 
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
@@ -370,91 +358,52 @@ def model_pipeline(config=None):
 
         # GET POSTERIOR CAN GET THE AFRICA ONE
 
-        get_posterior(unet, views_vol, device, n=config.test_samples) # TEST ON AFRICA (VIEWS SUBSET)
+        get_posterior(unet, views_vol, device, is_sweep, n=config.test_samples) # TEST ON AFRICA (VIEWS SUBSET)
         #end_test(unet, views_vol, config)
         print('Done testing')
 
-        #return(unet)
-
-
-# def get_swep_config():
-#     sweep_config = {
-#     'method': 'grid'
-#     }
-
-#     metric = {
-#         'name': '36month_mean_squared_error',
-#         'goal': 'minimize'   
-#         }
-
-#     sweep_config['metric'] = metric
-
-
-#     parameters_dict = {
-#         'hidden_channels': {'values': [28, 30]},
-#         'min_events': {'values': [20, 22]},
-#         'samples': {'values': [450, 550]},
-#         "dropout_rate" : {'values' : [0.05, 0.1]},
-#         'learning_rate': {'values' : [0.00001, 0.00005]},
-#         "weight_decay" : {'values' : [0.1, 0.05]},
-#         'input_channels' : {'value' : 1},
-#         'output_channels': { 'value' : 1},
-#         'loss' : { 'value' : 'b'},
-#         'test_samples': { 'value' : 128}       
-#         }
-
-
-#     sweep_config['parameters'] = parameters_dict
-
-#     return sweep_config
+        if is_sweep == False: # if it is not a sweep
+            return(unet)
 
 
 if __name__ == "__main__":
 
     wandb.login()
 
-    sweep_config = get_swep_config()
-    sweep_id = wandb.sweep(sweep_config, project="RUNET_VIEWS_REP_experiments36_HBL") # and then you put in the right project name
+    do_sweep = input(f'a) Do sweep \nb) do one run and pickle results \n')
 
-    # Hyper parameters.
-    # hyperparameters = {
-    # "hidden_channels" : 4, # 10 is max if you do full timeline in test.. might nee to be smaller for monthly # you like do not have mem for more than 64
-    # "input_channels" : 1,
-    # "output_channels": 1,
-    # "dropout_rate" : 0.05, #0.05
-    # 'learning_rate' :  0.00005,
-    # "weight_decay" :  0.05,
-    # 'betas' : (0.9, 0.999),
-    # "epochs": 2, # as it is now, this is samples...
-    # "batch_size": 8, # this also you do not ues
-    # "samples" : 140,
-    # "test_samples": 128, # go 128, but this is tj́sut to see is there is a collaps
-    # "min_events": 22}
+    if do_sweep == 'a':
 
+        sweep_config = get_swep_config()
+        sweep_id = wandb.sweep(sweep_config, project="RUNET_VIEWS_REP_experiments36_HBL") # and then you put in the right project name
 
-    #loss_arg = input(f'a) Sinkhorn \nb) BCE/MSE \n')
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print(device)
 
-    # why you do not set the other hyper parameters this why idk..
-    #hyperparameters['loss'] = loss_arg
+        start_t = time.time()
+        wandb.agent(sweep_id, model_pipeline) 
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(device)
+    elif do_sweep == 'b':
 
-    start_t = time.time()
+        hyperparameters = get_hp_config()
+        hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
 
-    wandb.agent(sweep_id, model_pipeline)
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print(device)
 
-    # unet = model_pipeline(hyperparameters)
+        start_t = time.time()
 
-    # print('Saving model...')
+        unet = model_pipeline(config = hyperparameters)
 
-    # if hyperparameters['loss'] == 'a':
-    #     PATH = 'unet_monthly_sinkhorn.pth'
+        # print('Saving model...') # this should be an opiton wen not sweeping
 
-    # elif hyperparameters['loss'] == 'b':
-    #     PATH = 'unet_monthly.pth'
+        # if hyperparameters['loss'] == 'a':
+        #     PATH = 'unet_monthly_sinkhorn.pth'
 
-    # torch.save(unet.state_dict(), PATH)
+        # elif hyperparameters['loss'] == 'b':
+        #     PATH = 'unet_monthly.pth'
+
+        # torch.save(unet.state_dict(), PATH)
 
     end_t = time.time()
     minutes = (end_t - start_t)/60

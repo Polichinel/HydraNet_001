@@ -117,7 +117,7 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
 
 
 
-def ALT_get_train_tensors(ucpd_vol, config, sample):
+def get_train_tensors(ucpd_vol, config, sample):
   
     # This need to change to be validation, but it depends on the viewser setup
     train_ucpd_vol = ucpd_vol[:-36] # not tha last 36 months - these ar for test set
