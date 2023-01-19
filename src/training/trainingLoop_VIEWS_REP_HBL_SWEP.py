@@ -358,7 +358,7 @@ def model_pipeline(config=None):
 
         # GET POSTERIOR CAN GET THE AFRICA ONE
 
-        get_posterior(unet, views_vol, device, is_sweep, n=config.test_samples) # TEST ON AFRICA (VIEWS SUBSET)
+        get_posterior(unet, views_vol, is_sweep, device, n=config.test_samples) # TEST ON AFRICA (VIEWS SUBSET)
         #end_test(unet, views_vol, config)
         print('Done testing')
 
@@ -370,9 +370,11 @@ if __name__ == "__main__":
 
     wandb.login()
 
-    do_sweep = input(f'a) Do sweep \nb) do one run and pickle results \n')
+    do_sweep = input(f'a) Do sweep \nb) Do one run and pickle results \n')
 
     if do_sweep == 'a':
+
+        print('Doing a sweep!')
 
         sweep_config = get_swep_config()
         sweep_id = wandb.sweep(sweep_config, project="RUNET_VIEWS_REP_experiments36_HBL") # and then you put in the right project name
@@ -384,6 +386,8 @@ if __name__ == "__main__":
         wandb.agent(sweep_id, model_pipeline) 
 
     elif do_sweep == 'b':
+
+        print('One run and pickle!')
 
         hyperparameters = get_hp_config()
         hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
