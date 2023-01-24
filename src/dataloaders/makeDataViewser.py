@@ -52,7 +52,9 @@ def get_views_date(location, partitioner_dict):
         
         
         #month_range = np.arange(partitioner_dict['train'][0], partitioner_dict['predict'][1]+1,1)
-        month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+11,1)
+        #month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+11,1)
+        month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+21,1)
+
 
         df = df[df['month_id'].isin(month_range)] # temp sub
 
