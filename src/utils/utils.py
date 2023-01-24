@@ -11,6 +11,34 @@ from torchvision import transforms
 
 import wandb
 
+# def get_data(): #CHANGED FOR VIEWSER
+
+#     """Function to load the volumes of conflict history. Currently load two volumes. 
+#     One which is based of the views 2019 replication data (views_monthly_REP_vol.pkl).
+#     And one based direct of UCDP and PRIO data, covering the whole globe (views_world_monthly_vol.pkl).
+#     The volumes should be changes to be based on data from viewser."""
+
+#     # Data
+#     print('loading data....')
+#     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
+
+#     # The views replication data only covering africa 
+#     file_name = "/views_monthly_REP_vol.pkl"
+
+#     pkl_file = open(location + file_name, 'rb')
+#     views_vol = pickle.load(pkl_file)
+#     pkl_file.close()
+
+
+#     # Even for the views sub suet you want to train on the whole world.
+#     file_name2 = "/views_world_monthly_vol.pkl" 
+
+#     pkl_file2 = open(location + file_name2, 'rb')
+#     world_vol = pickle.load(pkl_file2)
+#     pkl_file2.close()
+
+#     return(views_vol, world_vol)
+
 def get_data():
 
     """Function to load the volumes of conflict history. Currently load two volumes. 
@@ -22,22 +50,14 @@ def get_data():
     print('loading data....')
     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
 
-    # The views replication data only covering africa
-    file_name = "/views_monthly_REP_vol.pkl"
+    # The views replication data only covering africa 
+    file_name = "/viewser_monthly_vol_test.pkl"
 
     pkl_file = open(location + file_name, 'rb')
     views_vol = pickle.load(pkl_file)
     pkl_file.close()
 
-
-    # Even for the views sub suet you want to train on the whole world.
-    file_name2 = "/views_world_monthly_vol.pkl" 
-
-    pkl_file2 = open(location + file_name2, 'rb')
-    world_vol = pickle.load(pkl_file2)
-    pkl_file2.close()
-
-    return(views_vol, world_vol)
+    return(views_vol)
 
 
 def norm(x, a = 0, b = 1):
@@ -78,8 +98,8 @@ def draw_window(ucpd_vol, min_events, sample):
     The windows are constrained to be sampled from an area with some
     minimum number of log_best events (min_events)."""
 
-    # with coordinates in vol, log best is 7
-    ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,7], axis = 0) 
+    # with coordinates in vol, log best was 7 #CHANGED FOR VIEWSER
+    ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,5], axis = 0) #CHANGED FOR VIEWSER
 
     # number of events so >= 1 or > 0 is the same as np.nonzero
     min_events_index = np.where(ucpd_vol_count >= min_events) 
@@ -135,7 +155,8 @@ def get_train_tensors(ucpd_vol, config, sample):
             min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
             max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
-            HBL = np.random.randint(7,10,1).item()
+            #HBL = np.random.randint(7,10,1).item()#CHANGED FOR VIEWSER
+            HBL = 5 # right now just the log_best #CHANGED FOR VIEWSER
 
             input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, HBL].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
             break
