@@ -69,9 +69,12 @@ def get_views_date(location, partitioner_dict):
 
         df['in_viewser'] = True
         # df['name'] = df.cy.name # No need
-        df.to_pickle(path_views_data)
-
-        print('VIEWS data pickled.')
+        
+        # ----------------------------------------------------
+        # I'm not sure it is ever a good idea to save this?
+        #df.to_pickle(path_views_data)
+        #print('VIEWS data pickled.')
+        # ----------------------------------------------------
 
     return df
 
@@ -191,19 +194,23 @@ def compile():
 
     if partitioner == 'a':
         partitioner_dict = {"train":(121,396),"predict":(397,444)} # calib_partitioner_dict
+        file_name = "/viewser_monthly_vol_calib.pkl"
 
     elif partitioner == 'b':
         partitioner_dict = {"train":(121,444),"predict":(445,492)} # test_partitioner_dict
+        file_name = "/viewser_monthly_vol_test.pkl"
 
     elif partitioner == 'c':
         partitioner_dict = {"train":(121,492),"predict":(493,504)} # furture_partitioner_dict
+        file_name = "/viewser_monthly_vol_furture.pkl"
 
     else:
         print('Wrong input... breaking operation.')
         sys.exit() # you could let people in they own stuff..
 
 
-    location = '/home/number_one/Documents/scripts/conflictNet/data/raw'
+    #location = '/home/number_one/Documents/scripts/conflictNet/data/raw'
+    location = '/home/projects/ku_00017/data/raw/conflictNet'
 
     df = get_views_date(location, partitioner_dict)
     print('Data loaded from viewser')
@@ -219,8 +226,6 @@ def compile():
 
     vol = make_volumn(grid)
     print('Created volumn')
-
-    file_name = "/viewser_monthly_vol.pkl"
 
     print(f'Pickling {file_name}')
     output = open(location + file_name, 'wb')
