@@ -53,7 +53,7 @@ def get_views_date(location, partitioner_dict):
         
         #month_range = np.arange(partitioner_dict['train'][0], partitioner_dict['predict'][1]+1,1)
         #month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+11,1)
-        month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+21,1)
+        month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+24,1)
 
 
         df = df[df['month_id'].isin(month_range)] # temp sub
@@ -133,7 +133,8 @@ def monthly_grid(prio_grid, views_df):
 
     full_grid.fillna({'ln_sb_best' : 0, 'ln_sb_high' : 0, 'c_id' : 0, 'in_viewser' : False}, inplace = True) # for c_id 0 is no country
 
-    full_grid["month_id"] = full_grid.groupby("month").transform(lambda x: x.fillna(x.mean(skipna = True)))['month_id'] # I think this is cool, but must check...
+    # full_grid["month_id"] = full_grid.groupby("month").transform(lambda x: x.fillna(x.mean(skipna = True)))['month_id'] # I think this is cool, but must check...
+    full_grid["month_id"] = full_grid.groupby(["year_id", "month"]).apply(lambda x: x.fillna(x.mean(skipna = True)))['month_id']
 
     # Drop stuff..
 
