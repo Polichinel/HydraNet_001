@@ -20,7 +20,7 @@ def get_views_date(location, partitioner_dict):
 
     if os.path.isfile(path_views_data) == True:
 
-        print('File already downloaded')
+        print('Data from viewser already downloaded')
         df = pd.read_pickle(path_views_data)
         
     else:
@@ -51,8 +51,8 @@ def get_views_date(location, partitioner_dict):
         # df = df[df['month_id'].isin([121, 122, 123, 124])] # temp sub
         
         
-        #month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['predict'][1]+1,1)
-        month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+11,1)
+        month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['predict'][1]+1,1)
+        #month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+11,1)
 
         df = df[df['month_id'].isin(month_range)] # temp sub
 
@@ -85,7 +85,7 @@ def get_prio_shape(location):
 
     if os.path.isfile(path_prio) == True:
         
-        print('File already downloaded')
+        print('PRIO grid shape file already downloaded')
         prio_grid = gpd.read_file('zip://' + path_prio)
 
         prio_grid =  pd.DataFrame(prio_grid.drop(columns = ['geometry']))
