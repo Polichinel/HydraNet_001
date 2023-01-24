@@ -51,9 +51,9 @@ def get_views_date(location, partitioner_dict):
         # df = df[df['month_id'].isin([121, 122, 123, 124])] # temp sub
         
         
-        #month_range = np.arange(partitioner_dict['train'][0], partitioner_dict['predict'][1]+1,1)
+        month_range = np.arange(partitioner_dict['train'][0], partitioner_dict['predict'][1]+1,1)
         #month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+11,1)
-        month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+24,1)
+        #month_range = np.arange(partitioner_dict['train'][0],partitioner_dict['train'][0]+24,1)
 
 
         df = df[df['month_id'].isin(month_range)] # temp sub
@@ -137,6 +137,8 @@ def monthly_grid(prio_grid, views_df):
     full_grid["month_id"] = full_grid.groupby(["year_id", "month"]).apply(lambda x: x.fillna(x.mean(skipna = True)))['month_id']
 
     # Drop stuff..
+    full_grid.dropna(inplace=True)
+    # the point of this is to drop months that were not give and month_id. The PRIO grid explosion makes only whole years, so this removes any excess months
 
     return full_grid
 
