@@ -12,9 +12,9 @@ def get_swep_config():
 
 
     parameters_dict = {
-        'hidden_channels': {'values': [16, 24, 32]},
-        'min_events': {'values': [16, 20, 24]},
-        'samples': {'values': [200, 400, 800]},
+        'hidden_channels': {'values': [16, 24]},
+        'min_events': {'values': [16, 20]},
+        'samples': {'values': [200, 250]},
         "dropout_rate" : {'value' : 0.1},# {'values' : [0.05, 0.1]},
         'learning_rate': {'value' :  0.00005},# {'values' : [0.00001, 0.00005]},
         "weight_decay" : {'value' : 0.1},#{'values' : [0.1, 0.05]},

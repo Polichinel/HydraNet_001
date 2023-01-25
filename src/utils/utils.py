@@ -39,7 +39,7 @@ import wandb
 
 #     return(views_vol, world_vol)
 
-def get_data():
+def get_data(run_type):
 
     """Function to load the volumes of conflict history. Currently load two volumes. 
     One which is based of the views 2019 replication data (views_monthly_REP_vol.pkl).
@@ -47,12 +47,18 @@ def get_data():
     The volumes should be changes to be based on data from viewser."""
 
     # Data
-    print('loading data....')
+    
     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
 
-    # The views replication data only covering africa 
-    file_name = "/viewser_monthly_vol_test.pkl"
+    # The viewser data
 
+    if run_type == 'calib':
+        file_name = "/viewser_monthly_vol_calib.pkl"
+
+    elif run_type == 'test':
+        file_name = "/viewser_monthly_vol_test.pkl"
+
+    print('loading data....')
     pkl_file = open(location + file_name, 'rb')
     views_vol = pickle.load(pkl_file)
     pkl_file.close()

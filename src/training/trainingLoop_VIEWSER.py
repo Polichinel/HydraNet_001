@@ -324,12 +324,17 @@ def get_posterior(unet, views_vol, is_sweep, device, n):
 
 def model_pipeline(config=None):
 
+    # This is a proxy for wheter it is a sweep
     if config == None:
-        project = "RUNET_VIEWSER_experiments_001" # this gets ignorede if you do the sweep anyway
+        config = wandb.config
+        run_type = config['parameters']['run_type']['value']
+        project = f"RUNET_VIEWSER_{run_type}_experiments_001" # this gets ignorede if you do the sweep anyway
         is_sweep = True
     
+    # Or not a sweep.
     else:
-        project = "RUNET_VIEWS_REP_pickeled"
+        run_type = config['run_type']
+        project = f"RUNET_VIEWS_{run_type}_pickeled"
         is_sweep = False
 
     # tell wandb to get started
@@ -339,13 +344,8 @@ def model_pipeline(config=None):
         wandb.define_metric("monthly/out_sample_month")
         wandb.define_metric("monthly/*", step_metric="monthly/out_sample_month")
         # -----------------------------------------------------------------------
-
-        # access all HPs through wandb.config, so logging matches execution!
-        config = wandb.config
-
-        # get the data # CHANGED FOR VIEWSER
-        # views_vol, world_vol = get_data() # CHANGED FOR VIEWSER
-        views_vol = get_data()
+                
+        views_vol = get_data(run_type)
 
         # make the model, data, and optimization problem
         unet, criterion, optimizer = make(config)
@@ -373,6 +373,10 @@ if __name__ == "__main__":
 
     wandb.login()
 
+    runtype_dict = {'a' : 'calib', 'b' : 'test'}
+    run_type = runtype_dict[input("a) Calibration\nb) Testing\n")]
+    print(f'Run type: {run_type}\n')
+
     do_sweep = input(f'a) Do sweep \nb) Do one run and pickle results \n')
 
     if do_sweep == 'a':
@@ -380,6 +384,8 @@ if __name__ == "__main__":
         print('Doing a sweep!')
 
         sweep_config = get_swep_config()
+        sweep_config['parameters']['run_type'] = {'value' : run_type}
+
         sweep_id = wandb.sweep(sweep_config, project="RUNET_VIEWSER_experiments_001") # and then you put in the right project name
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -394,6 +400,7 @@ if __name__ == "__main__":
 
         hyperparameters = get_hp_config()
         hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
+        hyperparameters['run_type'] = run_type
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print(device)
