@@ -220,7 +220,7 @@ def test(model, test_tensor, device):
     return pred_np_list, pred_class_np_list
 
 
-def get_posterior(unet, views_vol, is_sweep, device, n):
+def get_posterior(unet, views_vol, run_type, is_sweep, device, n):
     print('Testing initiated...')
 
     # SIZE NEED TO CHANGE WITH VIEWS
@@ -244,7 +244,7 @@ def get_posterior(unet, views_vol, is_sweep, device, n):
     if is_sweep == False:
         dump_location = '/home/projects/ku_00017/data/generated/conflictNet/' 
         posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_tensor' : out_of_sample_tensor}
-        with open(f'{dump_location}posterior_dict.pkl', 'wb') as file: 
+        with open(f'{dump_location}posterior_dict_{run_type}.pkl', 'wb') as file: 
             pickle.dump(posterior_dict, file) 
 
         print("Posterior pickle dumped!")
@@ -324,38 +324,35 @@ def get_posterior(unet, views_vol, is_sweep, device, n):
 
 def model_pipeline(config=None, project=None):
 
-    # This is a proxy for wheter it is a sweep
-    if config == None:
-        # project = f"RUNET_VIEWSER_{run_type}_experiments_001" # this gets ignorede if you do the sweep anyway
-        is_sweep = True
+    # # This is a proxy for wheter it is a sweep
+    # if config == None:
+    #     # project = f"RUNET_VIEWSER_{run_type}_experiments_001" # this gets ignorede if you do the sweep anyway
+    #     is_sweep = True
     
-    # Or not a sweep.
-    else:
-        is_sweep = False
+    # # Or not a sweep.
+    # else:
+    #     is_sweep = False
 
     # tell wandb to get started
     with wandb.init(project=project, entity="nornir", config=config): # project and config ignored when runnig a sweep
 
-        # NEW ------------------------------------------------------------------
         wandb.define_metric("monthly/out_sample_month")
         wandb.define_metric("monthly/*", step_metric="monthly/out_sample_month")
-        # -----------------------------------------------------------------------
                 
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
         run_type = config['run_type']
+        is_sweep = config['sweep']
 
         views_vol = get_data(run_type)
 
         # make the model, data, and optimization problem
         unet, criterion, optimizer = make(config)
-        #print(unet)
-
 
         training_loop(config, unet, criterion, optimizer, views_vol) 
         print('Done training')
 
-        get_posterior(unet, views_vol, is_sweep, device, n=config.test_samples)
+        get_posterior(unet, views_vol, run_type, is_sweep, device, n=config.test_samples)
         print('Done testing')
 
         if is_sweep == False: # if it is not a sweep
@@ -380,6 +377,7 @@ if __name__ == "__main__":
 
         sweep_config = get_swep_config()
         sweep_config['parameters']['run_type'] = {'value' : run_type}
+        sweep_config['parameters']['sweep'] = {'value' : True}
 
         sweep_id = wandb.sweep(sweep_config, project=project) # and then you put in the right project name
 
@@ -398,6 +396,7 @@ if __name__ == "__main__":
         hyperparameters = get_hp_config()
         hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
         hyperparameters['run_type'] = run_type
+        hyperparameters['sweep'] = False
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print(device)
