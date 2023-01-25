@@ -248,7 +248,7 @@ def get_posterior(unet, views_vol, time_steps, run_type, is_sweep, device, n):
     if is_sweep == False:
         dump_location = '/home/projects/ku_00017/data/generated/conflictNet/' 
         posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_tensor' : out_of_sample_tensor}
-        with open(f'{dump_location}posterior_dict_{run_type}.pkl', 'wb') as file: 
+        with open(f'{dump_location}posterior_dict_{time_steps}_{run_type}.pkl', 'wb') as file: 
             pickle.dump(posterior_dict, file) 
 
         print("Posterior pickle dumped!")
@@ -307,10 +307,10 @@ def get_posterior(unet, views_vol, time_steps, run_type, is_sweep, device, n):
         metric_dict = {'out_sample_month_list' : out_sample_month_list, 'mse_list': mse_list, 
                     'ap_list' : ap_list, 'auc_list': auc_list, 'brier_list' : brier_list}
 
-        with open(f'{dump_location}metric_dict.pkl', 'wb') as file:
+        with open(f'{dump_location}_{time_steps}_{run_type}_metric_dict.pkl', 'wb') as file:
             pickle.dump(metric_dict, file)
 
-        with open(f'{dump_location}test_tensor.pkl', 'wb') as file: # make it numpy
+        with open(f'{dump_location}_{time_steps}_{run_type}_test_tensor.pkl', 'wb') as file: # make it numpy
             pickle.dump(test_tensor, file)
 
         print('Metric and test pickle dumped!')
@@ -371,7 +371,7 @@ if __name__ == "__main__":
                        'c':36,
                        'd':48,}
 
-    time_steps = time_steps_dict[input('a) 12 months\nb) 24 months\nc) 36 months\nd) 48 months\nNote: 48 is the current VIEWS standard.')]   
+    time_steps = time_steps_dict[input('a) 12 months\nb) 24 months\nc) 36 months\nd) 48 months\nNote: 48 is the current VIEWS standard.\n')]   
 
 
     runtype_dict = {'a' : 'calib', 'b' : 'test'}
