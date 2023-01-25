@@ -146,7 +146,9 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
 def get_train_tensors(ucpd_vol, config, sample):
   
     # This need to change to be validation, but it depends on the viewser setup
-    train_ucpd_vol = ucpd_vol[:-36] # not tha last 36 months - these ar for test set
+    # train_ucpd_vol = ucpd_vol[:-36] # not tha last 36 months - these ar for test set
+    train_ucpd_vol = ucpd_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
+
 
     # The lenght of a whole time lime.
     seq_len = train_ucpd_vol.shape[0]
@@ -168,7 +170,7 @@ def get_train_tensors(ucpd_vol, config, sample):
             break
 
         except:
-            print('RE-sample edge-window...', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
+            print('Resample edge', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
             continue
 
     # 0 since this is constant across years. 1 dim for batch and one dim for time.

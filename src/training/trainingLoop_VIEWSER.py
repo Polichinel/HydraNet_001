@@ -175,7 +175,7 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
 
 
 # these need to stay, but it must be validatiion nad not test as such.
-def test(model, test_tensor, device):
+def test(model, test_tensor, time_steps, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
 
@@ -195,9 +195,11 @@ def test(model, test_tensor, device):
 
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
-        # HERE - IF WE GO BEYOUND -36 THEN USE t1_pred AS t0
+        # HERE - IF WE GO BEYOUND -36 (or time steps) THEN USE t1_pred AS t0
 
-        if i < seq_len-1-36: # take form the test set
+        # if i < seq_len-1-36: # take form the test set
+        if i < seq_len-1-time_steps: # take form the test set
+
             print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
             t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
@@ -220,21 +222,23 @@ def test(model, test_tensor, device):
     return pred_np_list, pred_class_np_list
 
 
-def get_posterior(unet, views_vol, run_type, is_sweep, device, n):
+def get_posterior(unet, views_vol, time_steps, run_type, is_sweep, device, n):
     print('Testing initiated...')
 
     # SIZE NEED TO CHANGE WITH VIEWS
     test_tensor = torch.tensor(views_vol[:, :, : , 5].reshape(1, -1, 180, 180)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     print(test_tensor.shape)
 
-    out_of_sample_tensor = test_tensor[:,-36:,:,:]
+    # out_of_sample_tensor = test_tensor[:,-36:,:,:]
+    out_of_sample_tensor = test_tensor[:,-time_steps:,:,:]
+
     print(out_of_sample_tensor.shape)
 
     posterior_list = []
     posterior_list_class = []
 
     for i in range(n):
-        pred_np_list, pred_class_np_list = test(unet, test_tensor, device)
+        pred_np_list, pred_class_np_list = test(unet, test_tensor, time_steps, device) # --------------------------------------------------------------
         posterior_list.append(pred_np_list)
         posterior_list_class.append(pred_class_np_list)
 
@@ -314,13 +318,11 @@ def get_posterior(unet, views_vol, run_type, is_sweep, device, n):
     else:
         print('Running sweep. no metric or test pickle dumped')
 
-
-    wandb.log({"36month_mean_squared_error": np.mean(mse_list)})
-    wandb.log({"36month_average_precision_score": np.mean(ap_list)})
-    wandb.log({"36month_roc_auc_score": np.mean(auc_list)})
-    wandb.log({"36month_brier_score_loss":np.mean(brier_list)})
-
-
+    # ------------------------------------------------------------------------------------
+    wandb.log({f"{time_steps}month_mean_squared_error": np.mean(mse_list)})
+    wandb.log({f"{time_steps}month_average_precision_score": np.mean(ap_list)})
+    wandb.log({f"{time_steps}month_roc_auc_score": np.mean(auc_list)})
+    wandb.log({f"{time_steps}month_brier_score_loss":np.mean(brier_list)})
 
 def model_pipeline(config=None, project=None):
 
@@ -341,6 +343,7 @@ def model_pipeline(config=None, project=None):
                 
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
+        time_steps = config['time_steps']
         run_type = config['run_type']
         is_sweep = config['sweep']
 
@@ -352,7 +355,7 @@ def model_pipeline(config=None, project=None):
         training_loop(config, unet, criterion, optimizer, views_vol) 
         print('Done training')
 
-        get_posterior(unet, views_vol, run_type, is_sweep, device, n=config.test_samples)
+        get_posterior(unet, views_vol, time_steps, run_type, is_sweep, device, n=config.test_samples)
         print('Done testing')
 
         if is_sweep == False: # if it is not a sweep
@@ -362,6 +365,14 @@ def model_pipeline(config=None, project=None):
 if __name__ == "__main__":
 
     wandb.login()
+
+    time_steps_dict = {'a':12, 
+                       'b':24,
+                       'c':36,
+                       'd':48,}
+
+    time_steps = time_steps_dict[input('a) 12 months\nb) 24 months\nc) 36 months\nd) 48 months\nNote: 48 is the current VIEWS standard.')]   
+
 
     runtype_dict = {'a' : 'calib', 'b' : 'test'}
     run_type = runtype_dict[input("a) Calibration\nb) Testing\n")]
@@ -373,11 +384,13 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
 
-        project = f"RUNET_VIEWSER_{run_type}_experiments_001"
+        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_001"
 
         sweep_config = get_swep_config()
+        sweep_config['parameters']['time_steps'] = {'value' : time_steps}
         sweep_config['parameters']['run_type'] = {'value' : run_type}
         sweep_config['parameters']['sweep'] = {'value' : True}
+
 
         sweep_id = wandb.sweep(sweep_config, project=project) # and then you put in the right project name
 
@@ -391,10 +404,11 @@ if __name__ == "__main__":
 
         print('One run and pickle!')
 
-        project = f"RUNET_VIEWS_{run_type}_pickeled"
+        project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickeled"
 
         hyperparameters = get_hp_config()
         hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
+        hyperparameters['time_steps'] = time_steps
         hyperparameters['run_type'] = run_type
         hyperparameters['sweep'] = False
 
