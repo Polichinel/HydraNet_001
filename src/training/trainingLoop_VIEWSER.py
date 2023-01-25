@@ -310,7 +310,7 @@ def get_posterior(unet, views_vol, time_steps, run_type, is_sweep, device, n):
         with open(f'{dump_location}metric_dict_{time_steps}_{run_type}.pkl', 'wb') as file:
             pickle.dump(metric_dict, file)
 
-        with open(f'{dump_location}{time_steps}test_tensor_{time_steps}_{run_type}.pkl', 'wb') as file: # make it numpy
+        with open(f'{dump_location}test_tensor_{time_steps}_{run_type}.pkl', 'wb') as file: # make it numpy
             pickle.dump(test_tensor, file)
 
         print('Metric and test pickle dumped!')
