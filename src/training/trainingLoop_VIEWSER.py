@@ -326,43 +326,37 @@ def model_pipeline(config=None):
 
     # This is a proxy for wheter it is a sweep
     if config == None:
-        config = wandb.config
-        run_type = config['parameters']['run_type']['value']
-        project = f"RUNET_VIEWSER_{run_type}_experiments_001" # this gets ignorede if you do the sweep anyway
+        # project = f"RUNET_VIEWSER_{run_type}_experiments_001" # this gets ignorede if you do the sweep anyway
         is_sweep = True
     
     # Or not a sweep.
     else:
-        run_type = config['run_type']
         project = f"RUNET_VIEWS_{run_type}_pickeled"
         is_sweep = False
 
     # tell wandb to get started
-    with wandb.init(project=project, entity="nornir", config=config): # project and entity ignored when runnig a sweep
+    with wandb.init(project=project, entity="nornir", config=config): # project and config ignored when runnig a sweep
 
         # NEW ------------------------------------------------------------------
         wandb.define_metric("monthly/out_sample_month")
         wandb.define_metric("monthly/*", step_metric="monthly/out_sample_month")
         # -----------------------------------------------------------------------
                 
+        # access all HPs through wandb.config, so logging matches execution!
+        config = wandb.config
+        run_type = config['run_type']
+
         views_vol = get_data(run_type)
 
         # make the model, data, and optimization problem
         unet, criterion, optimizer = make(config)
         #print(unet)
 
-        # RIGHT NOW YOU JUST TRAIN ON AFRICA
-        # training_loop(config, unet, criterion, optimizer, world_vol) # TRAIN ON WHOLE WORLD
-        training_loop(config, unet, criterion, optimizer, views_vol) # TRAIN ON WHOLE WORLD
 
-
-        #training_loop(config, unet, criterion, optimizer, views_vol) # TRAIN ON WHOLE WORLD
+        training_loop(config, unet, criterion, optimizer, views_vol) 
         print('Done training')
 
-        # GET POSTERIOR CAN GET THE AFRICA ONE
-
-        get_posterior(unet, views_vol, is_sweep, device, n=config.test_samples) # TEST ON AFRICA (VIEWS SUBSET)
-        #end_test(unet, views_vol, config)
+        get_posterior(unet, views_vol, is_sweep, device, n=config.test_samples)
         print('Done testing')
 
         if is_sweep == False: # if it is not a sweep
@@ -386,7 +380,7 @@ if __name__ == "__main__":
         sweep_config = get_swep_config()
         sweep_config['parameters']['run_type'] = {'value' : run_type}
 
-        sweep_id = wandb.sweep(sweep_config, project="RUNET_VIEWSER_experiments_001") # and then you put in the right project name
+        sweep_id = wandb.sweep(sweep_config, project=f"RUNET_VIEWSER_{run_type}_experiments_001") # and then you put in the right project name
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print(device)
