@@ -322,7 +322,7 @@ def get_posterior(unet, views_vol, is_sweep, device, n):
 
 
 
-def model_pipeline(config=None):
+def model_pipeline(config=None, project=None):
 
     # This is a proxy for wheter it is a sweep
     if config == None:
@@ -331,7 +331,6 @@ def model_pipeline(config=None):
     
     # Or not a sweep.
     else:
-        project = f"RUNET_VIEWS_{run_type}_pickeled"
         is_sweep = False
 
     # tell wandb to get started
@@ -377,10 +376,12 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
 
+        project = f"RUNET_VIEWSER_{run_type}_experiments_001"
+
         sweep_config = get_swep_config()
         sweep_config['parameters']['run_type'] = {'value' : run_type}
 
-        sweep_id = wandb.sweep(sweep_config, project=f"RUNET_VIEWSER_{run_type}_experiments_001") # and then you put in the right project name
+        sweep_id = wandb.sweep(sweep_config, project=project) # and then you put in the right project name
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print(device)
@@ -392,6 +393,8 @@ if __name__ == "__main__":
 
         print('One run and pickle!')
 
+        project = f"RUNET_VIEWS_{run_type}_pickeled"
+
         hyperparameters = get_hp_config()
         hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
         hyperparameters['run_type'] = run_type
@@ -401,7 +404,7 @@ if __name__ == "__main__":
 
         start_t = time.time()
 
-        unet = model_pipeline(config = hyperparameters)
+        unet = model_pipeline(config = hyperparameters, project = project)
 
         # print('Saving model...') # this should be an opiton wen not sweeping
 
