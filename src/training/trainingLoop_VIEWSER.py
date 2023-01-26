@@ -233,8 +233,8 @@ def test(model, test_tensor, time_steps, config, device):
             
             # t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             # t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
-            t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W) Input channels done before
-            
+            #t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W) Input channels done before
+            t0 = test_tensor[:, i, :, :, :] 
 
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
@@ -242,6 +242,7 @@ def test(model, test_tensor, time_steps, config, device):
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
+            #Is it this????????????????
             t0 = torch.cat([t0, t0, t0], 1) # VERY MUCH A DEBUG HACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             # issue -> this needs to be three now also....
@@ -266,9 +267,12 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     # test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     
     # could be at get test_tensor...
-    ln_best_sb_idx = 5
-    last_feature_idx = ln_best_sb_idx + config.input_channels
-    test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0)[:, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)# Messy oneliner... 
+    #ln_best_sb_idx = 5
+    #last_feature_idx = ln_best_sb_idx + config.input_channels
+    #test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0)[:, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)# Messy oneliner... 
+
+    test_tensor = get_test_tensor(views_vol, config, device) # better cal thiis evel tensor
+
 
     #test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     

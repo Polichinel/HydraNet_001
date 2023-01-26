@@ -166,6 +166,14 @@ def get_train_tensors(ucpd_vol, config, sample):
     return(train_tensor, meta_tensor_dict)
 
 
+def get_test_tensor(ucpd_vol, config, device):
+
+    ln_best_sb_idx = 5
+    last_feature_idx = ln_best_sb_idx + config.input_channels
+    test_tensor = torch.tensor(ucpd_vol).float().to(device).unsqueeze(dim=0)[:, :, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)# Messy oneliner..
+
+    return test_tensor
+
 
 # OLD
 
