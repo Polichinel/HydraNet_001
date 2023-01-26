@@ -110,9 +110,14 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
 
 
         # NOT SURE IF YOU GET STUF RIGHT HERE!!! Meybe use permute first?
-        t0 = train_tensor[:, i, :, :, :].reshape(1, config.input_channels, window_dim , window_dim).to(device)  # So three channels feauture ''''''''''''''''''''''''''''''''''''''''
-        t1 = train_tensor[:, i+1, :, :, 0].reshape(1, 1 , window_dim, window_dim).to(device) # but one channel (sb) taget. For now. '''''''''''''''''''''''''''''''''''''''''''''''''''''
+        
+        #t0 = train_tensor[:, i, :, :, :].reshape(1, config.input_channels, window_dim , window_dim).to(device)  # So three channels feauture ''''''''''''''''''''''''''''''''''''''''
+        #t1 = train_tensor[:, i+1, :, :, 0].reshape(1, 1 , window_dim, window_dim).to(device) # but one channel (sb) taget. For now. '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+        train_tensor = train_tensor.permute(0,1,4,2,3) # batch, month(gone below), widht, hight, channels -> batch, channels, month(gone below), widht, hight. 
+
+        t0 = train_tensor[:, i, :, :, :]
+        t1 = train_tensor[:, i+1, 0, :, :] # 0 is ln_best_sb
 
         # is this the right dime?
 
