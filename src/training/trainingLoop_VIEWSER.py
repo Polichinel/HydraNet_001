@@ -175,9 +175,9 @@ def training_loop(config, model, criterion, optimizer, views_vol):
         # data augmentation (can be turned of for final experiments)
         
         
-        train_tensor = train_tensor.permute(0,1,4,2,3) # just for debugging
-        train_tensor = transformer(train_tensor) # rotations and flips
-        train_tensor = train_tensor.permute(0,1,2,4,3) # just for debugging
+        #train_tensor = train_tensor.permute(0,1,4,2,3) # just for debugging
+        train_tensor = transformer(train_tensor[:,:,:,:,0]) # rotations and flips
+        #train_tensor = train_tensor.permute(0,1,2,4,3) # just for debugging
 
 
         train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, config, device, unet, sample, plot = False)
