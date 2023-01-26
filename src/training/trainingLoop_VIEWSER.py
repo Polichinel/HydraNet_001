@@ -173,7 +173,13 @@ def training_loop(config, model, criterion, optimizer, views_vol):
         #input_tensor = torch.tensor(train_views_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
         train_tensor, meta_tensor_dict = get_train_tensors(views_vol, config, sample)
         # data augmentation (can be turned of for final experiments)
+        
+        print('here?')
+        
         train_tensor = transformer(train_tensor) # rotations and flips
+
+        print('or?')
+
 
         train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, config, device, unet, sample, plot = False)
 
