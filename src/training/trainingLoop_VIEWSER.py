@@ -176,7 +176,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
         
         
         #train_tensor = train_tensor.permute(0,1,4,2,3) # just for debugging
-        train_tensor = transformer(train_tensor[:,:,:,:,0]) # rotations and flips
+        #train_tensor = transformer(train_tensor[:,:,:,:,0]) # rotations and flips # skip for now...
         #train_tensor = train_tensor.permute(0,1,2,4,3) # just for debugging
 
 
