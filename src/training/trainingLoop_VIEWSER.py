@@ -391,7 +391,7 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
 
-        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_001"
+        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_001_sbnsos"
 
         sweep_config = get_swep_config()
         sweep_config['parameters']['time_steps'] = {'value' : time_steps}
@@ -411,7 +411,7 @@ if __name__ == "__main__":
 
         print('One run and pickle!')
 
-        project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickeled"
+        project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickeled_sbnsos"
 
         hyperparameters = get_hp_config()
         hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
