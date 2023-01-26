@@ -132,7 +132,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
         # data augmentation (can be turned of for final experiments)
         #train_tensor = transformer(train_tensor[:,:,:,:,0]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
 
-        train(model, optimizer, criterion_reg, criterion_class, train_tensor, config, device, sample, plot = False)
+        train(model, optimizer, criterion_reg, criterion_class, train_tensor, config, device)
 
     print('training done...')
 
