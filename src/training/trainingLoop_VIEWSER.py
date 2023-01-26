@@ -85,10 +85,6 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
      
         t0 = train_tensor[:, i, :, :, :] 
 
-        print(f't0: {t0.shape}')
-        print(f'h: {h.shape}')
-
-
         t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim. just to have one output right now..
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         
@@ -352,7 +348,7 @@ if __name__ == "__main__":
 
         print('One run and pickle!')
 
-        project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickeled_sbnsos"
+        project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickled_sbnsos"
 
         hyperparameters = get_hp_config()
         hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.

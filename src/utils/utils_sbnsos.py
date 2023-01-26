@@ -143,37 +143,6 @@ def get_train_tensors(views_vol, sample, config, device):
     last_feature_idx = ln_best_sb_idx + config.input_channels
     train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
-    # # To handle "edge windows"
-    # while True:
-    #     try:
-    #         window_dict = draw_window(views_vol = views_vol, config = config)
-    #         #print(window_dict)
-
-    #         min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
-    #         max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
-    #         min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
-    #         max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
-
-    #         #print(min_lat_indx)
-    #         #print(max_lat_indx)
-    #         #print(min_long_indx)
-    #         #print(max_long_indx)
-
-    #         input_window = train_views_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, :]
-    #         print(input_window.shape)
-            
-    #         ln_best_sb_idx = 5
-    #         last_feature_idx = ln_best_sb_idx + config.input_channels
-    #         train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
-
-    #         train_tensor = train_tensor.reshape(-1, config.input_channels, window_dict['dim'], window_dict['dim']) # Hack that will through an error --- residual from old days make better...
-
-    #         break
-
-    #     except:
-    #         print('Resample edge', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
-    #         continue
-
     print(f'train_tensor: {train_tensor.shape}')  # debug
     return(train_tensor)
 
