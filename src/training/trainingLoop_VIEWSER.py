@@ -174,7 +174,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
         train_tensor, meta_tensor_dict = get_train_tensors(views_vol, config, sample)
         # data augmentation (can be turned of for final experiments)
         
-        print('here?')
+        print(train_tensor.shape)
         
         train_tensor = transformer(train_tensor) # rotations and flips
 
