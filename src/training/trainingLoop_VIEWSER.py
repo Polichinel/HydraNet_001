@@ -117,7 +117,7 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
         train_tensor = train_tensor.permute(0,1,4,2,3).to(device) # batch, month(gone below), widht, hight, channels -> batch, channels, month(gone below), widht, hight. 
 
         t0 = train_tensor[:, i, :, :, :]
-        t1 = train_tensor[:, i+1, 0, :, :] # 0 is ln_best_sb
+        t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim.
 
         # is this the right dime?
 
