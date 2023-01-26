@@ -121,13 +121,17 @@ def get_train_tensors(views_vol, sample, config, device):
     while True:
         try:
             window_dict = draw_window(views_vol = views_vol, config = config)
-            #window_dict = draw_window(vol_t2, 22, sample)
+            print(window_dict)
 
             min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
             max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
             min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
             max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
+            print(min_lat_indx)
+            print(max_lat_indx)
+            print(min_long_indx)
+            print(max_long_indx)
 
             input_window = train_views_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, :]
             print(input_window.shape)
