@@ -117,8 +117,8 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
 
         # train_tensor = train_tensor.permute(0,1,4,2,3).to(device) # batch, month(gone below), widht, hight, channels -> batch, channels, month(gone below), widht, hight. 
 
-        t0 = train_tensor[:, i, :, :, :]
-        t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim.
+        t0 = train_tensor[:, i, :, 0:config.input_channel, :]
+        t1 = train_tensor[:, i+1, 0:config.input_channel, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim.
 
         # print(t0.shape)
         # print(t1.shape)
@@ -214,8 +214,8 @@ def test(model, test_tensor, time_steps, config, device):
     print(f'\t\t\t\t sequence length: {seq_len}', end= '\r')
 
 
-    H = test_tensor.shape[2]
-    W = test_tensor.shape[3]
+    # H = test_tensor.shape[2]
+    # W = test_tensor.shape[3]
 
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
@@ -226,7 +226,11 @@ def test(model, test_tensor, time_steps, config, device):
 
             print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
-            t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            # t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            
+            # t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
@@ -254,7 +258,16 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     print('Testing initiated...')
 
     # SIZE NEED TO CHANGE WITH VIEWS
-    test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    # test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    
+    # could be at get test_tensor...
+    ln_best_sb_idx = 5
+    last_feature_idx = ln_best_sb_idx + config.input_channels
+    test_tensor = torch.tensor(views_vol.unsqueeze(dim=0)[:, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)).float().to(device)
+
+
+    #test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    
     print(test_tensor.shape)
 
     # out_of_sample_tensor = test_tensor[:,-36:,:,:]
