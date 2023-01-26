@@ -130,7 +130,6 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
         train_tensor = get_train_tensors(views_vol, sample, config, device)
         
-        print(f'train_tensor (training_loop): {train_tensor.shape}')
         # data augmentation (can be turned of for final experiments)
         #train_tensor = transformer(train_tensor[:,:,:,:,0]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
 
@@ -180,11 +179,11 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     print('Testing initiated...')
 
     test_tensor = get_test_tensor(views_vol, config, device) # better cal thiis evel tensor
-    print(test_tensor.shape) # RIGHT NOW 1,324,3,180,180)
+    #print(test_tensor.shape) # RIGHT NOW 1,324,3,180,180)
 
 
     out_of_sample_tensor = test_tensor[:,-time_steps:,0,:,:].cpu() # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    print(out_of_sample_tensor.shape) # # RIGHT NOW 1, 48,180,180) so no channel dim
+    #print(out_of_sample_tensor.shape) # # RIGHT NOW 1, 48,180,180) so no channel dim
 
     posterior_list = []
     posterior_list_class = []
