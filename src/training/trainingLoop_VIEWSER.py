@@ -223,6 +223,10 @@ def test(model, test_tensor, time_steps, config, device):
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
+            t0 = torch.cat([t0, t0, t0], 1) # VERY MUCH A DEBUG HACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            # issue -> this needs to be three now also....
+
             out_of_sampel = 1
 
         #t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
