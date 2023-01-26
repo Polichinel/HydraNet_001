@@ -130,7 +130,7 @@ def get_train_tensors(views_vol, sample, config, device):
 
 
             input_window = train_views_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, :]
-
+            print(input_window.shape)
             
             break
 
