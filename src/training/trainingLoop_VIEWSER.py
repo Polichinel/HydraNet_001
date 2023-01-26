@@ -75,7 +75,7 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
     model.train()  # train mode
     
     seq_len = train_tensor.shape[1] 
-    window_dim = train_tensor.shape[2]
+    window_dim = train_tensor.shape[-1] # the last dim should always be a spatial dim (H or W)
     
     # initialize a hidden state
     h = model.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
@@ -86,7 +86,7 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
         t0 = train_tensor[:, i, :, :, :] 
 
         print(f't0: {t0.shape}')
-        print(f't0: {h.shape}')
+        print(f'h: {h.shape}')
 
 
         t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim. just to have one output right now..
