@@ -216,7 +216,7 @@ def test(model, test_tensor, time_steps, config, device):
 
             print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
-            t0 = test_tensor[:, i, :, :, :].reshape(1, 1 , H , W, config.input_channels).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
@@ -240,7 +240,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     print('Testing initiated...')
 
     # SIZE NEED TO CHANGE WITH VIEWS
-    test_tensor = torch.tensor(views_vol[:, :, : , 5].reshape(1, -1, 180, 180)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     print(test_tensor.shape)
 
     # out_of_sample_tensor = test_tensor[:,-36:,:,:]
