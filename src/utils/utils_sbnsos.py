@@ -63,7 +63,7 @@ def standard(x, noise = False):
     return(x_standard)
 
 
-def draw_window(views_vol, min_events, sample):
+def draw_window(views_vol, config):
 
     """Draw/sample a window/patch from the traning tensor.
     The dimensions of the windows are HxWxD, 
@@ -71,7 +71,11 @@ def draw_window(views_vol, min_events, sample):
     The windows are constrained to be sampled from an area with some
     minimum number of log_best events (min_events)."""
 
-    views_vol_count = np.count_nonzero(views_vol[:,:,:,5:8], axis = 0).sum(axis=2) #for either sb, ns, os
+    ln_best_sb_idx = 5
+    last_feature_idx = ln_best_sb_idx + config.input_channels
+    min_events = config.min_events
+
+    views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
 
     # number of events so >= 1 or > 0 is the same as np.nonzero
     min_events_index = np.where(views_vol_count >= min_events) 
@@ -116,16 +120,14 @@ def get_train_tensors(views_vol, sample, config, device):
     # To handle "edge windows"
     while True:
         try:
-            window_dict = draw_window(views_vol = views_vol, min_events = config.min_events, sample= sample)
+            window_dict = draw_window(views_vol = views_vol, config = config)
             #window_dict = draw_window(vol_t2, 22, sample)
 
             min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
             max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
             min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
             max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
-                
-            ln_best_sb_idx = 5
-            last_feature_idx = ln_best_sb_idx + config.input_channels
+
 
             input_window = train_views_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, :]
 
@@ -136,7 +138,9 @@ def get_train_tensors(views_vol, sample, config, device):
             print('Resample edge', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
             continue
 
-    train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0)[:, :, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)
+    ln_best_sb_idx = 5
+    last_feature_idx = ln_best_sb_idx + config.input_channels
+    train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
     print(f'train_tensor: {train_tensor.shape}')  # debug
     return(train_tensor)
@@ -146,7 +150,7 @@ def get_test_tensor(views_vol, config, device):
 
     ln_best_sb_idx = 5
     last_feature_idx = ln_best_sb_idx + config.input_channels
-    test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0)[:, :, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)
+    test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
     print(f'test_tensor: {test_tensor.shape}') # debug
     return test_tensor
