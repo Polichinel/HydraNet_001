@@ -265,8 +265,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     # could be at get test_tensor...
     ln_best_sb_idx = 5
     last_feature_idx = ln_best_sb_idx + config.input_channels
-    test_tensor = torch.tensor(views_vol.unsqueeze(dim=0)[:, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)).float().to(device)
-
+    test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0)[:, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)# Messy oneliner... 
 
     #test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     
