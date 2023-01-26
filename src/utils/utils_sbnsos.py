@@ -140,7 +140,7 @@ def get_train_tensors(views_vol, sample, config, device):
             last_feature_idx = ln_best_sb_idx + config.input_channels
             train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
-            train_tensor = train_tensor.reshape(1, window_dict['dim'], window_dict['dim'], -1) # Hack that will through an error --- residual from old days make better...
+            train_tensor = train_tensor.reshape(1, config.input_channels, window_dict['dim'], window_dict['dim']) # Hack that will through an error --- residual from old days make better...
 
             break
 
