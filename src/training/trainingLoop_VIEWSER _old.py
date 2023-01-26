@@ -41,6 +41,14 @@ def choose_loss(config):
         criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
         criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
 
+        # But scaling does a big difference so woth trying 0.3-0.7
+        # set higer reach: ex 64
+        # set highet scaling = 0.9
+        # Scaling 0.1 worse, scaking 0.9 worse
+        # try p = 1
+        # Needs to set reach: "[...] if reach is None (balanced Optimal Transport), the resulting routine will expect measures whose total masses are equal with each other."
+        # Needs to set backend explicitly: online or multiscale
+
     elif config.loss == 'b':
         PATH = 'unet.pth'
         criterion_reg = nn.MSELoss().to(device) # works
@@ -56,15 +64,21 @@ def choose_loss(config):
 def make(config):
 
     unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
+
+    #optimizer = torch.optim.Adam(unet.parameters(), lr = config.learning_rate, weight_decay = config.weight_decay)
     optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
     return(unet, criterion, optimizer) #, dataloaders, dataset_sizes)
 
 
 
+# ----------------------------------------------------------------------------------------------------------------------------------
 
-def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config, device):
+
+
+def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, config, device, sample, plot = False):
     
     wandb.watch(model, [criterion_reg, criterion_class], log= None, log_freq=2048)
 
@@ -72,33 +86,77 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
     avg_loss_class_list = []
     avg_loss_list = []
 
+    #pred_list = []
+    #observed_list = []
+
     model.train()  # train mode
     
     seq_len = train_tensor.shape[1] 
     window_dim = train_tensor.shape[2]
     
     # initialize a hidden state
+#    h = unet.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
     h = model.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
-    
+
+    train_tensor = train_tensor.permute(0,1,4,2,3).to(device)
+    #for i in range(seq_len-1): # so your sequnce is the full time len - last month.
     for i in range(seq_len-1): # so your sequnce is the full time len - last month.
         print(f'\t\t month: {i+1}/{seq_len}...', end='\r')
      
-        t0 = train_tensor[:, i, :, :, :] 
-        t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim. just to have one output right now..
+
+        # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
+        # ACTUALLY I DO NOT THINK YOU DO HERE!!! IT IS ONLY FOR TESTING...... STOP THAT
+        # t0 = train_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
+        # t1 = train_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
+
+
+        # NOT SURE IF YOU GET STUF RIGHT HERE!!! Meybe use permute first?
+        
+        #t0 = train_tensor[:, i, :, :, :].reshape(1, config.input_channels, window_dim , window_dim).to(device)  # So three channels feauture ''''''''''''''''''''''''''''''''''''''''
+        #t1 = train_tensor[:, i+1, :, :, 0].reshape(1, 1 , window_dim, window_dim).to(device) # but one channel (sb) taget. For now. '''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+        # train_tensor = train_tensor.permute(0,1,4,2,3).to(device) # batch, month(gone below), widht, hight, channels -> batch, channels, month(gone below), widht, hight. 
+
+        #t0 = train_tensor[:, i, 0:config.input_channels, :, :]
+        t0 = train_tensor[:, i, :, :, :] # the three channels are already defined in get_train
+        #t1 = train_tensor[:, i+1, 0:config.input_channels, :, :] # for when you do it right...
+        t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim.
+
+
+        #print(f'x:{t0.shape}')
+        #print(f'y:{t1.shape}')
+
+
+        # is this the right dime?
+
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         
+        # UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True),rather than torch.tensor(sourceTensor).
+
         # forward
         t1_pred, t1_pred_class, h = model(t0, h.detach())
 
+        # debug
+        # print(t1_pred_class.dtype)
+        # print(t1_binary.dtype)
+
+        # backwards    
         optimizer.zero_grad()
 
-        # forward-pass
-        loss_reg = criterion_reg(t1_pred, t1)
-        loss_class = criterion_class(t1_pred_class, t1_binary)  
+
+        # SHOULD THIS BE criterion_reg(t1_pred, t1) !!!!!?
+        # loss_reg = criterion_reg(t1, t1_pred)  # forward-pass 
+        loss_reg = criterion_reg(t1_pred, t1)  # forward-pass. # correct and working!!!
+
+        # NEEDS DEBUGGING
+#        loss_class = criterion_class(t1_binary, t1_pred_class)  # forward-pass
+        loss_class = criterion_class(t1_pred_class, t1_binary)  # forward-pass # correct and working!!!
+        # ---------------------------------------------------
+
         loss = loss_reg + loss_class # naive no weights und so weider
 
-        # backward-pass
-        loss.backward()  
+
+        loss.backward()  # backward-pass
         optimizer.step()  # update weights
 
         avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
@@ -127,61 +185,104 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
         print(f'Sample: {sample+1}/{config.samples}', end = '\r')
 
-        train_tensor = get_train_tensors(views_vol, sample, config, device)
-        
+        #input_tensor = torch.tensor(train_views_vol[:, sub_images_y[i][0]:sub_images_y[i][1], sub_images_x[i][0]:sub_images_x[i][1], 4].reshape(1, seq_len, dim, dim)).float() #Why not do this in funciton?
+        train_tensor, meta_tensor_dict = get_train_tensors(views_vol, config, sample)
         # data augmentation (can be turned of for final experiments)
+        
+        
+        #train_tensor = train_tensor.permute(0,1,4,2,3) # just for debugging
         #train_tensor = transformer(train_tensor[:,:,:,:,0]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
+        #train_tensor = train_tensor.permute(0,1,2,4,3) # just for debugging
 
-        train(model, optimizer, criterion_reg, criterion_class, train_tensor, config, device, sample, plot = False)
+
+        train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, config, device, sample, plot = False)
+
 
     print('training done...')
 
 
-
-def test(model, test_tensor, time_steps, config, device): # should be called eval/validation
+# these need to stay, but it must be validatiion nad not test as such.
+def test(model, test_tensor, time_steps, config, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
 
     # wait until you know if this work as usually
     pred_np_list = []
     pred_class_np_list = []
+    out_of_sampel = 0
 
+    #!!!!!!!
     h_tt = model.init_hTtime(hidden_channels = model.base, H = 180, W  = 180, test_tensor = test_tensor).float().to(device) # coul auto the...
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
     print(f'\t\t\t\t sequence length: {seq_len}', end= '\r')
 
 
+    # H = test_tensor.shape[2]
+    # W = test_tensor.shape[3]
+
     for i in range(seq_len-1): # need to get hidden state... You are predicting one step ahead so the -1
 
+        # HERE - IF WE GO BEYOUND -36 (or time steps) THEN USE t1_pred AS t0
+
+        # if i < seq_len-1-36: # take form the test set
         if i < seq_len-1-time_steps: # take form the test set
 
             print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
+            # t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            
+            # t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            # t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            #t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W) Input channels done before
             t0 = test_tensor[:, i, :, :, :] 
+
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
+
+            #Is it this????????????????
             t0 = torch.cat([t0, t0, t0], 1) # VERY MUCH A DEBUG HACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            # issue -> this needs to be three now also....
+
+            out_of_sampel = 1
+
+        #t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         #if out_of_sampel == 1:
             t1_pred, t1_pred_class, _ = model(t0, h_tt)
-            
             pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze())
             pred_class_np_list.append(t1_pred_class.cpu().detach().numpy().squeeze())
-            
+            t1_pred, t1_pred_class, _ = model(t0, h_tt)
+
     return pred_np_list, pred_class_np_list
 
 
 def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, device, n):
     print('Testing initiated...')
 
+    # SIZE NEED TO CHANGE WITH VIEWS
+    # test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    
+    # could be at get test_tensor...
+    #ln_best_sb_idx = 5
+    #last_feature_idx = ln_best_sb_idx + config.input_channels
+    #test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0)[:, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)# Messy oneliner... 
+
     test_tensor = get_test_tensor(views_vol, config, device) # better cal thiis evel tensor
+
+
+    #test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
+    
     print(test_tensor.shape) # RIGHT NOW 1,324,3,180,180)
 
-
+    # out_of_sample_tensor = test_tensor[:,-36:,:,:]
+    # out_of_sample_tensor = test_tensor[:,-time_steps:,:,:]
     out_of_sample_tensor = test_tensor[:,-time_steps:,0,:,:].cpu() # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ 
+
     print(out_of_sample_tensor.shape) # # RIGHT NOW 1, 48,180,180) so no channel dim
 
     posterior_list = []
@@ -223,7 +324,6 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
 
         y_score = mean_array[i].reshape(-1) # make it 1d  # nu 180x180 
         y_score_prob = mean_class_array[i].reshape(-1) # nu 180x180 
-        
         # do not really know what to do with these yet.
         y_var = std_array[i].reshape(-1)  # nu 180x180  
         y_var_prob = std_class_array[i].reshape(-1)  # nu 180x180 
@@ -276,6 +376,15 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     wandb.log({f"{time_steps}month_brier_score_loss":np.mean(brier_list)})
 
 def model_pipeline(config=None, project=None):
+
+    # # This is a proxy for wheter it is a sweep
+    # if config == None:
+    #     # project = f"RUNET_VIEWSER_{run_type}_experiments_001" # this gets ignorede if you do the sweep anyway
+    #     is_sweep = True
+    
+    # # Or not a sweep.
+    # else:
+    #     is_sweep = False
 
     # tell wandb to get started
     with wandb.init(project=project, entity="nornir", config=config): # project and config ignored when runnig a sweep

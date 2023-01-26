@@ -14,13 +14,7 @@ import wandb
 
 def get_data(run_type):
 
-    """Function to load the volumes of conflict history. Currently load two volumes. 
-    One which is based of the views 2019 replication data (views_monthly_REP_vol.pkl).
-    And one based direct of UCDP and PRIO data, covering the whole globe (views_world_monthly_vol.pkl).
-    The volumes should be changes to be based on data from viewser."""
-
     # Data
-    
     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
 
     # The viewser data
@@ -69,7 +63,7 @@ def standard(x, noise = False):
     return(x_standard)
 
 
-def draw_window(ucpd_vol, min_events, sample):
+def draw_window(views_vol, min_events, sample):
 
     """Draw/sample a window/patch from the traning tensor.
     The dimensions of the windows are HxWxD, 
@@ -77,13 +71,10 @@ def draw_window(ucpd_vol, min_events, sample):
     The windows are constrained to be sampled from an area with some
     minimum number of log_best events (min_events)."""
 
-    # with coordinates in vol, log best was 7 #CHANGED FOR VIEWSER
-#    ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,5], axis = 0) #CHANGED FOR VIEWSER
-    ucpd_vol_count = np.count_nonzero(ucpd_vol[:,:,:,5:8], axis = 0).sum(axis=2) #for either sb, ns, os
-
+    views_vol_count = np.count_nonzero(views_vol[:,:,:,5:8], axis = 0).sum(axis=2) #for either sb, ns, os
 
     # number of events so >= 1 or > 0 is the same as np.nonzero
-    min_events_index = np.where(ucpd_vol_count >= min_events) 
+    min_events_index = np.where(views_vol_count >= min_events) 
 
     min_events_row = min_events_index[0]
     min_events_col = min_events_index[1]
@@ -118,17 +109,14 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
 
 
 
-def get_train_tensors(ucpd_vol, config, sample):
+def get_train_tensors(views_vol, sample, config, device):
 
-    train_ucpd_vol = ucpd_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
-
-    # The lenght of a whole time lime.
-    seq_len = train_ucpd_vol.shape[0]
+    train_views_vol = views_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
 
     # To handle "edge windows"
     while True:
         try:
-            window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = config.min_events, sample= sample)
+            window_dict = draw_window(views_vol = views_vol, min_events = config.min_events, sample= sample)
             #window_dict = draw_window(vol_t2, 22, sample)
 
             min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
@@ -139,84 +127,26 @@ def get_train_tensors(ucpd_vol, config, sample):
             ln_best_sb_idx = 5
             last_feature_idx = ln_best_sb_idx + config.input_channels
 
-            # MAYBE CHANGE TO PERMUTE AND UNSQUEEZE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, ln_best_sb_idx:last_feature_idx].reshape(1, seq_len, window_dict['dim'], window_dict['dim'], config.input_channels)
-            #input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 5:8].reshape(1, seq_len, window_dict['dim'], window_dict['dim'], 3)
+            input_window = train_views_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, :]
+
+            
             break
 
         except:
             print('Resample edge', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
             continue
 
-    # sinkhorn stuff...        
-    # 0 since this is constant across years. 1 dim for batch and one dim for time.
-    # gids = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 0].reshape(1, 1, window_dict['dim'], window_dict['dim'])
-    # longitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 1].reshape(1, 1, window_dict['dim'], window_dict['dim'])
-    # latitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 2].reshape(1, 1, window_dict['dim'], window_dict['dim']) 
+    train_tensor = (input_window).float().to(device).unsqueeze(dim=0)[:, :, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)
 
-    # gids_tensor = torch.tensor(gids, dtype=torch.int) # must be int. You don't use it any more.
-    # longitudes_tensor = torch.tensor(longitudes, dtype=torch.float)
-    # latitudes_tensor = torch.tensor(latitudes, dtype=torch.float)
-
-    #meta_tensor_dict = {'gids' : gids_tensor, 'longitudes' : longitudes_tensor, 'latitudes' : latitudes_tensor }
-    
-    meta_tensor_dict = {} # right now just a place holder.. Delete if you end up not using it.
-    train_tensor = torch.tensor(input_window).float()
-
-    return(train_tensor, meta_tensor_dict)
+    print(f'train_tensor: {train_tensor.shape}')  # debug
+    return(train_tensor)
 
 
-def get_test_tensor(ucpd_vol, config, device):
+def get_test_tensor(views_vol, config, device):
 
     ln_best_sb_idx = 5
     last_feature_idx = ln_best_sb_idx + config.input_channels
-    test_tensor = torch.tensor(ucpd_vol).float().to(device).unsqueeze(dim=0)[:, :, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)# Messy oneliner..
+    test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0)[:, :, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)
 
+    print(f'test_tensor: {test_tensor.shape}') # debug
     return test_tensor
-
-
-# OLD
-
-# def get_train_tensors(ucpd_vol, config, sample):
-  
-#     # This need to change to be validation, but it depends on the viewser setup
-#     # train_ucpd_vol = ucpd_vol[:-36] # not tha last 36 months - these ar for test set
-#     train_ucpd_vol = ucpd_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
-
-
-#     # The lenght of a whole time lime.
-#     seq_len = train_ucpd_vol.shape[0]
-
-#     # To handle "edge windows"
-#     while True:
-#         try:
-#             window_dict = draw_window(ucpd_vol = ucpd_vol, min_events = config.min_events, sample= sample)
-            
-#             min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
-#             max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
-#             min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
-#             max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
-
-#             #HBL = np.random.randint(7,10,1).item()#CHANGED FOR VIEWSER
-#             HBL = 5 # right now just the log_best #CHANGED FOR VIEWSER
-
-#             input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, HBL].reshape(1, seq_len, window_dict['dim'], window_dict['dim'])
-#             break
-
-#         except:
-#             print('Resample edge', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
-#             continue
-
-#     # 0 since this is constant across years. 1 dim for batch and one dim for time.
-#     gids = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 0].reshape(1, 1, window_dict['dim'], window_dict['dim'])
-#     longitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 1].reshape(1, 1, window_dict['dim'], window_dict['dim'])
-#     latitudes = train_ucpd_vol[0 , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 2].reshape(1, 1, window_dict['dim'], window_dict['dim']) 
-
-#     gids_tensor = torch.tensor(gids, dtype=torch.int) # must be int. You don't use it any more.
-#     longitudes_tensor = torch.tensor(longitudes, dtype=torch.float)
-#     latitudes_tensor = torch.tensor(latitudes, dtype=torch.float)
-
-#     meta_tensor_dict = {'gids' : gids_tensor, 'longitudes' : longitudes_tensor, 'latitudes' : latitudes_tensor }
-#     train_tensor = torch.tensor(input_window).float()
-
-#     return(train_tensor, meta_tensor_dict)
