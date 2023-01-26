@@ -21,12 +21,15 @@ import wandb
 
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
-sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
+# sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils_sbnsos")
+
 
 #from trainingLoopUtils import *
 # from testLoopUtils import *
 from recurrentUnet import UNet
-from utils import *
+#from utils import *
+from utils_sbnsos import *
 from swep_config import *
 from hyperparameters_config import *
 
@@ -75,7 +78,7 @@ def make(config):
 
 
 
-def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, device, unet, sample, plot = False):
+def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, config, device, unet, sample, plot = False):
     
     wandb.watch(unet, [criterion_reg, criterion_class], log= None, log_freq=2048)
 
@@ -102,8 +105,12 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
 
         # AGIAN YOU DO PUT THE INPUT TENSOR TO DEVICE HERE SO YOU MIGHT NOT NEED TO DO THE WHOLE VOL BEFORE!!!!!!!!! 
         # ACTUALLY I DO NOT THINK YOU DO HERE!!! IT IS ONLY FOR TESTING...... STOP THAT
-        t0 = train_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
-        t1 = train_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
+        # t0 = train_tensor[:, i, :, :].reshape(1, 1 , window_dim , window_dim).to(device)  # this is the real x and y
+        # t1 = train_tensor[:, i+1, :, :].reshape(1, 1 , window_dim, window_dim).to(device)
+
+        t0 = train_tensor[:, i, :, :, :].reshape(1, 1 , window_dim , window_dim, config.input_channels).to(device)  # So three channels feauture ''''''''''''''''''''''''''''''''''''''''
+        t1 = train_tensor[:, i+1, :, :, 0].reshape(1, 1 , window_dim, window_dim).to(device) # but one channel (sb) taget. For now. '''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 
         # is this the right dime?
 
@@ -147,7 +154,7 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 
-def training_loop(config, unet, criterion, optimizer, views_vol):
+def training_loop(config, model, criterion, optimizer, views_vol):
 
 
     # add spatail transformer
@@ -168,7 +175,7 @@ def training_loop(config, unet, criterion, optimizer, views_vol):
         # data augmentation (can be turned of for final experiments)
         train_tensor = transformer(train_tensor) # rotations and flips
 
-        train(unet, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, device, unet, sample, plot = False)
+        train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, config, device, unet, sample, plot = False)
 
 
     print('training done...')
@@ -222,7 +229,7 @@ def test(model, test_tensor, time_steps, device):
     return pred_np_list, pred_class_np_list
 
 
-def get_posterior(unet, views_vol, time_steps, run_type, is_sweep, device, n):
+def get_posterior(model, views_vol, time_steps, run_type, is_sweep, device, n):
     print('Testing initiated...')
 
     # SIZE NEED TO CHANGE WITH VIEWS
@@ -238,7 +245,7 @@ def get_posterior(unet, views_vol, time_steps, run_type, is_sweep, device, n):
     posterior_list_class = []
 
     for i in range(n):
-        pred_np_list, pred_class_np_list = test(unet, test_tensor, time_steps, device) # --------------------------------------------------------------
+        pred_np_list, pred_class_np_list = test(model, test_tensor, time_steps, device) # --------------------------------------------------------------
         posterior_list.append(pred_np_list)
         posterior_list_class.append(pred_class_np_list)
 
