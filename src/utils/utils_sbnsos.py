@@ -136,7 +136,7 @@ def get_train_tensors(views_vol, sample, config, device):
             print('Resample edge', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
             continue
 
-    train_tensor = (input_window).float().to(device).unsqueeze(dim=0)[:, :, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)
+    train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0)[:, :, :, : , ln_best_sb_idx:last_feature_idx].permute(0,1,4,2,3)
 
     print(f'train_tensor: {train_tensor.shape}')  # debug
     return(train_tensor)
