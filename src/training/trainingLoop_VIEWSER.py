@@ -249,7 +249,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
 
     # out_of_sample_tensor = test_tensor[:,-36:,:,:]
     # out_of_sample_tensor = test_tensor[:,-time_steps:,:,:]
-    out_of_sample_tensor = test_tensor[:,-time_steps:,:,0] # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    out_of_sample_tensor = test_tensor[:,-time_steps:,:,:,0] # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  
 
     print(out_of_sample_tensor.shape)
