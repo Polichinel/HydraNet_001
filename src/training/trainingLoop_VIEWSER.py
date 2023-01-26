@@ -182,7 +182,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
 
 # these need to stay, but it must be validatiion nad not test as such.
-def test(model, test_tensor, time_steps, device):
+def test(model, test_tensor, time_steps, config, device):
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
 
@@ -209,7 +209,7 @@ def test(model, test_tensor, time_steps, device):
 
             print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
-            t0 = test_tensor[:, i, :, :].reshape(1, 1 , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            t0 = test_tensor[:, i, :, :, :].reshape(1, 1 , H , W, config.input_channels).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
@@ -229,7 +229,7 @@ def test(model, test_tensor, time_steps, device):
     return pred_np_list, pred_class_np_list
 
 
-def get_posterior(model, views_vol, time_steps, run_type, is_sweep, device, n):
+def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, device, n):
     print('Testing initiated...')
 
     # SIZE NEED TO CHANGE WITH VIEWS
@@ -245,7 +245,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, device, n):
     posterior_list_class = []
 
     for i in range(n):
-        pred_np_list, pred_class_np_list = test(model, test_tensor, time_steps, device) # --------------------------------------------------------------
+        pred_np_list, pred_class_np_list = test(model, test_tensor, time_steps, config, device) # --------------------------------------------------------------
         posterior_list.append(pred_np_list)
         posterior_list_class.append(pred_class_np_list)
 
@@ -362,7 +362,7 @@ def model_pipeline(config=None, project=None):
         training_loop(config, unet, criterion, optimizer, views_vol) 
         print('Done training')
 
-        get_posterior(unet, views_vol, time_steps, run_type, is_sweep, device, n=config.test_samples)
+        get_posterior(unet, views_vol, time_steps, run_type, is_sweep, config, device, n=config.test_samples) # actually since you give config now you do not need: time_steps, run_type, is_sweep,
         print('Done testing')
 
         if is_sweep == False: # if it is not a sweep
