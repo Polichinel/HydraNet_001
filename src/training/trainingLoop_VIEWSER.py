@@ -84,6 +84,11 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
         print(f'\t\t month: {i+1}/{seq_len}...', end='\r')
      
         t0 = train_tensor[:, i, :, :, :] 
+
+        print(f't0: {t0.shape}')
+        print(f't0: {h.shape}')
+
+
         t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim. just to have one output right now..
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         
@@ -129,6 +134,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
         train_tensor = get_train_tensors(views_vol, sample, config, device)
         
+        print(f'train_tensor (training_loop): {train_tensor.shape}')
         # data augmentation (can be turned of for final experiments)
         #train_tensor = transformer(train_tensor[:,:,:,:,0]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
 
