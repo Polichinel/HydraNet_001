@@ -174,11 +174,10 @@ def training_loop(config, model, criterion, optimizer, views_vol):
         train_tensor, meta_tensor_dict = get_train_tensors(views_vol, config, sample)
         # data augmentation (can be turned of for final experiments)
         
-        print(train_tensor.shape)
         
+        train_tensor = train_tensor.permute(0,1,4,2,3) # just for debugging
         train_tensor = transformer(train_tensor) # rotations and flips
-
-        print('or?')
+        train_tensor = train_tensor.permute(0,1,2,4,3) # just for debugging
 
 
         train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_tensor_dict, config, device, unet, sample, plot = False)
