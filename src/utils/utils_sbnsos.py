@@ -135,8 +135,12 @@ def get_train_tensors(ucpd_vol, config, sample):
             max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
             min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
             max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
+                
+            ln_best_sb_idx = 5
+            last_feature_idx = ln_best_sb_idx + config.input_channels
 
-            input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 5:8].reshape(1, seq_len, window_dict['dim'], window_dict['dim'], config.input_channels)
+            # MAYBE CHANGE TO PERMUTE AND UNSQUEEZE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, ln_best_sb_idx:last_feature_idx].reshape(1, seq_len, window_dict['dim'], window_dict['dim'], config.input_channels)
             #input_window = train_ucpd_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, 5:8].reshape(1, seq_len, window_dict['dim'], window_dict['dim'], 3)
             break
 

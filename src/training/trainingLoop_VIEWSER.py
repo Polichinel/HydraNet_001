@@ -117,7 +117,8 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
 
         # train_tensor = train_tensor.permute(0,1,4,2,3).to(device) # batch, month(gone below), widht, hight, channels -> batch, channels, month(gone below), widht, hight. 
 
-        t0 = train_tensor[:, i, 0:config.input_channels, :, :]
+        #t0 = train_tensor[:, i, 0:config.input_channels, :, :]
+        t0 = train_tensor[:, i, :, :, :] # the three channels are already defined in get_train
         #t1 = train_tensor[:, i+1, 0:config.input_channels, :, :] # for when you do it right...
         t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim.
 
@@ -231,8 +232,10 @@ def test(model, test_tensor, time_steps, config, device):
             # t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
             
             # t0 = test_tensor[:, i, :, :, :].reshape(1,  config.input_channels , H , W).to(device)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
-            t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            # t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W)  # YOU ACTUALLY PUT IT TO DEVICE HERE SO YOU CAN JUST NOT DO IT EARLIER FOR THE FULL VOL!!!!!!!!!!!!!!!!!!!!!
+            t0 = test_tensor[:, i, :, :, :]  #.reshape(1,  config.input_channels , H , W) Input channels done before
             
+
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
@@ -273,7 +276,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
 
     # out_of_sample_tensor = test_tensor[:,-36:,:,:]
     # out_of_sample_tensor = test_tensor[:,-time_steps:,:,:]
-    out_of_sample_tensor = test_tensor[:,-time_steps:,:,:,0] # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    out_of_sample_tensor = test_tensor[:,-time_steps:,0,:,:] # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  
 
     print(out_of_sample_tensor.shape)
