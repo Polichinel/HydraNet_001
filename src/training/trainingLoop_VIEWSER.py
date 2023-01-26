@@ -223,7 +223,7 @@ def test(model, test_tensor, time_steps, config, device):
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
-            t0 = torch.cat([t0, t0, t0], 1) # VERY MUCH A DEBUG HACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            t0 = torch.cat([t0, t0, t0], 1) # VERY MUCH A DEBUG HACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             # issue -> this needs to be three now also....
 
@@ -248,7 +248,9 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     print(test_tensor.shape)
 
     # out_of_sample_tensor = test_tensor[:,-36:,:,:]
-    out_of_sample_tensor = test_tensor[:,-time_steps:,:,:]
+    # out_of_sample_tensor = test_tensor[:,-time_steps:,:,:]
+    out_of_sample_tensor = test_tensor[:,-time_steps:,:,0] # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ 
 
     print(out_of_sample_tensor.shape)
 
