@@ -276,14 +276,14 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
 
     #test_tensor = torch.tensor(views_vol[:, :, : , 5:8].reshape(1, -1, 180, 180, config.input_channels)).float()#  nu 180x180     175, 184 views dim .to(device) #log best is 7 not 4 when you do sinkhorn or just have coords.
     
-    print(test_tensor.shape)
+    print(test_tensor.shape) # RIGHT NOW 1,324,3,180,180)
 
     # out_of_sample_tensor = test_tensor[:,-36:,:,:]
     # out_of_sample_tensor = test_tensor[:,-time_steps:,:,:]
-    out_of_sample_tensor = test_tensor[:,-time_steps:,0,:,:] # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    out_of_sample_tensor = test_tensor[:,-time_steps:,0,:,:].cpu() # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  
 
-    print(out_of_sample_tensor.shape)
+    print(out_of_sample_tensor.shape) # # RIGHT NOW 1, 48,180,180) so no channel dim
 
     posterior_list = []
     posterior_list_class = []
