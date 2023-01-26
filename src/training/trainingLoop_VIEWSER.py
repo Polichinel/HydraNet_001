@@ -22,7 +22,7 @@ import wandb
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
 # sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
-sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils_sbnsos")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
 
 #from trainingLoopUtils import *
