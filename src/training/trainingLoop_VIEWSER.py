@@ -122,8 +122,8 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, meta_t
         t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim.
 
 
-        # print(t0.shape)
-        # print(t1.shape)
+        print(f'x:{t0.shape}')
+        print(f'y:{t1.shape}')
 
 
         # is this the right dime?
