@@ -182,8 +182,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     #print(test_tensor.shape) # RIGHT NOW 1,324,3,180,180)
 
 
-    out_of_sample_tensor = test_tensor[:,-time_steps:,0,:,:].cpu().numpy() # not really a tensor now.. # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    #print(out_of_sample_tensor.shape) # # RIGHT NOW 1, 48,180,180) so no channel dim
+    out_of_sample_vol = test_tensor[:,-time_steps:,0,:,:].cpu().numpy() # not really a tensor now.. # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     posterior_list = []
     posterior_list_class = []
@@ -198,7 +197,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
 
     if is_sweep == False:
         dump_location = '/home/projects/ku_00017/data/generated/conflictNet/' 
-        posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_tensor' : out_of_sample_tensor}
+        posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_vol' : out_of_sample_vol}
         with open(f'{dump_location}posterior_dict_{time_steps}_{run_type}.pkl', 'wb') as file: 
             pickle.dump(posterior_dict, file) 
 
@@ -229,7 +228,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
         y_var = std_array[i].reshape(-1)  # nu 180x180  
         y_var_prob = std_class_array[i].reshape(-1)  # nu 180x180 
 
-        y_true = out_of_sample_tensor[:,i].reshape(-1)  # nu 180x180 . dim 0 is time
+        y_true = out_of_sample_vol[:,i].reshape(-1)  # nu 180x180 . dim 0 is time
         y_true_binary = (y_true > 0) * 1
 
 
