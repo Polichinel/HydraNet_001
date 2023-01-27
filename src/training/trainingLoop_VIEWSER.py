@@ -62,8 +62,6 @@ def make(config):
     return(unet, criterion, optimizer) #, dataloaders, dataset_sizes)
 
 
-
-
 def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config, device):
     
     wandb.watch(model, [criterion_reg, criterion_class], log= None, log_freq=2048)
@@ -85,7 +83,8 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
      
         t0 = train_tensor[:, i, :, :, :] 
 
-        t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim. just to have one output right now..
+        #t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim. just to have one output right now.
+        t1 = train_tensor[:, i+1, :, :, :]
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         
         # forward
@@ -109,11 +108,7 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
     train_log(avg_loss_reg_list, avg_loss_class_list, avg_loss_list)
 
 
-# ----------------------------------------------------------------------------------------------------------------------------------
-
-
 def training_loop(config, model, criterion, optimizer, views_vol):
-
 
     # add spatail transformer
     # transformer = transforms.Compose([transforms.RandomRotation((0,360)), transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
