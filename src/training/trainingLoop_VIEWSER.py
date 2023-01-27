@@ -138,9 +138,9 @@ def training_loop(config, model, criterion, optimizer, views_vol):
         W =  train_tensor.shape[4] # width
 
         # data augmentation (can be turned of for final experiments)        
-        train_tensor = train_tensor.reshape(N, C*D, H, W)
-        train_tensor = transformer(train_tensor[:,:,:,:]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
-        train_tensor = train_tensor.reshape(N, C, D, H, W)
+        #train_tensor = train_tensor.reshape(N, C*D, H, W)
+        #train_tensor = transformer(train_tensor[:,:,:,:]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
+        #train_tensor = train_tensor.reshape(N, C, D, H, W)
 
         # Should be an assert thing here..
 
