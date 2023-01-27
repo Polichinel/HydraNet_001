@@ -87,12 +87,12 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
         t1 = train_tensor[:, i+1, :, :, :]
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         
-        print(t1.shape) # debug
+        #print(t1.shape) # debug
 
         # forward
         t1_pred, t1_pred_class, h = model(t0, h.detach())
 
-        print(t1_pred.shape) # debug
+        #print(t1_pred.shape) # debug
 
 
         optimizer.zero_grad()
