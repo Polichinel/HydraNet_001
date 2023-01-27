@@ -9,7 +9,7 @@ def get_hp_config():
     'learning_rate' :  0.00005,
     "weight_decay" :  0.1,
     'input_channels' : 3,
-    "output_channels" : 1,
+    "output_channels" : 3,
     "loss": 'b', 
     "test_samples": 128}
 
