@@ -19,7 +19,7 @@ def get_swep_config():
         'learning_rate': {'values' : [0.00001, 0.00005]},
         "weight_decay" : {'values' : [0.1, 0.05]},
         'input_channels' : {'value' : 3},
-        'output_channels': {'value' : 1},
+        'output_channels': {'value' : 3},
         'loss' : { 'value' : 'b'},
         'test_samples': { 'value' : 128}       
         }
