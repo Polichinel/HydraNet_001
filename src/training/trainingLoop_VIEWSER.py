@@ -130,8 +130,11 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
         train_tensor = get_train_tensors(views_vol, sample, config, device)
         
-        # data augmentation (can be turned of for final experiments)
-        #train_tensor = transformer(train_tensor[:,:,:,:,0]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
+        # data augmentation (can be turned of for final experiments)        
+        train_tensor = train_tensor.reshape(1,-1,180,180)
+        train_tensor = transformer(train_tensor[:,:,:,:]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
+        train_tensor = train_tensor.reshape(1,-1, config.input_channels, 180, 180)
+
 
         train(model, optimizer, criterion_reg, criterion_class, train_tensor, config, device)
 
