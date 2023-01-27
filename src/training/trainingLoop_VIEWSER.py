@@ -182,7 +182,7 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
     #print(test_tensor.shape) # RIGHT NOW 1,324,3,180,180)
 
 
-    out_of_sample_tensor = test_tensor[:,-time_steps:,0,:,:].cpu() # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    out_of_sample_tensor = test_tensor[:,-time_steps:,0,:,:].cpu().numpy() # not really a tensor now.. # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     #print(out_of_sample_tensor.shape) # # RIGHT NOW 1, 48,180,180) so no channel dim
 
     posterior_list = []
