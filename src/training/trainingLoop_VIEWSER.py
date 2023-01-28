@@ -171,7 +171,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
         # Should be an assert thing here..
 
-        train(model, optimizer, criterion_reg, criterion_class, train_tensor, multitaskloss_instance, config, device)
+        train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instance, train_tensor, config, device)
 
     print('training done...')
 
