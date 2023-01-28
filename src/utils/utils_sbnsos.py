@@ -9,6 +9,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
 
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import brier_score_loss
+
 import wandb
 
 
@@ -155,30 +161,32 @@ def get_test_tensor(views_vol, config, device):
     return test_tensor
 
 
+def get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, out_of_sample_vol, config):
 
+    log_dict = {}
+    log_dict["monthly/out_sample_month"] = i
 
-# def get_log_dict():
+    for j in range(config.output_channels):
 
-#         y_score = mean_array[i].reshape(-1) # make it 1d  # nu 180x180 
-#         y_score_prob = mean_class_array[i].reshape(-1) # nu 180x180 
+        y_score = mean_array[i,j,:,:].reshape(-1) # make it 1d  # nu 180x180 
+        y_score_prob = mean_class_array[i,j,:,:].reshape(-1) # nu 180x180 
         
-#         # do not really know what to do with these yet.
-#         y_var = std_array[i].reshape(-1)  # nu 180x180  
-#         y_var_prob = std_class_array[i].reshape(-1)  # nu 180x180 
+        # do not really know what to do with these yet.
+        y_var = std_array[i,j,:,:].reshape(-1)  # nu 180x180  
+        y_var_prob = std_class_array[i,j,:,:].reshape(-1)  # nu 180x180 
 
-#         y_true = out_of_sample_vol[:,i].reshape(-1)  # nu 180x180 . dim 0 is time
-#         y_true_binary = (y_true > 0) * 1
+        y_true = out_of_sample_vol[:,i,j,:,:].reshape(-1)  # nu 180x180 . dim 0 is time
+        y_true_binary = (y_true > 0) * 1
 
 
-#         mse = mean_squared_error(y_true, y_score)
-#         ap = average_precision_score(y_true_binary, y_score_prob)
-#         auc = roc_auc_score(y_true_binary, y_score_prob)
-#         brier = brier_score_loss(y_true_binary, y_score_prob)
+        mse = mean_squared_error(y_true, y_score)
+        ap = average_precision_score(y_true_binary, y_score_prob)
+        auc = roc_auc_score(y_true_binary, y_score_prob)
+        brier = brier_score_loss(y_true_binary, y_score_prob)
 
-#         # Works?
-#         log_dict = ({"monthly/out_sample_month": i,
-#                      "monthly/mean_squared_error": mse,
-#                      "monthly/average_precision_score": ap,
-#                      "monthly/roc_auc_score": auc,
-#                      "monthly/brier_score_loss":brier})
+        log_dict[f"monthly/mean_squared_error{j}"] = mse
+        log_dict[f"monthly/average_precision_score{j}"] = ap
+        log_dict[f"monthly/roc_auc_score{j}"] = auc
+        log_dict[f"monthly/brier_score_loss{j}"] = brier
 
+    return (log_dict)

@@ -296,13 +296,16 @@ def get_posterior(model, views_vol, config, device, n):
         brier = brier_score_loss(y_true_binary, y_score_prob)
 
         # Works?
-        log_dict = ({"monthly/out_sample_month": i,
-                     "monthly/mean_squared_error": mse,
-                     "monthly/average_precision_score": ap,
-                     "monthly/roc_auc_score": auc,
-                     "monthly/brier_score_loss":brier})
+        # log_dict = ({"monthly/out_sample_month": i,
+        #              "monthly/mean_squared_error": mse,
+        #              "monthly/average_precision_score": ap,
+        #              "monthly/roc_auc_score": auc,
+        #              "monthly/brier_score_loss":brier})
+
+        log_dict = get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, out_of_sample_vol, config)# so at least it gets reported sep.
 
         wandb.log(log_dict)
+
 
         out_sample_month_list.append(i) # only used for pickle...
         mse_list.append(mse)
@@ -381,7 +384,7 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
 
-        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_004_sbnsos" # 4 is without h freeze...
+        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_005_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
 
         sweep_config = get_swep_config()
         sweep_config['parameters']['time_steps'] = {'value' : time_steps}
