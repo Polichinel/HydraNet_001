@@ -138,6 +138,9 @@ def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instan
         loss.backward()  
         optimizer.step()  # update weights
 
+        loss_reg = loss1r+loss2r+loss3r
+        loss_class = loss1c+loss2c+loss3c
+
         avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
         avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
         avg_loss_list.append(loss.detach().cpu().numpy().item())
