@@ -56,7 +56,7 @@ def choose_loss(config):
         sys.exit()
 
     is_regression = torch.Tensor([True, False])
-    multitaskloss_instance = MultiTaskLoss(is_regression)
+    multitaskloss_instance = MultiTaskLoss(is_regression, reduction = 'sum')
 
     return(criterion_reg, criterion_class, multitaskloss_instance)
 
