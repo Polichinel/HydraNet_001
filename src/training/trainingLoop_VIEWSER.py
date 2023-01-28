@@ -29,6 +29,7 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 # from testLoopUtils import *
 from recurrentUnet import UNet
 #from utils import *
+from mtloss import *
 from utils_sbnsos import *
 from swep_config import *
 from hyperparameters_config import *
@@ -54,7 +55,10 @@ def choose_loss(config):
         print('Wrong loss...')
         sys.exit()
 
-    return(criterion_reg, criterion_class)
+    is_regression = torch.Tensor([True, False])
+    multitaskloss_instance = MultiTaskLoss(is_regression)
+
+    return(criterion_reg, criterion_class, multitaskloss_instance)
 
 
 def make(config):
@@ -66,7 +70,7 @@ def make(config):
     return(unet, criterion, optimizer) #, dataloaders, dataset_sizes)
 
 
-def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config, device):
+def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instance, train_tensor, config, device):
     
     wandb.watch(model, [criterion_reg, criterion_class], log= None, log_freq=2048)
 
@@ -106,7 +110,13 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
         # forward-pass
         loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
         loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
-        loss = loss_reg + loss_class # naive no weights und so weider
+        # loss = loss_reg + loss_class # naive no weights und so weider
+
+        #loss = loss_reg + loss_class # naive no weights und so weider
+        
+        multitaskloss.train() # meybe another place... 
+        losses = torch.stack(loss_reg, loss_class)
+        loss = multitaskloss_instance(losses)
 
         # ------------------------------------------------------------------------------------------------------
 
@@ -130,7 +140,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
     avg_losses = []
 
-    criterion_reg, criterion_class = criterion
+    criterion_reg, criterion_class, multitaskloss_instance = criterion
 
     print('Training initiated...')
 
@@ -145,23 +155,23 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
         # Should really be N x C x D x H x W. Rigth now you do N x D x C x H x W (in your head, but it might bit really relevant)
         
-        # N = train_tensor.shape[0] # batch size. Always 1
-        # C = train_tensor.shape[1] # months
-        # D = config.input_channels # features
-        # H = train_tensor.shape[3] # height
-        # W =  train_tensor.shape[4] # width
+        N = train_tensor.shape[0] # batch size. Always 1
+        C = train_tensor.shape[1] # months
+        D = config.input_channels # features
+        H = train_tensor.shape[3] # height
+        W =  train_tensor.shape[4] # width
 
-        # # data augmentation (can be turned of for final experiments)        
-        # train_tensor = train_tensor.reshape(N, C*D, H, W)
-        # train_tensor = transformer(train_tensor[:,:,:,:]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
-        # train_tensor = train_tensor.reshape(N, C, D, H, W)
+        # data augmentation (can be turned of for final experiments)        
+        train_tensor = train_tensor.reshape(N, C*D, H, W)
+        train_tensor = transformer(train_tensor[:,:,:,:]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batch dom and then give it again afterwards?
+        train_tensor = train_tensor.reshape(N, C, D, H, W)
 
         # -------------------------------------------------------------------
 
 
         # Should be an assert thing here..
 
-        train(model, optimizer, criterion_reg, criterion_class, train_tensor, config, device)
+        train(model, optimizer, criterion_reg, criterion_class, train_tensor, multitaskloss_instance, config, device)
 
     print('training done...')
 
