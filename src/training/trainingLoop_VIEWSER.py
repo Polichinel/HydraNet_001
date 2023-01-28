@@ -43,12 +43,12 @@ def choose_loss(config):
 
     elif config.loss == 'b':
         PATH = 'unet.pth'
-        
+
         criterion_reg = nn.MSELoss().to(device) # works
         #criterion_reg = nn.L1Loss().to(device) # works
 
-        criterion_class = nn.KLDivLoss().to(device)
-        #criterion_class = nn.BCELoss().to(device) # works
+        #criterion_class = nn.KLDivLoss().to(device)
+        criterion_class = nn.BCELoss().to(device) # works
 
     else:
         print('Wrong loss...')
@@ -140,17 +140,24 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
         train_tensor = get_train_tensors(views_vol, sample, config, device)
         
-        # Should really be N x C x D x H x W. Rigth now you do N x D x C x H x W (in your head, but it might bit really relevant)
-        N = train_tensor.shape[0] # batch size. Always 1
-        C = train_tensor.shape[1] # months
-        D = config.input_channels # features
-        H = train_tensor.shape[3] # height
-        W =  train_tensor.shape[4] # width
 
-        # data augmentation (can be turned of for final experiments)        
-        train_tensor = train_tensor.reshape(N, C*D, H, W)
-        train_tensor = transformer(train_tensor[:,:,:,:]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
-        train_tensor = train_tensor.reshape(N, C, D, H, W)
+        # -------------------------------------------------------------------
+
+        # Should really be N x C x D x H x W. Rigth now you do N x D x C x H x W (in your head, but it might bit really relevant)
+        
+        # N = train_tensor.shape[0] # batch size. Always 1
+        # C = train_tensor.shape[1] # months
+        # D = config.input_channels # features
+        # H = train_tensor.shape[3] # height
+        # W =  train_tensor.shape[4] # width
+
+        # # data augmentation (can be turned of for final experiments)        
+        # train_tensor = train_tensor.reshape(N, C*D, H, W)
+        # train_tensor = transformer(train_tensor[:,:,:,:]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batrhc dom and then give it again afterwards?
+        # train_tensor = train_tensor.reshape(N, C, D, H, W)
+
+        # -------------------------------------------------------------------
+
 
         # Should be an assert thing here..
 
