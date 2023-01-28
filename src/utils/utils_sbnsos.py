@@ -153,3 +153,32 @@ def get_test_tensor(views_vol, config, device):
 
     #print(f'test_tensor: {test_tensor.shape}') # debug
     return test_tensor
+
+
+
+
+# def get_log_dict():
+
+#         y_score = mean_array[i].reshape(-1) # make it 1d  # nu 180x180 
+#         y_score_prob = mean_class_array[i].reshape(-1) # nu 180x180 
+        
+#         # do not really know what to do with these yet.
+#         y_var = std_array[i].reshape(-1)  # nu 180x180  
+#         y_var_prob = std_class_array[i].reshape(-1)  # nu 180x180 
+
+#         y_true = out_of_sample_vol[:,i].reshape(-1)  # nu 180x180 . dim 0 is time
+#         y_true_binary = (y_true > 0) * 1
+
+
+#         mse = mean_squared_error(y_true, y_score)
+#         ap = average_precision_score(y_true_binary, y_score_prob)
+#         auc = roc_auc_score(y_true_binary, y_score_prob)
+#         brier = brier_score_loss(y_true_binary, y_score_prob)
+
+#         # Works?
+#         log_dict = ({"monthly/out_sample_month": i,
+#                      "monthly/mean_squared_error": mse,
+#                      "monthly/average_precision_score": ap,
+#                      "monthly/roc_auc_score": auc,
+#                      "monthly/brier_score_loss":brier})
+

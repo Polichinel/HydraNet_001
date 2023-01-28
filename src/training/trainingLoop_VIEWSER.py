@@ -168,6 +168,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
         
 
         # -------------------------------------------------------------------
+        # Could be in get train tnesor
 
         # Should really be N x C x D x H x W. Rigth now you do N x D x C x H x W (in your head, but it might bit really relevant)
         
@@ -221,7 +222,8 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
             #t0 = torch.cat([t0, t0, t0], 1) # VERY MUCH A DEBUG HACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         #if out_of_sampel == 1:
-            t1_pred, t1_pred_class, _ = model(t0, h_tt)
+            #t1_pred, t1_pred_class, _ = model(t0, h_tt) # freeze
+            t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # or dont freez !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
             pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze())
             pred_class_np_list.append(t1_pred_class.cpu().detach().numpy().squeeze())
