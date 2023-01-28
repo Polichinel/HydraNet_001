@@ -43,7 +43,11 @@ def choose_loss(config):
 
     elif config.loss == 'b':
         PATH = 'unet.pth'
-        criterion_reg = nn.MSELoss().to(device) # works
+        # criterion_reg = nn.MSELoss().to(device) # works
+
+        criterion_reg = nn.L1Loss().to(device) # works
+
+        # criterion_class = nn.KLDivLoss().to(device)
         criterion_class = nn.BCELoss().to(device) # works
 
     else:
@@ -97,10 +101,15 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
 
         optimizer.zero_grad()
 
+        # ------------------------------------------------------------------------------------------------------
+
         # forward-pass
         loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
         loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
         loss = loss_reg + loss_class # naive no weights und so weider
+
+        # ------------------------------------------------------------------------------------------------------
+
 
         # backward-pass
         loss.backward()  
