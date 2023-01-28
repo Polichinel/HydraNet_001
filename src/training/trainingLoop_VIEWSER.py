@@ -43,12 +43,12 @@ def choose_loss(config):
 
     elif config.loss == 'b':
         PATH = 'unet.pth'
-        # criterion_reg = nn.MSELoss().to(device) # works
+        
+        criterion_reg = nn.MSELoss().to(device) # works
+        #criterion_reg = nn.L1Loss().to(device) # works
 
-        criterion_reg = nn.L1Loss().to(device) # works
-
-        # criterion_class = nn.KLDivLoss().to(device)
-        criterion_class = nn.BCELoss().to(device) # works
+        criterion_class = nn.KLDivLoss().to(device)
+        #criterion_class = nn.BCELoss().to(device) # works
 
     else:
         print('Wrong loss...')
