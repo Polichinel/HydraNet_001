@@ -98,8 +98,8 @@ def train(model, optimizer, criterion_reg, criterion_class, train_tensor, config
         optimizer.zero_grad()
 
         # forward-pass
-        loss_reg = criterion_reg(t1_pred[:,:,0,:,:], t1[:,:,0,:,:]) + criterion_reg(t1_pred[:,:,1,:,:], t1[:,:,1,:,:]) + criterion_reg(t1_pred[:,:,2,:,:], t1[:,:,2,:,:])
-        loss_class = criterion_class(t1_pred_class[:,:,0,:,:], t1_binary[:,:,0,:,:]) + criterion_class(t1_pred_class[:,:,1,:,:], t1_binary[:,:,1,:,:]) + criterion_class(t1_pred_class[:,:,2,:,:], t1_binary[:,:,2,:,:])  
+        loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
+        loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
         loss = loss_reg + loss_class # naive no weights und so weider
 
         # backward-pass
