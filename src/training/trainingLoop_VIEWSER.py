@@ -79,7 +79,9 @@ def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instan
     avg_loss_list = []
 
     model.train()  # train mode
-    
+    multitaskloss_instance.train() # meybe another place... 
+
+
     seq_len = train_tensor.shape[1] 
     window_dim = train_tensor.shape[-1] # the last dim should always be a spatial dim (H or W)
     
@@ -114,7 +116,6 @@ def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instan
 
         #loss = loss_reg + loss_class # naive no weights und so weider
         
-        #multitaskloss.train() # meybe another place... 
         losses = torch.stack((loss_reg, loss_class))
         loss = multitaskloss_instance(losses)
 
