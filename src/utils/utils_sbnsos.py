@@ -71,7 +71,7 @@ def draw_window(views_vol, config):
     The windows are constrained to be sampled from an area with some
     minimum number of log_best events (min_events)."""
 
-    ln_best_sb_idx = 5
+    ln_best_sb_idx =  np.random.choice([5,6,7]) # 5 - now it can be from all the three kinds of vioelnce... 
     last_feature_idx = ln_best_sb_idx + config.input_channels
     min_events = config.min_events
 
