@@ -187,7 +187,7 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
     return pred_np_list, pred_class_np_list
 
 
-def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, device, n):
+def get_posterior(model, views_vol, config, device, n):
     print('Testing initiated...')
 
     test_tensor = get_test_tensor(views_vol, config, device) # better cal thiis evel tensor
@@ -195,24 +195,24 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
 
 
     # out_of_sample_vol = test_tensor[:,-time_steps:,0,:,:].cpu().numpy() # not really a tensor now.. # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    out_of_sample_vol = test_tensor[:,-time_steps:,:,:,:].cpu().numpy() # not really a tensor now.. # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    out_of_sample_vol = test_tensor[:,-config.time_steps:,:,:,:].cpu().numpy() # not really a tensor now.. # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     posterior_list = []
     posterior_list_class = []
 
     for i in range(n):
-        pred_np_list, pred_class_np_list = test(model, test_tensor, time_steps, config, device) # --------------------------------------------------------------
+        pred_np_list, pred_class_np_list = test(model, test_tensor, config.time_steps, config, device) # --------------------------------------------------------------
         posterior_list.append(pred_np_list)
         posterior_list_class.append(pred_class_np_list)
 
         #if i % 10 == 0: # print steps 10
         print(f'Posterior sample: {i}/{n}', end = '\r')
 
-    if is_sweep == False:
+    if config.sweep == False: # should ne in config...
         dump_location = '/home/projects/ku_00017/data/generated/conflictNet/' 
         posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_vol' : out_of_sample_vol}
-        with open(f'{dump_location}posterior_dict_{time_steps}_{run_type}.pkl', 'wb') as file: 
+        with open(f'{dump_location}posterior_dict_{config.time_steps}_{config.run_type}.pkl', 'wb') as file: 
             pickle.dump(posterior_dict, file) 
 
         print("Posterior pickle dumped!")
@@ -266,16 +266,16 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
         auc_list.append(auc)
         brier_list.append(brier)
     
-    if is_sweep == False: 
+    if config.sweep == False: 
     
     # DUMP 
         metric_dict = {'out_sample_month_list' : out_sample_month_list, 'mse_list': mse_list, 
                     'ap_list' : ap_list, 'auc_list': auc_list, 'brier_list' : brier_list}
 
-        with open(f'{dump_location}metric_dict_{time_steps}_{run_type}.pkl', 'wb') as file:
+        with open(f'{dump_location}metric_dict_{config.time_steps}_{config.run_type}.pkl', 'wb') as file:
             pickle.dump(metric_dict, file)
 
-        with open(f'{dump_location}test_vol_{time_steps}_{run_type}.pkl', 'wb') as file: # make it numpy
+        with open(f'{dump_location}test_vol_{config.time_steps}_{config.run_type}.pkl', 'wb') as file: # make it numpy
             pickle.dump(test_tensor.cpu().numpy(), file)
 
         print('Metric and test pickle dumped!')
@@ -284,10 +284,10 @@ def get_posterior(model, views_vol, time_steps, run_type, is_sweep, config, devi
         print('Running sweep. no metric or test pickle dumped')
 
     # ------------------------------------------------------------------------------------
-    wandb.log({f"{time_steps}month_mean_squared_error": np.mean(mse_list)})
-    wandb.log({f"{time_steps}month_average_precision_score": np.mean(ap_list)})
-    wandb.log({f"{time_steps}month_roc_auc_score": np.mean(auc_list)})
-    wandb.log({f"{time_steps}month_brier_score_loss":np.mean(brier_list)})
+    wandb.log({f"{config.time_steps}month_mean_squared_error": np.mean(mse_list)})
+    wandb.log({f"{config.time_steps}month_average_precision_score": np.mean(ap_list)})
+    wandb.log({f"{config.time_steps}month_roc_auc_score": np.mean(auc_list)})
+    wandb.log({f"{config.time_steps}month_brier_score_loss":np.mean(brier_list)})
 
 def model_pipeline(config=None, project=None):
 
@@ -299,11 +299,8 @@ def model_pipeline(config=None, project=None):
                 
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
-        time_steps = config['time_steps']
-        run_type = config['run_type']
-        is_sweep = config['sweep']
 
-        views_vol = get_data(run_type)
+        views_vol = get_data(config.run_type)
 
         # make the model, data, and optimization problem
         unet, criterion, optimizer = make(config)
@@ -311,10 +308,10 @@ def model_pipeline(config=None, project=None):
         training_loop(config, unet, criterion, optimizer, views_vol) 
         print('Done training')
 
-        get_posterior(unet, views_vol, time_steps, run_type, is_sweep, config, device, n=config.test_samples) # actually since you give config now you do not need: time_steps, run_type, is_sweep,
+        get_posterior(unet, views_vol, config, device, n=config.test_samples) # actually since you give config now you do not need: time_steps, run_type, is_sweep,
         print('Done testing')
 
-        if is_sweep == False: # if it is not a sweep
+        if config.sweep == False: # if it is not a sweep
             return(unet)
 
 
