@@ -119,6 +119,7 @@ def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instan
         losses = torch.stack((loss_reg, loss_class))
         loss = multitaskloss_instance(losses)
 
+        print(loss.shape)
         # ------------------------------------------------------------------------------------------------------
 
 
