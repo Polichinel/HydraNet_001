@@ -2,7 +2,7 @@
 def get_hp_config():
     
     hyperparameters = {
-    "hidden_channels" : 32,
+    "hidden_channels" : 16,
     "min_events" : 16,
     "samples": 600, # 10 just for debug n
     "dropout_rate" : 0.05,
