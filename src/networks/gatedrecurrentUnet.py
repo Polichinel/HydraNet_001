@@ -43,14 +43,14 @@ class UNet(nn.Module):
         self.dropout = nn.Dropout(p = dropout_rate)
 
         #gated
-        self.xz = nn.Conv2d( hidden_channels, base, 3, padding= 'same') # right now hidden_channels and base is the same so...
-        self.hz = nn.Conv2d( hidden_channels, base, 3, padding= 'same')
+        self.xz = nn.Conv2d(base, hidden_channels, 3, padding= 'same') # right now hidden_channels and base is the same so...
+        self.hz = nn.Conv2d(hidden_channels, hidden_channels, 3, padding= 'same')
 
-        self.xr = nn.Conv2d( hidden_channels, base, 3, padding= 'same')
-        self.hr = nn.Conv2d( hidden_channels, base, 3, padding= 'same')
+        self.xr = nn.Conv2d(hidden_channels, hidden_channels, 3, padding= 'same')
+        self.hr = nn.Conv2d(hidden_channels, hidden_channels, 3, padding= 'same')
 
-        self.xh = nn.Conv2d( hidden_channels, base, 3, padding= 'same')
-        self.hh = nn.Conv2d( hidden_channels, base, 3, padding= 'same')
+        self.xh = nn.Conv2d(hidden_channels, hidden_channels, 3, padding= 'same')
+        self.hh = nn.Conv2d(hidden_channels, hidden_channels, 3, padding= 'same')
 
 
     def forward(self, x, h):
