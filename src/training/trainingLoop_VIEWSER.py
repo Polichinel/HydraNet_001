@@ -135,7 +135,8 @@ def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instan
 
 
         # backward-pass
-        loss.backward()  
+        loss.backward()
+        #nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
         optimizer.step()  # update weights
 
         loss_reg = loss1r+loss2r+loss3r
