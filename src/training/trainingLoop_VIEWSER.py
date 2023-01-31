@@ -160,25 +160,14 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
         # ------------------------------------------------------------------------------------------------------DEBUG        
 
-        loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
-        loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
-        # loss = loss_reg + loss_class # naive no weights und so weider
-
-        #loss = loss_reg + loss_class # naive no weights und so weider
+        #loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
+        #loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
         
-        #losses = torch.stack((loss_reg, loss_class))
-        #losses = torch.stack([loss1r, loss2r, loss3r, loss1c, loss2c, loss3c])
+        
         
         losses = torch.stack(losses_list)
         loss = multitaskloss_instance(losses)
 
-        #loss = losses.sum()
-
-        #print(loss.shape)
-        # ------------------------------------------------------------------------------------------------------DEBUG
-        #for i in range(losses.shape[0]):
-        #    scheduler[i].step(losses[i])
-        # ------------------------------------------------------------------------------------------------------DEBUG
 
         # backward-pass
         loss.backward()
@@ -192,8 +181,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         optimizer.step()  # update weights
 
         # ------------------------------------------------------------------------------------------------------DEBUG
-        #loss_reg = losses[:config.output_channels].sum()
-        #loss_class = losses[-config.output_channels:].sum()
+        loss_reg = losses[:config.output_channels].sum()
+        loss_class = losses[-config.output_channels:].sum()
         # ------------------------------------------------------------------------------------------------------DEBUG
 
         avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
