@@ -30,7 +30,7 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 #from trainingLoopUtils import *
 # from testLoopUtils import *
 from recurrentUnet import UNet
-from gatedrecurrentUnet import GUNet
+#from gatedrecurrentUnet import GUNet
 
 #from utils import *
 from mtloss import *
@@ -67,29 +67,35 @@ def choose_loss(config):
 
 def make(config):
 
-    if config.model == 'UNet':
-        unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+    unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
     
-    elif config.model == 'GUNet':
-        unet = GUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+    # ------------------------------------------------------------------------------------------------------DEBUG
+    # if config.model == 'UNet':
+    #     unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+    
+    # elif config.model == 'GUNet':
+    #     unet = GUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
-    else:
-        pass
+    # else:
+    #     pass
+    # ------------------------------------------------------------------------------------------------------DEBUG
 
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
-    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
-    # optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
+    #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
+    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
-# not scalable...----------------------------------------------------------------------------------
-    scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler_2r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler_3r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+# not scalable...---------------------------------------------------------------------------------------DEBUG
+    # scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_2r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_3r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
 
-    scheduler_1c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler_2c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler_3c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_1c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_2c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_3c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
 
-    scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
+    # scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
+    # ------------------------------------------------------------------------------------------------------DEBUG
+    scheduler = []
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
@@ -134,41 +140,42 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         # forward-pass
 
         # NOT SCALABLE!!! # ------------------------------------------------------------------------------------------------------
-        # loss1r = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:])
-        # loss2r = criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:])
-        # loss3r = criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
+        loss1r = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:])
+        loss2r = criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:])
+        loss3r = criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
 
-        # loss1c = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:])
-        # loss2c = criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:])
-        # loss3c = criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:]) 
+        loss1c = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:])
+        loss2c = criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:])
+        loss3c = criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:]) 
 
 
-        # should be scaleble...
-        losses_list = []
+        # should be scaleble...# ------------------------------------------------------------------------------------------------------DEBUG
+        # losses_list = []
 
-        for i in range(config.output_channels):
-            losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
+        # for i in range(config.output_channels):
+        #     losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
 
-        for i in range(config.output_channels):
-            losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
-                
+        # for i in range(config.output_channels):
+        #     losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+        # ------------------------------------------------------------------------------------------------------DEBUG        
 
-        # loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
-        # loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
+        loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
+        loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
         # loss = loss_reg + loss_class # naive no weights und so weider
 
         #loss = loss_reg + loss_class # naive no weights und so weider
         
         #losses = torch.stack((loss_reg, loss_class))
-        #losses = torch.stack([loss1r, loss2r, loss3r, loss1c, loss2c, loss3c])
+        losses = torch.stack([loss1r, loss2r, loss3r, loss1c, loss2c, loss3c])
         
-        losses = torch.stack(losses_list)
+        #losses = torch.stack(losses_list)
         loss = multitaskloss_instance(losses)
 
         #print(loss.shape)
-        # ------------------------------------------------------------------------------------------------------
-        for i in range(losses.shape[0]):
-            scheduler[i].step(losses[i])
+        # ------------------------------------------------------------------------------------------------------DEBUG
+        #for i in range(losses.shape[0]):
+        #    scheduler[i].step(losses[i])
+        # ------------------------------------------------------------------------------------------------------DEBUG
 
         # backward-pass
         loss.backward()
@@ -181,8 +188,10 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         
         optimizer.step()  # update weights
 
-        loss_reg = losses[:config.output_channels].sum()
-        loss_class = losses[-config.output_channels:].sum()
+        # ------------------------------------------------------------------------------------------------------DEBUG
+        #loss_reg = losses[:config.output_channels].sum()
+        #loss_class = losses[-config.output_channels:].sum()
+        # ------------------------------------------------------------------------------------------------------DEBUG
 
         avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
         avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
