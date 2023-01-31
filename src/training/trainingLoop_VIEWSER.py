@@ -8,6 +8,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import ChainedScheduler
+
 from torchvision import transforms
 #import geomloss # New loss. also needs: pip install pykeops
 
@@ -76,7 +78,16 @@ def make(config):
     optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     # optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
-    scheduler = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+# not scalable...----------------------------------------------------------------------------------
+    scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_2r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_3r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+
+    scheduler_1c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_2c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_3c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+
+    scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
@@ -118,17 +129,30 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
         optimizer.zero_grad()
 
-        # ------------------------------------------------------------------------------------------------------
+        
 
         # forward-pass
 
-        loss1r = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:])
-        loss2r = criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:])
-        loss3r = criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
 
-        loss1c = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:])
-        loss2c = criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:])
-        loss3c = criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:]) 
+        # NOT SCALABLE!!! # ------------------------------------------------------------------------------------------------------
+        # loss1r = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:])
+        # loss2r = criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:])
+        # loss3r = criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
+
+        # loss1c = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:])
+        # loss2c = criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:])
+        # loss3c = criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:]) 
+
+
+        # should be scaleble...
+        losses_list = []
+
+        for i in range(config.output_channels):
+            losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
+
+        for i in range(config.output_channels):
+            losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+                
 
         # loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
         # loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
@@ -137,19 +161,15 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #loss = loss_reg + loss_class # naive no weights und so weider
         
         #losses = torch.stack((loss_reg, loss_class))
-        losses = torch.stack((loss1r, loss2r, loss3r, loss1c, loss2c, loss3c))
+        #losses = torch.stack([loss1r, loss2r, loss3r, loss1c, loss2c, loss3c])
         
+        losses = torch.stack(losses_list)
         loss = multitaskloss_instance(losses)
 
         #print(loss.shape)
         # ------------------------------------------------------------------------------------------------------
-        scheduler.step(loss)
-
-        # if i == 0:
-        #     print(scheduler.get_lr)
-        #     #print(optimizer.param_groups['lr'])
-        # else:
-        #     pass
+        for i in range(losses.shape[0]):
+            scheduler[i].step(losses[i])
 
         # backward-pass
         loss.backward()
