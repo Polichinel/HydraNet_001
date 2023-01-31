@@ -10,15 +10,14 @@ def get_swep_config():
 
     sweep_config['metric'] = metric
 
-
     parameters_dict = {
-        'model' : {'value' : 'GUNet'},
+        'model' : {'values' : ['UNet', 'GUNet_v01', 'GUNet_v02', 'GUNet_v03']},
         'clip_grad_norm' : {'value': True},
-        'hidden_channels': {'value': 32},
+        'hidden_channels': {'values': [16, 24, 32]},
         'min_events': {'value': 16},
-        'samples': {'value': 300},
+        'samples': {'values': [300, 400, 500, 600, 700, 800]},
         "dropout_rate" : {'value' : 0.05},
-        'learning_rate': {'values' : [0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]},
+        'learning_rate': {'values' : [0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]},
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},

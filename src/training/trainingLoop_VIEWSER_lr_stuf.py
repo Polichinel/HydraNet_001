@@ -90,12 +90,12 @@ def make(config):
     # ------------------------------------------------------------------------------------------------------DEBUG
 
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
-    #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
-    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
+    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
+    #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
     scheduler = []  
-    # for i in range(config.output_channels):
-    #     scheduler.append(ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5))
+    for i in range(config.output_channels):
+        scheduler.append(ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5))
 
 # not scalable...---------------------------------------------------------------------------------------DEBUG
     # scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
@@ -176,8 +176,11 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
         #loss_class = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:]) + criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:]) + criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:])  
         
+        
+        
         losses = torch.stack(losses_list)
         loss = multitaskloss_instance(losses)
+
 
         # backward-pass
         loss.backward()
@@ -189,6 +192,9 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #     pass
         
         optimizer.step()  # update weights
+
+        for i in range(config.output_channels):
+            scheduler[i].step(losses[i])
 
         # ------------------------------------------------------------------------------------------------------DEBUG
         loss_reg = losses[:config.output_channels].sum()
