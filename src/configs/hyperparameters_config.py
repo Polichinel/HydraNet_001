@@ -2,7 +2,7 @@
 def get_hp_config():
     
     hyperparameters = {
-    "model" : 'UNet',
+    "model" : 'GUNet',
     "clip_grad_norm" : True,
     "hidden_channels" : 16,
     "min_events" : 10,
