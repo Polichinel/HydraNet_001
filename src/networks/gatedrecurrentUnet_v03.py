@@ -85,7 +85,7 @@ class GUNet(nn.Module):
         d0_class = F.relu(self.dec_conv0_class(torch.cat([self.upsample0_class(b),e1s],1)))
         d0_class = self.dropout(d0_class)
         
-        d1_class = F.relu(self.dec_conv1_class(torch.cat([self.upsample1_class(d0_class), e0s],1)))  # This here could also be the hidden state ------------------------------------------------
+        d1_class = F.relu(self.dec_conv1_class(torch.cat([self.upsample1_class(d0_class), e0s],1)))  # This here could also be the hidden state - it does work ------------------------------------------------
         d1_class = self.dropout(d1_class)
 
         d2_class = self.dec_conv2_class(d1_class)
@@ -133,7 +133,7 @@ class GUNet(nn.Module):
     def init_hTtime(self, hidden_channels, H, W, test_tensor):
         
         # NEW -----------------------------------------------------------
-        hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64) # usually we do zeros here ...................................................................................
+        hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64) # usually we do zeros here ...................................................................................
         #hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
         #hs= torch.nn.init.kaiming_normal_(hs, mode='fan_out') # is for weights not hidden states
 

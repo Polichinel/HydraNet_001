@@ -30,7 +30,10 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 #from trainingLoopUtils import *
 # from testLoopUtils import *
 from recurrentUnet import UNet
-from gatedrecurrentUnet import GUNet
+from gatedrecurrentUnet_v01 import GUNet_v01
+from gatedrecurrentUnet_v02 import GUNet_v02
+from gatedrecurrentUnet_v03 import GUNet_v03
+
 
 #from utils import *
 from mtloss import *
@@ -74,29 +77,29 @@ def make(config):
         unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
     
     elif config.model == 'GUNet':
-        unet = GUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = GUNet_v01(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     else:
         pass
     # ------------------------------------------------------------------------------------------------------DEBUG
 
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
-    #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
-    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
+    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
+    #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
 # not scalable...---------------------------------------------------------------------------------------DEBUG
-    # scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    # scheduler_2r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    # scheduler_3r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_2r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_3r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
 
-    # scheduler_1c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    # scheduler_2c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    # scheduler_3c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_1c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_2c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler_3c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
 
-    # scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
+    scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
     # ------------------------------------------------------------------------------------------------------DEBUG
     
-    scheduler = []
+    #scheduler = []
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
@@ -179,6 +182,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #     pass
         
         optimizer.step()  # update weights
+
+        scheduler.step()
 
         # ------------------------------------------------------------------------------------------------------DEBUG
         loss_reg = losses[:config.output_channels].sum()
