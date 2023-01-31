@@ -2,6 +2,8 @@
 def get_hp_config():
     
     hyperparameters = {
+    "model" : 'GUNet',
+    "clip_grad_norm" : True,
     "hidden_channels" : 16,
     "min_events" : 10,
     "samples": 400, # 10 just for debug n

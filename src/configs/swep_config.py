@@ -12,6 +12,8 @@ def get_swep_config():
 
 
     parameters_dict = {
+        'model' : {'values' : ['UNet', 'GUNet']},
+        'clip_grad_norm' : {'values': [True, False]},
         'hidden_channels': {'values': [16, 24, 32]},
         'min_events': {'values': [10, 15, 20]},
         'samples': {'values': [300, 400, 500, 600, 700, 800]},
