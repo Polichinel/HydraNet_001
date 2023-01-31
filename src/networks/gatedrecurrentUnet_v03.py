@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # give everything better names at some point
-class GUNet(nn.Module):
+class GUNet_v03(nn.Module):
     def __init__(self, input_channels, hidden_channels, output_channels, dropout_rate):
         super().__init__()
 
