@@ -95,7 +95,6 @@ def make(config):
 
     # scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
     # ------------------------------------------------------------------------------------------------------DEBUG
-    
     scheduler = []
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
@@ -141,23 +140,23 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         # forward-pass
 
         # NOT SCALABLE!!! # ------------------------------------------------------------------------------------------------------
-        # loss1r = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:])
-        # loss2r = criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:])
-        # loss3r = criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
+        loss1r = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:])
+        loss2r = criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:])
+        loss3r = criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
 
-        # loss1c = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:])
-        # loss2c = criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:])
-        # loss3c = criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:]) 
+        loss1c = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:])
+        loss2c = criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:])
+        loss3c = criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:]) 
 
 
         # should be scaleble...# ------------------------------------------------------------------------------------------------------DEBUG
-        losses_list = []
+        # losses_list = []
 
-        for i in range(config.output_channels):
-            losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
+        # for i in range(config.output_channels):
+        #     losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
 
-        for i in range(config.output_channels):
-            losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+        # for i in range(config.output_channels):
+        #     losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
         # ------------------------------------------------------------------------------------------------------DEBUG        
 
         loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
@@ -167,9 +166,9 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #loss = loss_reg + loss_class # naive no weights und so weider
         
         #losses = torch.stack((loss_reg, loss_class))
-        #losses = torch.stack([loss1r, loss2r, loss3r, loss1c, loss2c, loss3c])
+        losses = torch.stack([loss1r, loss2r, loss3r, loss1c, loss2c, loss3c])
         
-        losses = torch.stack(losses_list)
+        #losses = torch.stack(losses_list)
         loss = multitaskloss_instance(losses)
 
         #loss = losses.sum()
