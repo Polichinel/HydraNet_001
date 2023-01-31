@@ -183,7 +183,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         
         optimizer.step()  # update weights
 
-        scheduler.step()
+        for i in range(config.output_channels):
+            scheduler[i].step()
 
         # ------------------------------------------------------------------------------------------------------DEBUG
         loss_reg = losses[:config.output_channels].sum()
