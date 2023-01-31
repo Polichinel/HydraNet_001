@@ -8,7 +8,7 @@ def get_hp_config():
     "min_events" : 10,
     "samples": 400, # 10 just for debug n
     "dropout_rate" : 0.05,
-    'learning_rate' :  0.00005,
+    'learning_rate' :  0.01,
     "weight_decay" :  0.1,
     'input_channels' : 3,
     "output_channels" : 3,
