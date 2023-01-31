@@ -146,8 +146,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         scheduler.step(loss)
 
         if i == 0:
-            #print(scheduler.get_lr)
-            print(optimizer.param_groups['lr'])
+            print(scheduler.get_lr)
+            #print(optimizer.param_groups['lr'])
         else:
             pass
 
