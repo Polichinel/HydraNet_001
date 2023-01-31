@@ -12,7 +12,7 @@ def get_swep_config():
 
 
     parameters_dict = {
-        'model' : {'values' : 'GUNet'},
+        'model' : {'value' : 'GUNet'},
         'clip_grad_norm' : {'value': True},
         'hidden_channels': {'value': 32},
         'min_events': {'value': 16},

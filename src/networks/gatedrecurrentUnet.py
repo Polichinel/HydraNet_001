@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # give everything better names at some point
-class UNet(nn.Module):
+class GUNet(nn.Module):
     def __init__(self, input_channels, hidden_channels, output_channels, dropout_rate):
         super().__init__()
 
@@ -58,7 +58,7 @@ class UNet(nn.Module):
         x = torch.cat([x, h], 1)
 
         # encoder
-        e0s = self.dropout(F.relu(self.enc_conv0(x)))
+        e0s = self.dropout(F.relu(self.enc_conv0(x))) # Maybe take the hidden state before dropout? Or meybe it is prudent ------------------------------------------------
         e0 = self.pool0(e0s)
         
         e1s = self.dropout(F.relu(self.enc_conv1(e0)))
@@ -73,10 +73,10 @@ class UNet(nn.Module):
         d0_reg = F.relu(self.dec_conv0_reg(torch.cat([self.upsample0_reg(b),e1s],1)))
         d0_reg = self.dropout(d0_reg)
         
-        d1_reg = F.relu(self.dec_conv1_reg(torch.cat([self.upsample1_reg(d0_reg), e0s],1)))  # You did not have any activations before - why not?
+        d1_reg = F.relu(self.dec_conv1_reg(torch.cat([self.upsample1_reg(d0_reg), e0s],1)))  # This here could also be the hidden state ------------------------------------------------
         d1_reg = self.dropout(d1_reg)
 
-        d2_reg = self.dec_conv2_reg(d1_reg) # test bc I don't want negative values...
+        d2_reg = self.dec_conv2_reg(d1_reg) 
 
         d2_reg = F.relu(d2_reg)
 
@@ -84,10 +84,10 @@ class UNet(nn.Module):
         d0_class = F.relu(self.dec_conv0_class(torch.cat([self.upsample0_class(b),e1s],1)))
         d0_class = self.dropout(d0_class)
         
-        d1_class = F.relu(self.dec_conv1_class(torch.cat([self.upsample1_class(d0_class), e0s],1)))  # You did not have any activations before - why not?
+        d1_class = F.relu(self.dec_conv1_class(torch.cat([self.upsample1_class(d0_class), e0s],1)))  # This here could also be the hidden state ------------------------------------------------
         d1_class = self.dropout(d1_class)
 
-        d2_class = self.dec_conv2_class(d1_class) # test bc I don't want negative values...
+        d2_class = self.dec_conv2_class(d1_class)
 
         d2_class = torch.sigmoid(d2_class)
         
@@ -128,9 +128,9 @@ class UNet(nn.Module):
     def init_hTtime(self, hidden_channels, H, W, test_tensor):
         
         # NEW -----------------------------------------------------------
-#       hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+#       hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64) # usually we do zeros here ...................................................................................
         hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
-        #hs= torch.nn.init.kaiming_normal_(hs, mode='fan_out')
+        #hs= torch.nn.init.kaiming_normal_(hs, mode='fan_out') # is for weights not hidden states
 
         #hs_p = hs + test_tensor.detach().cpu() 
         return hs
