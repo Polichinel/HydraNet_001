@@ -182,8 +182,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         
         optimizer.step()  # update weights
 
-        loss_reg = loss1r+loss2r+loss3r
-        loss_class = loss1c+loss2c+loss3c
+        loss_reg = losses[:config.output_channels].sum()
+        loss_class = losses[-config.output_channels:].sum()
 
         avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
         avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
