@@ -58,7 +58,8 @@ class GUNet(nn.Module):
         x = torch.cat([x, h], 1)
 
         # encoder
-        e0s = self.dropout(F.relu(self.enc_conv0(x))) # Maybe take the hidden state before dropout? Or meybe it is prudent ------------------------------------------------
+        e0s_ = F.relu(self.enc_conv0(x))
+        e0s = self.dropout(e0s_) # Maybe take the hidden state before dropout? Or meybe it is prudent ------------------------------------------------
         e0 = self.pool0(e0s)
         
         e1s = self.dropout(F.relu(self.enc_conv1(e0)))
@@ -84,8 +85,8 @@ class GUNet(nn.Module):
         d0_class = F.relu(self.dec_conv0_class(torch.cat([self.upsample0_class(b),e1s],1)))
         d0_class = self.dropout(d0_class)
         
-        d1_class_ = F.relu(self.dec_conv1_class(torch.cat([self.upsample1_class(d0_class), e0s],1)))  # This here could also be the hidden state ------------------------------------------------
-        d1_class = self.dropout(d1_class_)
+        d1_class = F.relu(self.dec_conv1_class(torch.cat([self.upsample1_class(d0_class), e0s],1)))  # This here could also be the hidden state ------------------------------------------------
+        d1_class = self.dropout(d1_class)
 
         d2_class = self.dec_conv2_class(d1_class)
 
@@ -100,9 +101,9 @@ class GUNet(nn.Module):
         # R = torch.sigmoid(self.xr(e0s) + self.hr(h))
         # h_tilde = torch.tanh(self.xh(e0s) + self.hh(torch.mul(R,h)))
         # h = torch.mul(torch.mul(Z,h) + (1 - Z), h_tilde)
-        Z = torch.sigmoid(self.xz(d1_class_) + self.hz(h))
-        R = torch.sigmoid(self.xr(d1_class_) + self.hr(h))
-        h_tilde = torch.tanh(self.xh(d1_class_) + self.hh(torch.mul(R,h)))
+        Z = torch.sigmoid(self.xz(e0s_) + self.hz(h))
+        R = torch.sigmoid(self.xr(e0s_) + self.hr(h))
+        h_tilde = torch.tanh(self.xh(e0s_) + self.hh(torch.mul(R,h)))
         h = torch.mul(torch.mul(Z,h) + (1 - Z), h_tilde)
         # --------------------------------------------------------------------------------------------------------------------------
 
