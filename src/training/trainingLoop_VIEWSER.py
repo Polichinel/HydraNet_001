@@ -74,6 +74,9 @@ def make(config):
     elif config.model == 'GUNet':
         unet = GUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
     
+    else:
+        pass
+
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
     optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     # optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))

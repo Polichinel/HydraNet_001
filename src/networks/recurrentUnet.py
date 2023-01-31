@@ -107,7 +107,7 @@ class UNet(nn.Module):
         
         # NEW -----------------------------------------------------------
         hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
-#        hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
+        # hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
 
         #hs_p = hs + test_tensor.detach().cpu() 
         return hs
