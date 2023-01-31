@@ -87,16 +87,20 @@ def make(config):
     optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
+    scheduler = []  
+    for i in range(config.output_channels):
+        scheduler.append(ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5))
+
 # not scalable...---------------------------------------------------------------------------------------DEBUG
-    scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler_2r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler_3r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_2r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_3r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
 
-    scheduler_1c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler_2c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler_3c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_1c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_2c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    # scheduler_3c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
 
-    scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
+    # scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
     # ------------------------------------------------------------------------------------------------------DEBUG
     
     #scheduler = []
