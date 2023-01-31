@@ -75,9 +75,9 @@ class GUNet_v03(nn.Module):
         d0_reg = self.dropout(d0_reg)
         
         d1_reg = F.relu(self.dec_conv1_reg(torch.cat([self.upsample1_reg(d0_reg), e0s],1)))  # This here could also be the hidden state ------------------------------------------------
-        d1_reg = self.dropout(d1_reg)
+        d1_reg_ = self.dropout(d1_reg)
 
-        d2_reg = self.dec_conv2_reg(d1_reg) 
+        d2_reg = self.dec_conv2_reg(d1_reg_) 
 
         d2_reg = F.relu(d2_reg)
 
@@ -101,9 +101,9 @@ class GUNet_v03(nn.Module):
         # R = torch.sigmoid(self.xr(e0s) + self.hr(h))
         # h_tilde = torch.tanh(self.xh(e0s) + self.hh(torch.mul(R,h)))
         # h = torch.mul(torch.mul(Z,h) + (1 - Z), h_tilde)
-        Z = torch.sigmoid(self.xz(e0s_) + self.hz(h))
-        R = torch.sigmoid(self.xr(e0s_) + self.hr(h))
-        h_tilde = torch.tanh(self.xh(e0s_) + self.hh(torch.mul(R,h)))
+        Z = torch.sigmoid(self.xz(d1_reg_) + self.hz(h))
+        R = torch.sigmoid(self.xr(d1_reg_) + self.hr(h))
+        h_tilde = torch.tanh(self.xh(d1_reg_) + self.hh(torch.mul(R,h)))
         h = torch.mul(torch.mul(Z,h) + (1 - Z), h_tilde)
         # --------------------------------------------------------------------------------------------------------------------------
 
