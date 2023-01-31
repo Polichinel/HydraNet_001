@@ -7,8 +7,8 @@ import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchvision import transforms
-
 #import geomloss # New loss. also needs: pip install pykeops
 
 from sklearn.preprocessing import MinMaxScaler
@@ -28,6 +28,8 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 #from trainingLoopUtils import *
 # from testLoopUtils import *
 from recurrentUnet import UNet
+from gatedrecurrentUnet import GUNet
+
 #from utils import *
 from mtloss import *
 from utils_sbnsos import *
@@ -63,14 +65,23 @@ def choose_loss(config):
 
 def make(config):
 
-    unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+    if config.model == 'UNet':
+        
+        unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+    
+    elif config.model == 'GUNet':
+        unet = GUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+    
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
-    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
+    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
+    # optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
-    return(unet, criterion, optimizer) #, dataloaders, dataset_sizes)
+    scheduler = ReduceLROnPlateau(optimizer, mode = 'min', factor = 2, patience = 5)
+
+    return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
 
-def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instance, train_tensor, config, device):
+def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitaskloss_instance, train_tensor, config, device):
     
     wandb.watch(model, [criterion_reg, criterion_class], log= None, log_freq=2048)
 
@@ -132,11 +143,23 @@ def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instan
 
         #print(loss.shape)
         # ------------------------------------------------------------------------------------------------------
+        scheduler.step(loss)
 
+        if i == 0:
+            #print(scheduler.get_lr)
+            print(optimizer.param_groups['lr'])
+        else:
+            pass
 
         # backward-pass
         loss.backward()
-        #nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
+        
+        if config.clip_grad_norm == True:
+            nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
+        
+        else: 
+            pass
+        
         optimizer.step()  # update weights
 
         loss_reg = loss1r+loss2r+loss3r
@@ -149,7 +172,7 @@ def train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instan
     train_log(avg_loss_reg_list, avg_loss_class_list, avg_loss_list)
 
 
-def training_loop(config, model, criterion, optimizer, views_vol):
+def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
     # add spatail transformer
     # transformer = transforms.Compose([transforms.RandomRotation((0,360)), transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
@@ -189,7 +212,7 @@ def training_loop(config, model, criterion, optimizer, views_vol):
 
         # Should be an assert thing here..
 
-        train(model, optimizer, criterion_reg, criterion_class, multitaskloss_instance, train_tensor, config, device)
+        train(model, optimizer, scheduler , criterion_reg, criterion_class, multitaskloss_instance, train_tensor, config, device)
 
     print('training done...')
 
@@ -351,9 +374,9 @@ def model_pipeline(config=None, project=None):
         views_vol = get_data(config.run_type)
 
         # make the model, data, and optimization problem
-        unet, criterion, optimizer = make(config)
+        unet, criterion, optimizer, scheduler = make(config)
 
-        training_loop(config, unet, criterion, optimizer, views_vol) 
+        training_loop(config, unet, criterion, optimizer, scheduler, views_vol) 
         print('Done training')
 
         get_posterior(unet, views_vol, config, device, n=config.test_samples) # actually since you give config now you do not need: time_steps, run_type, is_sweep,
@@ -385,7 +408,7 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
 
-        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_005_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
+        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_006_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
 
         sweep_config = get_swep_config()
         sweep_config['parameters']['time_steps'] = {'value' : time_steps}
@@ -403,7 +426,7 @@ if __name__ == "__main__":
 
     elif do_sweep == 'b':
 
-        print('One run and pickle!')
+        print(f'One run and pickle!')
 
         project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickled_sbnsos"
 
@@ -412,6 +435,8 @@ if __name__ == "__main__":
         hyperparameters['time_steps'] = time_steps
         hyperparameters['run_type'] = run_type
         hyperparameters['sweep'] = False
+
+        print(f"using: {hyperparameters['model']}")
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print(device)
