@@ -106,8 +106,8 @@ class UNet(nn.Module):
     def init_hTtime(self, hidden_channels, H, W, test_tensor):
         
         # NEW -----------------------------------------------------------
-#       hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
-        hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
+        hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+#        hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
 
         #hs_p = hs + test_tensor.detach().cpu() 
         return hs
