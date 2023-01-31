@@ -171,6 +171,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #losses = torch.stack(losses_list)
         loss = multitaskloss_instance(losses)
 
+        #loss = losses.sum()
+
         #print(loss.shape)
         # ------------------------------------------------------------------------------------------------------DEBUG
         #for i in range(losses.shape[0]):
@@ -180,11 +182,11 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         # backward-pass
         loss.backward()
         
-        if config.clip_grad_norm == True:
-            nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
+        # if config.clip_grad_norm == True:
+        #     nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
         
-        else: 
-            pass
+        # else: 
+        #     pass
         
         optimizer.step()  # update weights
 
