@@ -30,7 +30,7 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 #from trainingLoopUtils import *
 # from testLoopUtils import *
 from recurrentUnet import UNet
-from gatedrecurrentUnet import GUNet
+#from gatedrecurrentUnet import GUNet
 
 #from utils import *
 from mtloss import *
@@ -68,12 +68,11 @@ def choose_loss(config):
 def make(config):
 
     if config.model == 'UNet':
-        
         unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
     
     elif config.model == 'GUNet':
-        unet = GUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
-    
+        #unet = GUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        pass
     else:
         pass
 
@@ -132,10 +131,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
         optimizer.zero_grad()
 
-        
-
         # forward-pass
-
 
         # NOT SCALABLE!!! # ------------------------------------------------------------------------------------------------------
         # loss1r = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:])
