@@ -76,7 +76,7 @@ def make(config):
     optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     # optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
-    scheduler = ReduceLROnPlateau(optimizer, mode = 'min', factor = 2, patience = 5)
+    scheduler = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
