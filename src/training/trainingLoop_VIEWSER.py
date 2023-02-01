@@ -56,8 +56,8 @@ def choose_loss(config):
         criterion_reg = nn.MSELoss().to(device) # works
         #criterion_reg = nn.L1Loss().to(device) # works
         #criterion_class = nn.KLDivLoss().to(device)
-        #criterion_class = nn.BCELoss().to(device) # works
-        criterion_class = FocalLoss().to(device)
+        criterion_class = nn.BCELoss().to(device) # works
+        #criterion_class = FocalLoss().to(device)
 
 
     else:
@@ -187,7 +187,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
         if config.clip_grad_norm == True:
         #     nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
-            nn.utils.clip_grad_value_(model.parameters(), 1)    
+            nn.utils.clip_grad_value_(model.parameters(), 0.1)    
         #     for p in model.parameters:
         #       p.grad.data.clamp_(max=1)
         
