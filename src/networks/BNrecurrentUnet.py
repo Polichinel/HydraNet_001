@@ -34,8 +34,8 @@ class BNUNet(nn.Module):
         self.dec_conv1_reg = nn.Conv2d(base*2, base, 3, padding=1, bias = False) # base+base=base*2 because of skip connection
         self.bn_dec_conv1_reg = nn.BatchNorm2d(base) 
 
-        self.dec_conv2_reg = nn.Conv2d(base, output_channels, 3, padding=1, bias = False) 
-        self.bn_dec_conv2_reg = nn.BatchNorm2d(output_channels)  # you sire you want one here?
+        self.dec_conv2_reg = nn.Conv2d(base, output_channels, 3, padding=1) 
+        #self.bn_dec_conv2_reg = nn.BatchNorm2d(output_channels)  # you sire you want one here?
 
 
         # decoder_class (upsampling)
@@ -47,8 +47,8 @@ class BNUNet(nn.Module):
         self.dec_conv1_class = nn.Conv2d(base*2, base, 3, padding=1, bias = False) # base+base=base*2 because of skip connection
         self.bn_dec_conv1_class = nn.BatchNorm2d(base) 
 
-        self.dec_conv2_class = nn.Conv2d(base, output_channels, 3, padding=1, bias = False)
-        self.bn_dec_conv2_class = nn.BatchNorm2d(output_channels) 
+        self.dec_conv2_class = nn.Conv2d(base, output_channels, 3, padding=1)
+        #self.bn_dec_conv2_class = nn.BatchNorm2d(output_channels) 
 
         # misc
         self.dropout = nn.Dropout(p = dropout_rate)
@@ -78,7 +78,7 @@ class BNUNet(nn.Module):
         d1_reg = F.relu(self.bn_dec_conv1_reg(self.dec_conv1_reg(torch.cat([self.upsample1_reg(d0_reg), e0s],1)))) # You did not have any activations before - why not?
         d1_reg = self.dropout(d1_reg)
 
-        d2_reg = self.bn_dec_conv2_reg(self.dec_conv2_reg(d1_reg)) # test bc I don't want negative values...
+        d2_reg = self.dec_conv2_reg(d1_reg) # test bc I don't want negative values...
 
         d2_reg = F.relu(d2_reg)
 
@@ -89,11 +89,11 @@ class BNUNet(nn.Module):
         d1_class = F.relu(self.bn_dec_conv1_class(self.dec_conv1_class(torch.cat([self.upsample1_class(d0_class), e0s],1))))  # You did not have any activations before - why not?
         d1_class = self.dropout(d1_class)
 
-        d2_class = self.bn_dec_conv2_class(self.dec_conv2_class(d1_class)) # test bc I don't want negative values...
+        d2_class = self.dec_conv2_class(d1_class) # test bc I don't want negative values...
 
         d2_class = torch.sigmoid(d2_class)
         
-        # h = torch.tanh(e0s)
+        #h = torch.tanh(e0s_)
 
         # return d2, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
         #return d2_reg, d2_class, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
