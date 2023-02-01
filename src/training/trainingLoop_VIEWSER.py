@@ -56,6 +56,15 @@ def choose_loss(config):
         criterion_reg = nn.MSELoss().to(device) # works
         #criterion_reg = nn.L1Loss().to(device) # works
         #criterion_class = nn.KLDivLoss().to(device)
+        criterion_class = nn.BCELoss().to(device) # works
+        #criterion_class = FocalLoss().to(device)
+
+    elif config.loss == 'c':
+        PATH = 'unet.pth'
+
+        criterion_reg = nn.MSELoss().to(device) # works
+        #criterion_reg = nn.L1Loss().to(device) # works
+        #criterion_class = nn.KLDivLoss().to(device)
         #criterion_class = nn.BCELoss().to(device) # works
         criterion_class = FocalLoss().to(device)
 
@@ -142,7 +151,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #t1 = train_tensor[:, i+1, 0:1, :, :] # 0 is ln_best_sb, 0:1 lest you keep the dim. just to have one output right now.
         t1 = train_tensor[:, i+1, :, :, :]
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
-
+        #t1_binary = t1_binary.type(torch.LongTensor).to(device)
+        
         #print(t1.shape) # debug
 
         # forward
@@ -173,7 +183,17 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             # mask = (t1_pred_class[:,i,:,:].reshape(-1) > 0.001) | (t1_binary[:,i,:,:].reshape(-1) > 0.0) # threshold
 
             # losses_list.append(criterion_reg(t1_pred_class_[mask], t1_binary_[mask]))
-            losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
+
+            # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device))) # put taht jsaxzz above
+            
+            if config.loss == 'b':
+                losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:])) # put taht jsaxzz above
+
+            elif config.loss == 'c':
+                losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
+
+            else: 
+                print('wrong loss input')
         # ------------------------------------------------------------------------------------------------------DEBUG
 
         #loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
