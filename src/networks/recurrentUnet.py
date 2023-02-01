@@ -48,7 +48,8 @@ class UNet(nn.Module):
         x = torch.cat([x, h], 1)
 
         # encoder
-        e0s = self.dropout(F.relu(self.enc_conv0(x)))
+        e0s_ = F.relu(self.enc_conv0(x))
+        e0s = self.dropout(e0s_)
         e0 = self.pool0(e0s)
         
         e1s = self.dropout(F.relu(self.enc_conv1(e0)))
@@ -82,7 +83,8 @@ class UNet(nn.Module):
         d2_class = torch.sigmoid(d2_class)
         
         # return d2, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
-        return d2_reg, d2_class, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
+        #return d2_reg, d2_class, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
+        return d2_reg, d2_class, e0s_ # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
 
 
     # YOU CAN MAKE HIDDEN STATE TAKE THE FIRST INPUT AND JUST BROADCAT IT OUT..
