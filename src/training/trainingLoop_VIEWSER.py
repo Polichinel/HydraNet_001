@@ -7,7 +7,7 @@ import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, LinearLR
 from torch.optim.lr_scheduler import ChainedScheduler
 
 from torchvision import transforms
@@ -92,8 +92,21 @@ def make(config):
     optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
     
-    #scheduler = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    scheduler = [] # experiment with differt 
+    if config.scheduler == 'plateau':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        scheduler = ReduceLROnPlateau(optimizer)
+
+    elif config.scheduler == 'step':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        scheduler = StepLR(optimizer, step_size= 60)
+
+    elif config.scheduler == 'linear':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        scheduler = LinearLR(optimizer)
+
+    else:
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
+        scheduler = [] # coul set to None...
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
@@ -144,13 +157,18 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             # zero inflation:
             t1_pred_ = t1_pred[:,i,:,:].reshape(-1)
             t1_ = t1[:,i,:,:].reshape(-1)
-            mask = t1_pred_class[:,i,:,:].reshape(-1) > 0.001 # threshold
+            mask = (t1_pred_class[:,i,:,:].reshape(-1) > 0.001) | (t1_binary[:,i,:,:].reshape(-1) > 0.0) # threshold
 
             losses_list.append(criterion_reg(t1_pred_[mask], t1_[mask]))
             # losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
 
         for i in range(config.output_channels):
-            losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+            t1_pred_class_ = t1_pred_class[:,i,:,:].reshape(-1)
+            t1_binary_ = t1_binary[:,i,:,:].reshape(-1)
+            mask = (t1_pred_class[:,i,:,:].reshape(-1) > 0.001) | (t1_binary[:,i,:,:].reshape(-1) > 0.0) # threshold
+
+            losses_list.append(criterion_reg(t1_pred_class_[mask], t1_binary_[mask]))            
+            #losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
         # ------------------------------------------------------------------------------------------------------DEBUG        
 
         #loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
@@ -169,7 +187,12 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #     pass
         
         optimizer.step()  # update weights
-        #scheduler.step(loss)
+        
+        if type(scheduler) != list: # becaus you use an empty list
+            scheduler.step(loss)
+
+        else:
+            pass
         
         # ------------------------------------------------------------------------------------------------------DEBUG
         loss_reg = losses[:config.output_channels].sum()

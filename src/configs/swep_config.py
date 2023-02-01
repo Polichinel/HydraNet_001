@@ -13,6 +13,7 @@ def get_swep_config():
     parameters_dict = {
         'model' : {'values' : ['UNet', 'GUNet_v01', 'GUNet_v02', 'GUNet_v03']},
         'clip_grad_norm' : {'value': True},
+        'scheduler' : {'value': None},
         'hidden_channels': {'values': [16, 24, 32]},
         'min_events': {'value': 16},
         'samples': {'values': [300, 400, 500, 600, 700, 800]},
