@@ -193,7 +193,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
                 losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
 
             else: 
-                print('wrong loss input')
+                #print('wrong loss input. Defaulting to BCE')
+                losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
         # ------------------------------------------------------------------------------------------------------DEBUG
 
         #loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
