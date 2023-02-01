@@ -443,7 +443,7 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
 
-        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_007_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
+        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_008_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
 
         sweep_config = get_swep_config()
         sweep_config['parameters']['time_steps'] = {'value' : time_steps}
