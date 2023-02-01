@@ -99,11 +99,11 @@ def make(config):
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = ReduceLROnPlateau(optimizer)
 
-    elif config.scheduler == 'step':
+    elif config.scheduler == 'step': # seems to be an DEPRECATION issue
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = StepLR(optimizer, step_size= 60)
 
-    elif config.scheduler == 'linear':
+    elif config.scheduler == 'linear': 
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = LinearLR(optimizer)
 
@@ -182,9 +182,12 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         # backward-pass
         loss.backward()
 
-        # if config.clip_grad_norm == True:
+        if config.clip_grad_norm == True:
         #     nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
-
+            nn.utils.clip_grad_value_(model.parameters(), 1)    
+        #     for p in model.parameters:
+        #       p.grad.data.clamp_(max=1)
+        
         # else:
         #     pass
 
