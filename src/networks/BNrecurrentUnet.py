@@ -93,11 +93,11 @@ class BNUNet(nn.Module):
 
         d2_class = torch.sigmoid(d2_class)
         
-        #h = torch.tanh(e0s_)
+        h = torch.tanh(e0s_)
 
         # return d2, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
         #return d2_reg, d2_class, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
-        return d2_reg, d2_class, e0s_ # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
+        return d2_reg, d2_class, h # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
 
 
     # YOU CAN MAKE HIDDEN STATE TAKE THE FIRST INPUT AND JUST BROADCAT IT OUT..
