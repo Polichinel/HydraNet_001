@@ -122,7 +122,6 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     model.train()  # train mode
     multitaskloss_instance.train() # meybe another place... 
 
-
     seq_len = train_tensor.shape[1] 
     window_dim = train_tensor.shape[-1] # the last dim should always be a spatial dim (H or W)
     
@@ -180,11 +179,11 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         # backward-pass
         loss.backward()
         
-        # if config.clip_grad_norm == True:
-        #     nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
+        if config.clip_grad_norm == True:
+            nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
         
-        # else: 
-        #     pass
+        else: 
+            pass
         
         optimizer.step()  # update weights
         
