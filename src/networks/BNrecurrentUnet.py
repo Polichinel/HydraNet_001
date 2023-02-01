@@ -3,8 +3,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+# why can't import????
 # give everything better names at some point
-class UNet(nn.Module):
+class BNUNet(nn.Module):
     def __init__(self, input_channels, hidden_channels, output_channels, dropout_rate):
         super().__init__()
 
