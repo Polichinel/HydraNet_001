@@ -101,10 +101,18 @@ class GUNet_v01(nn.Module):
         # R = torch.sigmoid(self.xr(e0s) + self.hr(h))
         # h_tilde = torch.tanh(self.xh(e0s) + self.hh(torch.mul(R,h)))
         # h = torch.mul(torch.mul(Z,h) + (1 - Z), h_tilde)
+        
         Z = torch.sigmoid(self.xz(e0s_) + self.hz(h))
         R = torch.sigmoid(self.xr(e0s_) + self.hr(h))
         h_tilde = torch.tanh(self.xh(e0s_) + self.hh(torch.mul(R,h)))
         h = torch.mul(torch.mul(Z,h) + (1 - Z), h_tilde)
+        
+        # why not??
+        # Z = F.relu(self.xz(e0s_) + self.hz(h))
+        # R = F.relu(self.xr(e0s_) + self.hr(h))
+        # h_tilde = torch.tanh(self.xh(e0s_) + self.hh(torch.mul(R,h)))
+        # h = torch.mul(torch.mul(Z,h) + (1 - Z), h_tilde)
+        
         # --------------------------------------------------------------------------------------------------------------------------
 
         #return d2_reg, d2_class, h # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
