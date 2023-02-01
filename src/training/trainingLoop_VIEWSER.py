@@ -56,8 +56,8 @@ def choose_loss(config):
         criterion_reg = nn.MSELoss().to(device) # works
         #criterion_reg = nn.L1Loss().to(device) # works
         #criterion_class = nn.KLDivLoss().to(device)
-        criterion_class = nn.BCELoss().to(device) # works
-        #criterion_class = FocalLoss().to(device)
+        #criterion_class = nn.BCELoss().to(device) # works
+        criterion_class = FocalLoss().to(device)
 
 
     else:
@@ -173,7 +173,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             # mask = (t1_pred_class[:,i,:,:].reshape(-1) > 0.001) | (t1_binary[:,i,:,:].reshape(-1) > 0.0) # threshold
 
             # losses_list.append(criterion_reg(t1_pred_class_[mask], t1_binary_[mask]))
-            losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+            losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1)))
         # ------------------------------------------------------------------------------------------------------DEBUG
 
         #loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
