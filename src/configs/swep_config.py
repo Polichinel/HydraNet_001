@@ -14,17 +14,33 @@ def get_swep_config():
         'model' : {'values' : ['UNet', 'BNUNet', 'GUNet_v01', 'GUNet_v02', 'GUNet_v03']},
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'values': ['plateau', 'step', 'linear', None]},
-        'hidden_channels': {'values': [16, 24, 32]},
-        'min_events': {'values': [16, 12, 32]},
-        'samples': {'values': [300, 400, 500, 600, 700, 800]},
-        "dropout_rate" : {'values' : [0.2, 0.1, 0.05]},
-        'learning_rate': {'values' : [0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]},
+        'hidden_channels': {'value': 16},
+        'min_events': {'value': 10},
+        'samples': {'value': 300},
+        "dropout_rate" : {'value' : 0.05},
+        'learning_rate': {'value' :  0.00005},
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
         'loss' : { 'value' : 'b'},
         'test_samples': { 'value' : 128}       
         }
+
+    # parameters_dict = {
+    #     'model' : {'values' : ['UNet', 'BNUNet', 'GUNet_v01', 'GUNet_v02', 'GUNet_v03']},
+    #     'clip_grad_norm' : {'value': True},
+    #     'scheduler' : {'values': ['plateau', 'step', 'linear', None]},
+    #     'hidden_channels': {'values': [16, 24, 32]},
+    #     'min_events': {'values': [16, 12, 32]},
+    #     'samples': {'values': [300, 400, 500, 600, 700, 800]},
+    #     "dropout_rate" : {'values' : [0.2, 0.1, 0.05]},
+    #     'learning_rate': {'values' : [0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]},
+    #     "weight_decay" : {'value' : 0.1},
+    #     'input_channels' : {'value' : 3},
+    #     'output_channels': {'value' : 3},
+    #     'loss' : { 'value' : 'b'},
+    #     'test_samples': { 'value' : 128}       
+    #     }
 
     # parameters_dict = {
     #     'model' : {'values' : ['UNet', 'GUNet']},
