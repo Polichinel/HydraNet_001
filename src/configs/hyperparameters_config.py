@@ -2,7 +2,7 @@
 def get_hp_config():
     
     hyperparameters = {
-    "model" : 'UNet',
+    "model" : 'BNUNet',
     "clip_grad_norm" : True,
     "scheduler" : None,
     "hidden_channels" : 16,

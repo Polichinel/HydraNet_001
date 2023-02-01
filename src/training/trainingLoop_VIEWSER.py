@@ -33,7 +33,7 @@ from recurrentUnet import UNet
 from gatedrecurrentUnet_v01 import GUNet_v01
 from gatedrecurrentUnet_v02 import GUNet_v02
 from gatedrecurrentUnet_v03 import GUNet_v03
-
+from BNrecurrentUnet import BNUNet
 
 #from utils import *
 from mtloss import *
@@ -83,6 +83,9 @@ def make(config):
 
     elif config.model == 'GUNet_v03':
         unet = GUNet_v03(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
+    elif config.model == 'BNUNet':
+        unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     else:
         print('no model...')
