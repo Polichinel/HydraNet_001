@@ -54,7 +54,6 @@ def choose_loss(config):
 
         criterion_reg = nn.MSELoss().to(device) # works
         #criterion_reg = nn.L1Loss().to(device) # works
-
         #criterion_class = nn.KLDivLoss().to(device)
         criterion_class = nn.BCELoss().to(device) # works
 
@@ -92,24 +91,9 @@ def make(config):
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
     optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
-
-    scheduler = []  
-    # for i in range(config.output_channels):
-    #     scheduler.append(ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5))
-
-# not scalable...---------------------------------------------------------------------------------------DEBUG
-    # scheduler_1r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    # scheduler_2r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    # scheduler_3r = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-
-    # scheduler_1c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    # scheduler_2c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-    # scheduler_3c = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
-
-    # scheduler = [scheduler_1r, scheduler_2r, scheduler_3r, scheduler_1c, scheduler_2c, scheduler_3c]
-    # ------------------------------------------------------------------------------------------------------DEBUG
     
-    scheduler = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    #scheduler = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.1, patience = 5)
+    scheduler = [] # experiment with differt 
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
@@ -153,21 +137,17 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
         # forward-pass
 
-        # NOT SCALABLE!!! # ------------------------------------------------------------------------------------------------------
-        # loss1r = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:])
-        # loss2r = criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:])
-        # loss3r = criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
-
-        # loss1c = criterion_class(t1_pred_class[:,0,:,:], t1_binary[:,0,:,:])
-        # loss2c = criterion_class(t1_pred_class[:,1,:,:], t1_binary[:,1,:,:])
-        # loss3c = criterion_class(t1_pred_class[:,2,:,:], t1_binary[:,2,:,:]) 
-
-
-        # should be scaleble...# ------------------------------------------------------------------------------------------------------DEBUG
         losses_list = []
 
         for i in range(config.output_channels):
-            losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
+
+            # zero inflation:
+            t1_pred_ = t1_pred[:,i,:,:].reshape(-1)
+            t1_ = t1[:,i,:,:].reshape(-1)
+            mask = t1_pred_class[:,i,:,:].reshape(-1) > 0.001 # threshold
+
+            losses_list.append(criterion_reg(t1_pred_[mask], t1_[mask]))
+            # losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
 
         for i in range(config.output_channels):
             losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
@@ -189,7 +169,8 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #     pass
         
         optimizer.step()  # update weights
-        scheduler.step(loss)
+        #scheduler.step(loss)
+        
         # ------------------------------------------------------------------------------------------------------DEBUG
         loss_reg = losses[:config.output_channels].sum()
         loss_class = losses[-config.output_channels:].sum()
@@ -205,7 +186,6 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
     # add spatail transformer
-    # transformer = transforms.Compose([transforms.RandomRotation((0,360)), transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
     transformer = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
     avg_losses = []
@@ -234,7 +214,7 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
         # data augmentation (can be turned of for final experiments)        
         train_tensor = train_tensor.reshape(N, C*D, H, W)
-        train_tensor = transformer(train_tensor[:,:,:,:]) # rotations and flips # skip for now... '''''''''''''''''''''''''''''''''''''''''''''''''''''' bug only take 4 dims.. could just squezze the batch dom and then give it again afterwards?
+        train_tensor = transformer(train_tensor[:,:,:,:]) 
         train_tensor = train_tensor.reshape(N, C, D, H, W)
 
         # -------------------------------------------------------------------
