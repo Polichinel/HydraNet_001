@@ -71,7 +71,7 @@ def choose_loss(config):
         #criterion_reg = nn.L1Loss().to(device) # works
         #criterion_class = nn.KLDivLoss().to(device)
         #criterion_class = nn.BCELoss().to(device) # works
-        criterion_class = FocalLoss2d().to(device)
+        criterion_class = FocalLoss2d(gamma=5).to(device)
 
     else:
         print('Wrong loss...')
