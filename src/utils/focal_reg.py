@@ -36,7 +36,7 @@ class FocalLossReg(nn.Module):
         #weight = Variable(self.weight) # why even here?
         #logpt = -F.cross_entropy(input, target) # why - ???
         l = F.l1_loss(input, target)
-        l2 = F.MSELoss(input, target)
+        l2 = F.mse_loss(input, target)
 
         # compute the loss
         loss = (l**self.gamma) * l2
