@@ -189,17 +189,18 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
             # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device))) # put taht jsaxzz above
             
-            losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+            # losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
 
-            # if config.loss == 'b':
-            #     losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:])) # put taht jsaxzz above
+            if config.loss == 'b':
+                losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:])) # put taht jsaxzz above
 
-            # elif config.loss == 'c':
-            #     losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
+            elif config.loss == 'c':
+                # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
+                losses_list.append(criterion_class(t1_pred_class[:,i,:,:].unsqueeze(0), t1_binary[:,i,:,:].unsqueeze(0)))
 
-            # else: 
-            #     #print('wrong loss input. Defaulting to BCE')
-            #     losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+            else: 
+                #print('wrong loss input. Defaulting to BCE')
+                losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
         # ------------------------------------------------------------------------------------------------------DEBUG
 
         #loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
