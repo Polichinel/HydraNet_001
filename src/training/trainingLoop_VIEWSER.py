@@ -67,7 +67,7 @@ def choose_loss(config):
         PATH = 'unet.pth'
 
         #criterion_reg = nn.MSELoss().to(device) # works
-        criterion_reg = nn.RMSLELoss().to(device) # works
+        criterion_reg = RMSLELoss().to(device) # works
         #criterion_reg = nn.L1Loss().to(device) # works
         #criterion_class = nn.KLDivLoss().to(device)
         #criterion_class = nn.BCELoss().to(device) # works
