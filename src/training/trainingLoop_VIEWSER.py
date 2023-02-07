@@ -34,7 +34,8 @@ from gatedrecurrentUnet_v01 import GUNet_v01
 from gatedrecurrentUnet_v02 import GUNet_v02
 from gatedrecurrentUnet_v03 import GUNet_v03
 from BNrecurrentUnet import BNUNet
-from focal import FocalLoss
+#from focal import FocalLoss
+from focal02 import FocalLoss2d
 
 #from utils import *
 from mtloss import *
@@ -66,7 +67,7 @@ def choose_loss(config):
         #criterion_reg = nn.L1Loss().to(device) # works
         #criterion_class = nn.KLDivLoss().to(device)
         #criterion_class = nn.BCELoss().to(device) # works
-        criterion_class = FocalLoss().to(device)
+        criterion_class = FocalLoss2d().to(device)
 
 
     else:
