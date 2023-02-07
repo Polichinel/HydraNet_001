@@ -22,7 +22,7 @@ def get_swep_config():
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
-        'loss' : { 'values' : ['b', 'c']},
+        'loss' : { 'values' : ['c', 'b']},
         'test_samples': { 'value' : 128}       
         }
 
