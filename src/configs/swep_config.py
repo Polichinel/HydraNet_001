@@ -11,20 +11,39 @@ def get_swep_config():
     sweep_config['metric'] = metric
 
     parameters_dict = {
-        'model' : {'values' : ['BNUNet', 'UNet']},
+        'model' : {'value' : 'BNUNet'},
         'clip_grad_norm' : {'value': True},
-        'scheduler' : {'values': ['step', 'linear', None]},
-        'hidden_channels': {'values': [16, 32]},
-        'min_events': {'values': [10, 15, 20]},
-        'samples': {'values': [500, 600, 700, 800]},
+        'scheduler' : {'value': 'step'},
+        'hidden_channels': {'value': 32},
+        'min_events': {'value': 15},
+        'samples': {'value': 300},
         "dropout_rate" : {'value' : 0.05},
-        'learning_rate': {'values' : [0.0001, 0.00005, 0.00001]},
+        'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
-        'loss' : { 'values' : ['c', 'b']},
+        'loss_class' : { 'values' : ['a', 'b']},
+        'loss_reg' : { 'values' : ['a', 'b', 'c']},
         'test_samples': { 'value' : 128}       
         }
+
+
+
+    # parameters_dict = {
+    #     'model' : {'values' : ['BNUNet', 'UNet']},
+    #     'clip_grad_norm' : {'value': True},
+    #     'scheduler' : {'values': ['step', 'linear', None]},
+    #     'hidden_channels': {'values': [16, 32]},
+    #     'min_events': {'values': [10, 15, 20]},
+    #     'samples': {'values': [500, 600, 700, 800]},
+    #     "dropout_rate" : {'value' : 0.05},
+    #     'learning_rate': {'values' : [0.0001, 0.00005, 0.00001]},
+    #     "weight_decay" : {'value' : 0.1},
+    #     'input_channels' : {'value' : 3},
+    #     'output_channels': {'value' : 3},
+    #     'loss' : { 'values' : ['c', 'b']},
+    #     'test_samples': { 'value' : 128}       
+    #     }
 
     # parameters_dict = {
     #     'model' : {'values' : ['UNet', 'BNUNet', 'GUNet_v01', 'GUNet_v02', 'GUNet_v03']},

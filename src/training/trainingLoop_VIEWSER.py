@@ -51,40 +51,60 @@ from hyperparameters_config import *
 
 def choose_loss(config):
 
-    if config.loss == 'a':
-        PATH = 'unet_sinkhorn.pth'
-        criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-        criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+    if config.loss_reg == 'a':
+        criterion_reg = nn.MSELoss().to(device)
 
+    elif config.loss_reg == 'b':
+        criterion_reg = FocalLossReg(gamma=5).to(device)
 
-    elif config.loss == 'b':
-        PATH = 'unet.pth'
-
-        criterion_reg = nn.MSELoss().to(device) # works
-        #criterion_reg = nn.L1Loss().to(device) # works
-        #criterion_class = nn.KLDivLoss().to(device)
-        criterion_class = nn.BCELoss().to(device) # works
-        #criterion_class = FocalLoss().to(device)
-
-    elif config.loss == 'c':
-        PATH = 'unet.pth'
+    elif config.loss_reg == 'c':
         criterion_reg = ShrinkageLoss(a=10, c=0.2).to(device)
-        #criterion_reg = FocalLossReg(gamma=5).to(device)
-        #criterion_reg = nn.MSELoss().to(device) # works
-        #criterion_reg = RMSLELoss().to(device) # works
-        #criterion_reg = nn.L1Loss().to(device) # works
-        #criterion_class = nn.KLDivLoss().to(device)
-        #criterion_class = nn.BCELoss().to(device) # works
-        criterion_class = FocalLossClass(gamma=5).to(device)
 
     else:
-        print('Wrong loss...')
+        print('Wrong reg loss...')
         sys.exit()
+
+
+    if config.loss_class == 'a':
+        criterion_class = nn.BCELoss().to(device)
+
+    elif config.loss_class == 'b':
+        criterion_class =  FocalLossClass(gamma=5).to(device)
+
+    else:
+        print('Wrong class loss...')
+        sys.exit()
+
+
+    # if config.loss == 'a': #3 not currently implemented
+    #     PATH = 'unet_sinkhorn.pth'
+    #     criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+    #     criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+
+
+    # elif config.loss == 'b':
+    #     PATH = 'unet.pth'
+    #     criterion_reg = nn.MSELoss().to(device) # works
+    #     criterion_class = nn.BCELoss().to(device) # works
+
+    # elif config.loss == 'c':
+    #     PATH = 'unet.pth'
+    #     criterion_reg = FocalLossReg(a=10, c=0.2).to(device)
+    #     criterion_class = FocalLossClass(gamma=5).to(device)
+
+    # elif config.loss == 'd':
+    #     PATH = 'unet.pth'
+    #     criterion_reg = ShrinkageLoss(gamma=5).to(device)
+    #     criterion_class = FocalLossClass(gamma=5).to(device)
+
+    # else:
+    #     print('Wrong loss...')
+    #     sys.exit()
 
     print(f'Regression loss: {criterion_reg}\n classification loss: {criterion_class}')
 
     is_regression = torch.Tensor([True, True, True, False, False, False])
-    multitaskloss_instance = MultiTaskLoss(is_regression, reduction = 'sum')
+    multitaskloss_instance = MultiTaskLoss(is_regression, reduction = 'sum') # also try mean
 
     return(criterion_reg, criterion_class, multitaskloss_instance)
 
