@@ -13,12 +13,12 @@ def get_swep_config():
     parameters_dict = {
         'model' : {'value' : 'BNUNet'},
         'clip_grad_norm' : {'value': True},
-        'scheduler' : {'value': 'step'},
-        'hidden_channels': {'value': 32},
-        'min_events': {'value': 15},
-        'samples': {'value': 300},
+        'scheduler' : {'values': ['step', 'linear', None]},
+        'hidden_channels': {'value': 16},
+        'min_events': {'value': 20},
+        'samples': {'value': 800},
         "dropout_rate" : {'value' : 0.05},
-        'learning_rate': {'value' : 0.0001},
+        'learning_rate': {'values' : [0.0001, 0.00001]},
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
@@ -26,7 +26,6 @@ def get_swep_config():
         'loss_reg' : { 'values' : ['a', 'b', 'c']},
         'test_samples': { 'value' : 128}       
         }
-
 
 
     # parameters_dict = {
