@@ -73,7 +73,7 @@ def choose_loss(config):
         print('Wrong loss...')
         sys.exit()
 
-    print(f'Regression loss: {criterion_reg}\n classification loss: {criterion_reg}')
+    print(f'Regression loss: {criterion_reg}\n classification loss: {criterion_class}')
 
     is_regression = torch.Tensor([True, True, True, False, False, False])
     multitaskloss_instance = MultiTaskLoss(is_regression, reduction = 'sum')
