@@ -206,10 +206,10 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
             # losses_list.append(criterion_reg(t1_pred_[mask], t1_[mask]))
             
-            if config.loss == 'b':
+            if config.loss_reg == 'a':
                 losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:])) # put taht jsaxzz above
 
-            elif config.loss == 'c':
+            elif config.loss_reg == 'b' or config.loss_reg == 'c':
                 # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
                 losses_list.append(criterion_reg(t1_pred[:,i,:,:].unsqueeze(0), t1[:,i,:,:].unsqueeze(0)))
 
@@ -231,12 +231,12 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             
             # losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
 
-            if config.loss == 'b':
+            if config.loss_class == 'a':
                 losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:])) # put taht jsaxzz above
 
-            elif config.loss == 'c':
+            elif config.loss_class == 'b': 
                 # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
-                losses_list.append(criterion_class(t1_pred_class[:,i,:,:].unsqueeze(0), t1_binary[:,i,:,:].unsqueeze(0)))
+                losses_list.append(criterion_class(t1_pred_class[:,i,:,:].unsqueeze(0), t1_binary[:,i,:,:].unsqueeze(0))) # CAN PUT THE UNSQUEEZE IN THE LOSS
 
             else: 
                 #print('wrong loss input. Defaulting to BCE')
