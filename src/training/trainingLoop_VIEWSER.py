@@ -69,10 +69,11 @@ def choose_loss(config):
         #criterion_class = nn.BCELoss().to(device) # works
         criterion_class = FocalLoss2d().to(device)
 
-
     else:
         print('Wrong loss...')
         sys.exit()
+
+    print(f'Regression loss: {criterion_reg}\n classification loss: {criterion_reg}')
 
     is_regression = torch.Tensor([True, True, True, False, False, False])
     multitaskloss_instance = MultiTaskLoss(is_regression, reduction = 'sum')
