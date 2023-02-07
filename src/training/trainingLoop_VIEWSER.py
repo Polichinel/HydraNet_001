@@ -37,6 +37,8 @@ from BNrecurrentUnet import BNUNet
 #from focal import FocalLoss
 from focal02 import FocalLoss2d
 
+from rmsle import RMSLELoss
+
 #from utils import *
 from mtloss import *
 from utils_sbnsos import *
@@ -64,7 +66,8 @@ def choose_loss(config):
     elif config.loss == 'c':
         PATH = 'unet.pth'
 
-        criterion_reg = nn.MSELoss().to(device) # works
+        #criterion_reg = nn.MSELoss().to(device) # works
+        criterion_reg = nn.RMSLELoss().to(device) # works
         #criterion_reg = nn.L1Loss().to(device) # works
         #criterion_class = nn.KLDivLoss().to(device)
         #criterion_class = nn.BCELoss().to(device) # works
