@@ -11,7 +11,7 @@ def get_swep_config():
     sweep_config['metric'] = metric
 
     parameters_dict = {
-        'model' : {'values' : ['UNet', 'BNUNet']},
+        'model' : {'values' : ['BNUNet', 'UNet']},
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'values': ['step', 'linear', None]},
         'hidden_channels': {'values': [16, 32]},
