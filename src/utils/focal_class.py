@@ -9,10 +9,10 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 # I refered https://github.com/c0nn3r/RetinaNet/blob/master/focal_loss.py
 
-class FocalLoss2d(nn.Module):
+class FocalLossClass(nn.Module):
 
     def __init__(self, gamma=0, weight=None, size_average=True):
-        super(FocalLoss2d, self).__init__()
+        super(FocalLossClass, self).__init__()
 
         self.gamma = gamma
         self.weight = weight

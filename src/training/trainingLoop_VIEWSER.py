@@ -35,7 +35,8 @@ from gatedrecurrentUnet_v02 import GUNet_v02
 from gatedrecurrentUnet_v03 import GUNet_v03
 from BNrecurrentUnet import BNUNet
 #from focal import FocalLoss
-from focal02 import FocalLoss2d
+from focal_class import FocalLossClass
+from focal_reg import FocalLossReg
 
 from rmsle import RMSLELoss
 
@@ -65,13 +66,13 @@ def choose_loss(config):
 
     elif config.loss == 'c':
         PATH = 'unet.pth'
-
+        criterion_reg = FocalLossReg(gamma=5).to(device)
         #criterion_reg = nn.MSELoss().to(device) # works
-        criterion_reg = RMSLELoss().to(device) # works
+        #criterion_reg = RMSLELoss().to(device) # works
         #criterion_reg = nn.L1Loss().to(device) # works
         #criterion_class = nn.KLDivLoss().to(device)
         #criterion_class = nn.BCELoss().to(device) # works
-        criterion_class = FocalLoss2d(gamma=5).to(device)
+        criterion_class = FocalLossClass(gamma=5).to(device)
 
     else:
         print('Wrong loss...')
