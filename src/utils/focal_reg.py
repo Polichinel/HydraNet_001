@@ -35,7 +35,7 @@ class FocalLossReg(nn.Module):
         # compute the negative likelyhood
         #weight = Variable(self.weight) # why even here?
         #logpt = -F.cross_entropy(input, target) # why - ???
-        l = F.L1_Loss(input, target)
+        l = F.l1_loss(input, target)
         l2 = F.MSELoss(input, target)
 
         # compute the loss
