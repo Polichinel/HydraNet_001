@@ -51,6 +51,7 @@ def choose_loss(config):
         criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
         criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
 
+
     elif config.loss == 'b':
         PATH = 'unet.pth'
 
@@ -497,7 +498,7 @@ if __name__ == "__main__":
         project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickled_sbnsos"
 
         hyperparameters = get_hp_config()
-        hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
+        #hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
         hyperparameters['time_steps'] = time_steps
         hyperparameters['run_type'] = run_type
         hyperparameters['sweep'] = False
