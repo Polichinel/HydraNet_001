@@ -182,7 +182,20 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             # mask = (t1_pred_class[:,i,:,:].reshape(-1) > 0.001) | (t1_binary[:,i,:,:].reshape(-1) > 0.0) # threshold
 
             # losses_list.append(criterion_reg(t1_pred_[mask], t1_[mask]))
-            losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
+            
+            if config.loss == 'b':
+                losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:])) # put taht jsaxzz above
+
+            elif config.loss == 'c':
+                # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
+                losses_list.append(criterion_reg(t1_pred[:,i,:,:].unsqueeze(0), t1[:,i,:,:].unsqueeze(0)))
+
+            else: 
+                #print('wrong loss input. Defaulting to BCE')
+                losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
+            
+            
+            #losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:])) #  works
 
         for i in range(config.output_channels):
             # t1_pred_class_ = t1_pred_class[:,i,:,:].reshape(-1)
