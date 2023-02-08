@@ -13,7 +13,7 @@ def get_hp_config():
     "weight_decay" :  0.1,
     'input_channels' : 3,
     "output_channels" : 3,
-    "loss_reg": 'b',
+    "loss_reg": 'c',
     "loss_class": 'b', 
     "test_samples": 128}
 
