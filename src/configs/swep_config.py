@@ -18,7 +18,7 @@ def get_swep_config():
         'min_events': {'value': 20},
         'samples': {'value': 800},
         "dropout_rate" : {'value' : 0.05},
-        'learning_rate': {'values' : 0.0001},
+        'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},

@@ -54,22 +54,21 @@ def choose_loss(config):
     if config.loss_reg == 'a':
         criterion_reg = nn.MSELoss().to(device)
 
-    elif config.loss_reg == 'b':
-        criterion_reg = FocalLossReg(gamma=5).to(device)
+    # elif config.loss_reg == 'b':
+    #     criterion_reg = FocalLossReg(gamma=5).to(device)
 
     elif config.loss_reg == 'c':
-        criterion_reg = ShrinkageLoss(a=10, c=0.2).to(device)
+        criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
 
     else:
         print('Wrong reg loss...')
         sys.exit()
 
-
     if config.loss_class == 'a':
         criterion_class = nn.BCELoss().to(device)
 
     elif config.loss_class == 'b':
-        criterion_class =  FocalLossClass(gamma=2, alpha = 1).to(device)
+        criterion_class =  FocalLossClass(gamma=config.loss_class_gamma, alpha = 1).to(device)
 
     else:
         print('Wrong class loss...')
@@ -454,7 +453,7 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
 
-        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_011_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
+        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_012_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
 
         sweep_config = get_swep_config()
         sweep_config['parameters']['time_steps'] = {'value' : time_steps}
