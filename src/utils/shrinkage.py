@@ -37,13 +37,16 @@ class ShrinkageLoss(nn.Module):
         # compute the negative likelyhood
         #weight = Variable(self.weight) # why even here?
         #logpt = -F.cross_entropy(input, target) # why - ???
-        l = F.l1_loss(input, target)
-        l2 = F.mse_loss(input, target)
 
-        weight = 1 + torch.exp(self.a*(self.c-l))
+        l = torch.abs(target - input)     #F.l1_loss(input, target)
+        #l2 =  l**2           #F.mse_loss(input, target)
+
+        # weight = 1 + torch.exp(self.a*(self.c-l))
 
         # compute the loss
-        loss = l2/weight
+        # loss = (l**2)/weight
+
+        loss = (l**2)/(1 + torch.exp(self.a*(self.c-l)))
 
         # averaging (or not) loss
         if self.size_average:
