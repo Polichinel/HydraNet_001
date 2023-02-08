@@ -11,35 +11,21 @@ from torch.autograd import Variable
 
 class FocalLossReg(nn.Module):
 
-    def __init__(self, gamma=0, weight=None, size_average=True):
+    def __init__(self, gamma=0, alpha=1, size_average=True):
         super(FocalLossReg, self).__init__()
 
         self.gamma = gamma
-        self.weight = weight
+        self.alpha = alpha
         self.size_average = size_average
 
     def forward(self, input, target):
-        if input.dim()>2:
-            input = input.contiguous().view(input.size(0), input.size(1), -1)
-            input = input.transpose(1,2)
-            input = input.contiguous().view(-1, input.size(2)).squeeze()
-        if target.dim()==4:
-            target = target.contiguous().view(target.size(0), target.size(1), -1)
-            target = target.transpose(1,2)
-            target = target.contiguous().view(-1, target.size(2)).squeeze()
-        elif target.dim()==3:
-            target = target.view(-1)
-        else:
-            target = target.view(-1, 1)
 
-        # compute the negative likelyhood
-        #weight = Variable(self.weight) # why even here?
-        #logpt = -F.cross_entropy(input, target) # why - ???
-        l = F.l1_loss(input, target)
-        l2 = F.mse_loss(input, target)
+        input, target = input.unsqueeze(0), target.unsqueeze(0)
+        #input = torch.clamp(input, min = np.exp(-100)) # could do this for no negatives???
 
-        # compute the loss
-        loss = (l**self.gamma) * l2
+        error = target - input
+        exp_error = np.exp(error)  #torch.clamp(se, min = np.exp(-100)))
+        loss = exp_error.mean()
 
         # averaging (or not) loss
         if self.size_average:
