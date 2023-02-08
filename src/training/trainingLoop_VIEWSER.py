@@ -69,7 +69,7 @@ def choose_loss(config):
         criterion_class = nn.BCELoss().to(device)
 
     elif config.loss_class == 'b':
-        criterion_class =  FocalLossClass(gamma=5).to(device)
+        criterion_class =  FocalLossClass(gamma=0, alpha = 1).to(device)
 
     else:
         print('Wrong class loss...')
@@ -145,7 +145,7 @@ def make(config):
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = StepLR(optimizer, step_size= 60)
 
-    elif config.scheduler == 'linear': 
+    elif config.scheduler == 'linear':
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = LinearLR(optimizer)
 
@@ -182,7 +182,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         t1 = train_tensor[:, i+1, :, :, :]
         t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
         #t1_binary = t1_binary.type(torch.LongTensor).to(device)
-        
+
         #print(t1.shape) # debug
 
         # forward
@@ -205,20 +205,20 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             # mask = (t1_pred_class[:,i,:,:].reshape(-1) > 0.001) | (t1_binary[:,i,:,:].reshape(-1) > 0.0) # threshold
 
             # losses_list.append(criterion_reg(t1_pred_[mask], t1_[mask]))
-            
-            if config.loss_reg == 'a':
-                losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:])) # put taht jsaxzz above
 
-            elif config.loss_reg == 'b' or config.loss_reg == 'c':
-                # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
-                losses_list.append(criterion_reg(t1_pred[:,i,:,:].unsqueeze(0), t1[:,i,:,:].unsqueeze(0)))
+            # if config.loss_reg == 'a':
+            #     losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:])) # put taht jsaxzz above
 
-            else: 
-                #print('wrong loss input. Defaulting to BCE')
-                losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
-            
-            
-            #losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:])) #  works
+            # elif config.loss_reg == 'b' or config.loss_reg == 'c':
+            #     # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
+            #     losses_list.append(criterion_reg(t1_pred[:,i,:,:].unsqueeze(0), t1[:,i,:,:].unsqueeze(0)))
+
+            # else:
+            #     #print('wrong loss input. Defaulting to BCE')
+            #     losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:]))
+
+
+            losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:])) #  works
 
         for i in range(config.output_channels):
             # t1_pred_class_ = t1_pred_class[:,i,:,:].reshape(-1)
@@ -228,19 +228,21 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             # losses_list.append(criterion_reg(t1_pred_class_[mask], t1_binary_[mask]))
 
             # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device))) # put taht jsaxzz above
-            
+
             # losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
 
-            if config.loss_class == 'a':
-                losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:])) # put taht jsaxzz above
+            # if config.loss_class == 'a':
+            #     losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:])) # put taht jsaxzz above
 
-            elif config.loss_class == 'b': 
-                # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
-                losses_list.append(criterion_class(t1_pred_class[:,i,:,:].unsqueeze(0), t1_binary[:,i,:,:].unsqueeze(0))) # CAN PUT THE UNSQUEEZE IN THE LOSS
+            # elif config.loss_class == 'b':
+            #     # losses_list.append(criterion_class(t1_pred_class[:,i,:,:].reshape(-1), t1_binary[:,i,:,:].reshape(-1).type(torch.LongTensor).to(device)))
+            #     losses_list.append(criterion_class(t1_pred_class[:,i,:,:].unsqueeze(0), t1_binary[:,i,:,:].unsqueeze(0))) # CAN PUT THE UNSQUEEZE IN THE LOSS
 
-            else: 
-                #print('wrong loss input. Defaulting to BCE')
-                losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+            # else:
+            #     #print('wrong loss input. Defaulting to BCE')
+            #     losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
+
+            losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
         # ------------------------------------------------------------------------------------------------------DEBUG
 
         #loss_reg = criterion_reg(t1_pred[:,0,:,:], t1[:,0,:,:]) + criterion_reg(t1_pred[:,1,:,:], t1[:,1,:,:]) + criterion_reg(t1_pred[:,2,:,:], t1[:,2,:,:])
@@ -254,10 +256,10 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
         if config.clip_grad_norm == True:
         #     nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
-        #    nn.utils.clip_grad_value_(model.parameters(), 0.1)    
+        #    nn.utils.clip_grad_value_(model.parameters(), 0.1)
             for p in model.parameters():
                 p.grad.data.clamp_(max=1)
-        
+
         # else:
         #     pass
 

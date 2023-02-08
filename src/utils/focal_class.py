@@ -3,6 +3,7 @@
 ##### University of Tokyo Doi Kento            #####
 ####################################################
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -11,34 +12,20 @@ from torch.autograd import Variable
 
 class FocalLossClass(nn.Module):
 
-    def __init__(self, gamma=0, weight=None, size_average=True):
+    def __init__(self, gamma=0, alpha=1, size_average=True):
         super(FocalLossClass, self).__init__()
 
         self.gamma = gamma
-        self.weight = weight
+        self.alpha = alpha
         self.size_average = size_average
 
     def forward(self, input, target):
-        if input.dim()>2:
-            input = input.contiguous().view(input.size(0), input.size(1), -1)
-            input = input.transpose(1,2)
-            input = input.contiguous().view(-1, input.size(2)).squeeze()
-        if target.dim()==4:
-            target = target.contiguous().view(target.size(0), target.size(1), -1)
-            target = target.transpose(1,2)
-            target = target.contiguous().view(-1, target.size(2)).squeeze()
-        elif target.dim()==3:
-            target = target.view(-1)
-        else:
-            target = target.view(-1, 1)
 
-        # compute the negative likelyhood
-        weight = Variable(self.weight)
-        logpt = -F.cross_entropy(input, target)
-        pt = torch.exp(logpt)
+        input, target = input.unsqueeze(0), target.unsqueeze(0)
+        input = torch.clamp(input, min = np.exp(-100)) # so we do not log(0)
 
-        # compute the loss
-        loss = -((1-pt)**self.gamma) * logpt
+        logpt = (target * np.log(input) + (1-target) * np.log(1-input))
+        loss = -self.alpha * ((1-np.exp(logpt))**self.gamma) * logpt # for gamma = 0 and alpha = 1 we get the BCELoss
 
         # averaging (or not) loss
         if self.size_average:
