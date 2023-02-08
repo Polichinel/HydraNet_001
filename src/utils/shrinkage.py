@@ -19,33 +19,10 @@ class ShrinkageLoss(nn.Module):
         self.size_average = size_average
 
     def forward(self, input, target):
-        # if input.dim()>2:
-        #     input = input.contiguous().view(input.size(0), input.size(1), -1)
-        #     input = input.transpose(1,2)
-        #     input = input.contiguous().view(-1, input.size(2)).squeeze()
-        # if target.dim()==4:
-        #     target = target.contiguous().view(target.size(0), target.size(1), -1)
-        #     target = target.transpose(1,2)
-        #     target = target.contiguous().view(-1, target.size(2)).squeeze()
-        # elif target.dim()==3:
-        #     target = target.view(-1)
-        # else:
-        #     target = target.view(-1, 1)
 
         input, target = input.unsqueeze(0), target.unsqueeze(0) 
 
-        # compute the negative likelyhood
-        #weight = Variable(self.weight) # why even here?
-        #logpt = -F.cross_entropy(input, target) # why - ???
-
-        l = torch.abs(target - input)     #F.l1_loss(input, target)
-        #l2 =  l**2           #F.mse_loss(input, target)
-
-        # weight = 1 + torch.exp(self.a*(self.c-l))
-
-        # compute the loss
-        # loss = (l**2)/weight
-
+        l = torch.abs(target - input)    
         loss = (l**2)/(1 + torch.exp(self.a*(self.c-l)))
 
         # averaging (or not) loss
