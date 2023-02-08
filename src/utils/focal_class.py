@@ -22,10 +22,10 @@ class FocalLossClass(nn.Module):
     def forward(self, input, target):
 
         input, target = input.unsqueeze(0), target.unsqueeze(0)
-        input = torch.clamp(input, min = np.exp(-100)) # so we do not log(0)
+        input = torch.clamp(input, min = torch.exp(-100)) # so we do not log(0)
 
-        logpt = (target * np.log(input) + (1-target) * np.log(1-input))
-        loss = -self.alpha * ((1-np.exp(logpt))**self.gamma) * logpt # for gamma = 0 and alpha = 1 we get the BCELoss
+        logpt = (target * torch.log(input) + (1-target) * torch.log(1-input))
+        loss = -self.alpha * ((1-torch.exp(logpt))**self.gamma) * logpt # for gamma = 0 and alpha = 1 we get the BCELoss
 
         # averaging (or not) loss
         if self.size_average:
