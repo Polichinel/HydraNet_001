@@ -10,6 +10,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 # I refered https://github.com/c0nn3r/RetinaNet/blob/master/focal_loss.py
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 class FocalLossClass(nn.Module):
 
     def __init__(self, gamma=0, alpha=1, size_average=True):
