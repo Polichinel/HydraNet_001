@@ -28,7 +28,7 @@ class BalancedFocalLossClass(nn.Module):
 
         #for logits
         pos = (-self.alpha * (1-F.sigmoid(input))**self.gamma * F.logsigmoid(input))
-        neg = (-(1-self.alpha) * (1-1-F.sigmoid(input))**self.gamma *  F.logsigmoid(1-input))
+        neg = (-(1-self.alpha) * (-F.sigmoid(input))**self.gamma *  F.logsigmoid(1-input))
         loss = (pos * target + neg * (1-target))
 
         # for probs
