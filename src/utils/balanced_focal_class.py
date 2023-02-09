@@ -27,17 +27,15 @@ class BalancedFocalLossClass(nn.Module):
         
 
         #for logits
-        pos = (-self.alpha * (1-F.sigmoid(input))**self.gamma * F.logsigmoid(input))
-        neg = (-(1-self.alpha) * (-F.sigmoid(input))**self.gamma *  F.logsigmoid(1-input))
-        loss = (pos * target + neg * (1-target))
+        # pos = (-self.alpha * (1-F.sigmoid(input))**self.gamma * F.logsigmoid(input))
+        # neg = (-(1-self.alpha) * (-F.sigmoid(input))**self.gamma *  F.logsigmoid(1-input))
+        # loss = (pos * target + neg * (1-target))
 
         # for probs
-        # input = torch.clamp(input, min = torch.exp(torch.tensor(-100).to(device))) # so we do not log(0)
-        
-        # pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
-        # neg = (-(1-self.alpha) * (1-1-input)**self.gamma *  torch.log(1-input))
-
-        # loss = (pos * target + neg * (1-target))
+        input = torch.clamp(input, min = torch.exp(torch.tensor(-100).to(device))) # so we do not log(0)
+        pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
+        neg = (-(1-self.alpha) * (1-1-input)**self.gamma *  torch.log(1-input))
+        loss = (pos * target + neg * (1-target))
 
         # averaging (or not) loss
         if self.size_average:

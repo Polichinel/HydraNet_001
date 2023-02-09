@@ -23,7 +23,7 @@ class FocalLossReg(nn.Module):
     def forward(self, input, target):
 
         input, target = input.unsqueeze(0), target.unsqueeze(0)
-        #input = torch.clamp(input, min = np.exp(-100)) # could do this for no negatives???
+        #input = torch.clamp(input, min = np.exp(torch.tensor(-100))) # could do this for no negatives???
 
         error = target - input
         exp_error = torch.exp(error)  #torch.clamp(se, min = np.exp(-100)))
