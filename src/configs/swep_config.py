@@ -24,7 +24,8 @@ def get_swep_config():
         'output_channels': {'value' : 3},
         'loss_class' : { 'value' :  'b'},
         'loss_class_gamma' : { 'values' : [0, 0.5, 1, 2, 4]},
-        'loss_reg' : { 'value' : 'c'},
+        'loss_class_alpha' : { 'values' : [0.25, 0.5, 0.75, 0.95]},
+        'loss_reg' : { 'value' : 'b'},
         'loss_reg_a' : { 'values' : [5, 10, 15]},
         'loss_reg_c' : { 'values' : [0.2, 0.5, 0.8]},
         'test_samples': { 'value' : 128}       

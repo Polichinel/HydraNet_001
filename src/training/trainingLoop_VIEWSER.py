@@ -36,11 +36,12 @@ from gatedrecurrentUnet_v03 import GUNet_v03
 from BNrecurrentUnet import BNUNet
 #from focal import FocalLoss
 from focal_class import FocalLossClass
-from focal_reg import FocalLossReg
+#from focal_reg import FocalLossReg
+from balanced_focal_class import BalancedFocalLossClass
 from shrinkage import ShrinkageLoss
 
 
-from rmsle import RMSLELoss
+#from rmsle import RMSLELoss
 
 #from utils import *
 from mtloss import *
@@ -54,10 +55,7 @@ def choose_loss(config):
     if config.loss_reg == 'a':
         criterion_reg = nn.MSELoss().to(device)
 
-    # elif config.loss_reg == 'b':
-    #     criterion_reg = FocalLossReg(gamma=5).to(device)
-
-    elif config.loss_reg == 'c':
+    elif config.loss_reg == 'b':
         criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
 
     else:
@@ -69,6 +67,9 @@ def choose_loss(config):
 
     elif config.loss_class == 'b':
         criterion_class =  FocalLossClass(gamma=config.loss_class_gamma, alpha = 1).to(device)
+
+    elif config.loss_class == 'c':
+        criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma, alpha = 1).to(device)
 
     else:
         print('Wrong class loss...')

@@ -7,14 +7,18 @@ def get_hp_config():
     "scheduler" : 'step',
     "hidden_channels" : 16,
     "min_events" : 20,
-    "samples": 800, # 10 just for debug n
+    "samples": 400, # 10 just for debug n
     "dropout_rate" : 0.05,
     'learning_rate' :  0.0001,
     "weight_decay" :  0.1,
     'input_channels' : 3,
     "output_channels" : 3,
-    "loss_reg": 'c',
-    "loss_class": 'b', 
+    "loss_class": 'b',
+    'loss_class_gamma' : 5,
+    'loss_class_alpha' : 0.95,
+    "loss_reg": 'b',
+    'loss_reg_a' : { 'values' : 10},
+    'loss_reg_c' : { 'values' : 0.2},
     "test_samples": 128}
 
     return hyperparameters
