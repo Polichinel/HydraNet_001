@@ -13,12 +13,12 @@ def get_hp_config():
     "weight_decay" :  0.1,
     'input_channels' : 3,
     "output_channels" : 3,
-    "loss_class": 'b',
+    "loss_class": 'c',
     'loss_class_gamma' : 5,
     'loss_class_alpha' : 0.95,
     "loss_reg": 'b',
-    'loss_reg_a' : { 'values' : 10},
-    'loss_reg_c' : { 'values' : 0.2},
+    'loss_reg_a' : 10,
+    'loss_reg_c' :  0.2,
     "test_samples": 128}
 
     return hyperparameters
