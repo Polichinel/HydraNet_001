@@ -13,7 +13,7 @@ def get_hp_config():
     "weight_decay" :  0.1,
     'input_channels' : 3,
     "output_channels" : 3,
-    "loss_class": 'b',
+    "loss_class": 'c',
     'loss_class_gamma' : 2,
     'loss_class_alpha' : 0.75,
     "loss_reg": 'b',
