@@ -11,23 +11,23 @@ def get_swep_config():
     sweep_config['metric'] = metric
 
     parameters_dict = {
-        'model' : {'value' : 'UNet'},
+        'model' : {'value' : 'BNUNet'},
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'step'},
-        'hidden_channels': {'value': 16},
-        'min_events': {'value': 20},
-        'samples': {'value': 800},
+        'hidden_channels': {'values': [16, 32]},
+        'min_events': {'values': [10, 20, 30]},
+        'samples': {'values': [600, 800, 1000, 1200]},
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
-        'loss_class' : { 'value' :  'b'},
-        'loss_class_gamma' : { 'values' : [0, 0.5, 1, 2, 4]},
-        'loss_class_alpha' : { 'values' : [0.25, 0.5, 0.75, 0.95]},
-        'loss_reg' : { 'value' : 'b'},
-        'loss_reg_a' : { 'values' : [5, 10, 15]},
-        'loss_reg_c' : { 'values' : [0.2, 0.5, 0.8]},
+        'loss_class' : { 'value' :  'a'},
+        'loss_class_gamma' : { 'value' : 0},
+        'loss_class_alpha' : { 'value' : 0.25},
+        'loss_reg' : { 'value' : 'a'},
+        'loss_reg_a' : { 'value' : 5},
+        'loss_reg_c' : { 'value' : 0.2},
         'test_samples': { 'value' : 128}       
         }
 
