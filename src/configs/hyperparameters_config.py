@@ -5,7 +5,7 @@ def get_hp_config():
     "model" : 'BNUNet',
     "clip_grad_norm" : True,
     "scheduler" : 'step',
-    "hidden_channels" : 16,
+    "hidden_channels" : 32,
     "min_events" : 10,
     "samples": 800, # 10 just for debug n
     "dropout_rate" : 0.05,
