@@ -26,8 +26,8 @@ def get_swep_config():
         'loss_class_gamma' : { 'value' : 0},
         'loss_class_alpha' : { 'value' : 0.25},
         'loss_reg' : { 'value' : 'b'},
-        'loss_reg_a' : { 'values' : [0.5, 1, 5, 10]},
-        'loss_reg_c' : { 'values' : [0.5, 0.1, 0.2, 0.5]},
+        'loss_reg_a' : { 'values' : [0.5, 0.75, 1, 1.25, 1.5]},
+        'loss_reg_c' : { 'values' : [0.05, 0.1, 0.2, 0.5]},
         'test_samples': { 'value' : 128}       
         }
 
