@@ -14,7 +14,7 @@ def get_swep_config():
         'model' : {'value' : 'BNUNet'},
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'step'},
-        'hidden_channels': {'value': 16},
+        'hidden_channels': {'values': [16, 32]},
         'min_events': {'value': 10},
         'samples': {'value': 800},
         "dropout_rate" : {'value' : 0.05},
@@ -28,7 +28,8 @@ def get_swep_config():
         'loss_reg' : { 'value' : 'b'},
         'loss_reg_a' : { 'values' : [0.5, 1, 1.5]},
         'loss_reg_c' : { 'values' : [0.05, 0.1]},
-        'test_samples': { 'value' : 128}       
+        'test_samples': { 'value' : 128},
+        'h_init' : {'value' : 'zero'}  # right now this is just as a note to self. Can't change it here     
         }
 
 
