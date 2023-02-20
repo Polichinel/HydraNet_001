@@ -17,7 +17,7 @@ def get_hp_config():
     'loss_class_gamma' : 2,
     'loss_class_alpha' : 0.75,
     "loss_reg": 'b',
-    'loss_reg_a' : 1,
+    'loss_reg_a' : 5,
     'loss_reg_c' :  0.1,
     "test_samples": 128}
 
