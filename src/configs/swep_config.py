@@ -15,8 +15,8 @@ def get_swep_config():
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'step'},
         'hidden_channels': {'value': 16},
-        'min_events': {'values': [10, 20]},
-        'samples': {'values': [600, 800]},
+        'min_events': {'value': 10},
+        'samples': {'value': 800},
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},
@@ -24,10 +24,10 @@ def get_swep_config():
         'output_channels': {'value' : 3},
         'loss_class' : { 'values' :  ['a', 'b']},
         'loss_class_gamma' : { 'values' : [0, 0.5, 1, 2, 5]},
-        'loss_class_alpha' : { 'values' : [0.1, 0.25, 0.5]},
+        'loss_class_alpha' : { 'values' : [0.1, 0.25, 0.5]}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b'},
-        'loss_reg_a' : { 'values' : [0.5, 0.75, 1, 1.25, 1.5]},
-        'loss_reg_c' : { 'values' : [0.05, 0.1, 0.2, 0.5]},
+        'loss_reg_a' : { 'values' : [0.5, 1, 1.5]},
+        'loss_reg_c' : { 'values' : [0.05, 0.1]},
         'test_samples': { 'value' : 128}       
         }
 
