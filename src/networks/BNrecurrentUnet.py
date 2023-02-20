@@ -105,8 +105,8 @@ class BNUNet(nn.Module):
     def init_h(self, hidden_channels, dim, train_tensor): # could have x as input and then take x.shape
 
         # NEW -----------------------------------------------------------
-        #hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64)
-        hs = torch.randn((1,hidden_channels,dim,dim), dtype= torch.float64)
+        hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64) # + torch.exp(torch.tensor(-100)
+        #hs = torch.randn((1,hidden_channels,dim,dim), dtype= torch.float64)
 
         #torch.randn(2, 3, 20)
         #print(hs.shape)
@@ -121,8 +121,8 @@ class BNUNet(nn.Module):
     def init_hTtime(self, hidden_channels, H, W, test_tensor):
         
         # NEW -----------------------------------------------------------
-        #hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
-        hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
+        hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64) # + torch.exp(torch.tensor(-100)
+        #hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
 
         #hs_p = hs + test_tensor.detach().cpu() 
         return hs
