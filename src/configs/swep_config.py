@@ -22,7 +22,7 @@ def get_swep_config():
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
-        'loss_class' : { 'values' :  ['a', 'b']},
+        'loss_class' : { 'value' :  'b'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
         'loss_class_gamma' : { 'values' : [0, 0.5, 1, 2, 5]},
         'loss_class_alpha' : { 'values' : [0.5, 0.75, 0.95]}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b'},
