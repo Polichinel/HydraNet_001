@@ -69,7 +69,7 @@ def standard(x, noise = False):
     return(x_standard)
 
 
-def draw_window(views_vol, config):
+def draw_window(views_vol, config, sample):
 
     """Draw/sample a window/patch from the traning tensor.
     The dimensions of the windows are HxWxD, 
@@ -80,6 +80,10 @@ def draw_window(views_vol, config):
     ln_best_sb_idx =  np.random.choice([5,6,7]) # 5 - now it can be from all the three kinds of vioelnce... 
     last_feature_idx = ln_best_sb_idx + config.input_channels
     min_events = config.min_events
+
+    # so you get more dens observations in the beginning..
+    if sample > 10:
+        min_events *= 2
 
     views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
 
@@ -127,7 +131,7 @@ def get_train_tensors(views_vol, sample, config, device):
     # To handle "edge windows"
     while True:
         try:
-            window_dict = draw_window(views_vol = views_vol, config = config)
+            window_dict = draw_window(views_vol = views_vol, config = config, sample = sample)
             #print(window_dict)
 
             min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
