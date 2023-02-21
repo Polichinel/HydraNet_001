@@ -102,10 +102,10 @@ class HydraBNUNet(nn.Module):
         b = self.dropout(b)
 
         # decoder
-        d0 = F.relu(self.bn_dec_conv0_reg(self.dec_conv0_reg(torch.cat([self.upsample0_reg(b),e1s],1))))
+        d0 = F.relu(self.bn_dec_conv0(self.dec_conv0(torch.cat([self.upsample0(b),e1s],1))))
         d0 = self.dropout(d0)
         
-        d1 = F.relu(self.bn_dec_conv1_reg(self.dec_conv1_reg(torch.cat([self.upsample1_reg(d0), e0s],1)))) # You did not have any activations before - why not?
+        d1 = F.relu(self.bn_dec_conv1(self.dec_conv1(torch.cat([self.upsample1(d0), e0s],1)))) # You did not have any activations before - why not?
         d1 = self.dropout(d1)
 
 
