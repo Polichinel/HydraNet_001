@@ -7,7 +7,7 @@ def get_hp_config():
     "scheduler" : 'step',
     "hidden_channels" : 16,
     "min_events" : 10,
-    "samples": 600, # 10 just for debug n
+    "samples": 400, # 10 just for debug n
     "dropout_rate" : 0.05,
     'learning_rate' :  0.0001,
     "weight_decay" :  0.1,
