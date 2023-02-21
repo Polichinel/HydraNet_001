@@ -12,10 +12,10 @@ from torch.autograd import Variable
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-class stabelBalancedFocalLossClass(nn.Module):
+class stableBalancedFocalLossClass(nn.Module):
 
     def __init__(self, gamma=0, alpha=0.5, size_average=True):
-        super(stabelBalancedFocalLossClass, self).__init__()
+        super(stableBalancedFocalLossClass, self).__init__()
 
         self.gamma = gamma
         self.alpha = alpha
@@ -24,24 +24,30 @@ class stabelBalancedFocalLossClass(nn.Module):
     def forward(self, input, target):
 
         input, target = input.unsqueeze(0), target.unsqueeze(0)
-        
 
-        #for logits
-        # pos = (-self.alpha * (1-F.sigmoid(input))**self.gamma * F.logsigmoid(input))
-        # neg = (-(1-self.alpha) * (-F.sigmoid(input))**self.gamma *  F.logsigmoid(1-input))
-        # loss = (pos * target + neg * (1-target))
+        # fo   r probs
+        min_ind = torch.exp(torch.tensor(-100)) # almost 0
+        max_ind = torch.tensor(1.0)- torch.exp(torch.tensor(-10)) # almost 1
+        input = torch.clamp(input, min = min_ind, max = max_ind) # so we do not log(0) or log(1) due to under- or overflow
 
-        # for probs
-        min_ind = torch.exp(torch.tensor(-100).to(device)) # almost 0
-        max_ind = torch.tensor(1.0).to(device) - torch.exp(torch.tensor(-10)).to(device) # almost 1
-        input = torch.clamp(input, min = min_ind, max = max_ind) # so we do not log(0)
-        
         pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
         neg = (-(1-self.alpha) * (1-1-input)**self.gamma *  torch.log(1-input))
         loss = (pos * target + neg * (1-target))
+
+        # Seem pytorch have something like this.. The gradient clipping like nullifies this anyway...
+        if loss.mean() >= max_ind:
+            multuplier = 10
+        else:
+            multuplier = 1
+
+        loss =  loss * 2 * multuplier # *2 is just a constant to make it more like BCE
 
         # averaging (or not) loss
         if self.size_average:
             return loss.mean()
         else:
             return loss.sum()
+        
+        # The same as above... 
+        #pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
+        #neg = ((1-self.alpha) * (-input)**self.gamma *  torch.log(1-input))
