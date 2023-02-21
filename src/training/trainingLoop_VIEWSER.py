@@ -76,7 +76,7 @@ def choose_loss(config):
         criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
     elif config.loss_class == 'c':
-        criterion_class =  stabelBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
+        criterion_class =  stableBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
     else:
         print('Wrong class loss...')
