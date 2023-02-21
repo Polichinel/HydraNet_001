@@ -109,6 +109,10 @@ class HydraBNUNet(nn.Module):
         d1 = self.dropout(d1)
 
 
+        # HEADS 
+        # Before the two two tasks did not learn enough. Now it a very (perhaps too) similar.
+        # Maybe a smalle encoder-decoder between the prehead and the output layers. It is just one more layer really.. 
+
         #H1
         H1_pre = F.relu(self.bn_head1(self.dec_conv2_pre_head1(d1)))
         H1_pre = self.dropout(H1_pre) # is this good?
