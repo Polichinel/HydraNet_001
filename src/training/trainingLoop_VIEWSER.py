@@ -41,7 +41,7 @@ from focal_class import FocalLossClass
 #from focal_reg import FocalLossReg
 from balanced_focal_class import BalancedFocalLossClass
 from shrinkage import ShrinkageLoss
-
+from stabelBalancedFocalLossClass import stabelBalancedFocalLossClass
 
 #from rmsle import RMSLELoss
 
@@ -72,6 +72,9 @@ def choose_loss(config):
 
     elif config.loss_class == 'b':
         criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
+
+    elif config.loss_class == 'c':
+        criterion_class =  stabelBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
     else:
         print('Wrong class loss...')
@@ -201,7 +204,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             for p in model.parameters():
 
                 max_g = torch.tensor(1.0).to(device) - torch.exp(torch.tensor(-100)).to(device) # almost 1. better numerical stability - or you can put it in the loss...
-
+                # likely no reason to have these as tensors on device... Could just use numpy...
                 p.grad.data.clamp_(max = max_g)
 
         # else:
