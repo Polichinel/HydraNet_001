@@ -82,12 +82,8 @@ def draw_window(views_vol, config, sample):
     min_events = config.min_events
 
     # so you get more dens observations in the beginning..
-    if sample <= 5:
-        min_events *= 2
-
-    #And less dense later on
-    elif sample >= 300:
-        min_events /= 2
+    if sample <= min_events:
+        min_events = int((min_events + (min_events*4 - min_events) / (1 + np.exp(min_events)*0.1)))
 
     views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
 
