@@ -33,6 +33,8 @@ from recurrentUnet import UNet
 from gatedrecurrentUnet_v01 import GUNet_v01
 from gatedrecurrentUnet_v02 import GUNet_v02
 from gatedrecurrentUnet_v03 import GUNet_v03
+from HydraBNrecurrentUnet import HydraBNUNet
+
 from BNrecurrentUnet import BNUNet
 #from focal import FocalLoss
 from focal_class import FocalLossClass
@@ -106,6 +108,9 @@ def make(config):
 
     elif config.model == 'GUNet_v03':
         unet = GUNet_v03(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
+    elif config.model == 'HydraBNUNet':
+        unet = HydraBNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'BNUNet':
         unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
@@ -367,13 +372,6 @@ def get_posterior(model, views_vol, config, device, n):
         ap = average_precision_score(y_true_binary, y_score_prob)
         auc = roc_auc_score(y_true_binary, y_score_prob)
         brier = brier_score_loss(y_true_binary, y_score_prob)
-
-        # Works?
-        # log_dict = ({"monthly/out_sample_month": i,
-        #              "monthly/mean_squared_error": mse,
-        #              "monthly/average_precision_score": ap,
-        #              "monthly/roc_auc_score": auc,
-        #              "monthly/brier_score_loss":brier})
 
         log_dict = get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, out_of_sample_vol, config)# so at least it gets reported sep.
 
