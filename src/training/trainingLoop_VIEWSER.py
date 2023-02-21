@@ -43,7 +43,7 @@ from focal_class import FocalLossClass
 #from focal_reg import FocalLossReg
 from balanced_focal_class import BalancedFocalLossClass
 from shrinkage import ShrinkageLoss
-from stable_balanced_focal_class import stabelBalancedFocalLossClass
+from stable_balanced_focal_class import stableBalancedFocalLossClass
 
 #from rmsle import RMSLELoss
 
