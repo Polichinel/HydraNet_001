@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 # why can't import????
 # give everything better names at some point
-class HydraBNUNet(nn.Module):
+class HydraBNUNet02(nn.Module):
     def __init__(self, input_channels, hidden_channels, output_channels, dropout_rate):
         super().__init__()
 
@@ -39,21 +39,46 @@ class HydraBNUNet(nn.Module):
 
         # HEAD1
         self.dec_conv2_pre_head1 = nn.Conv2d(base, base, 3, padding=1)
-        self.dec_conv2_reg_head1 = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
-        self.dec_conv2_class_head1 = nn.Conv2d(base, 1, 3, padding=1)
         self.bn_head1 = nn.BatchNorm2d(base)
+
+        # reg1
+        self.dec_conv2_reg_head1 = nn.Conv2d(base, base, 3, padding=1)
+        self.bn_reg1 = nn.BatchNorm2d(base)
+        self.dec_conv2_reg_out1 = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
+        
+        # class1
+        self.dec_conv2_class_head1 = nn.Conv2d(base, base, 3, padding=1)
+        self.bn_class1 = nn.BatchNorm2d(base)
+        self.dec_conv2_class_out1 = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
+
 
         # HEAD2
         self.dec_conv2_pre_head2 = nn.Conv2d(base, base, 3, padding=1)
-        self.dec_conv2_reg_head2 = nn.Conv2d(base, 1, 3, padding=1)
-        self.dec_conv2_class_head2 = nn.Conv2d(base, 1, 3, padding=1)
         self.bn_head2 = nn.BatchNorm2d(base)
 
+        # reg2
+        self.dec_conv2_reg_head2 = nn.Conv2d(base, base, 3, padding=1)
+        self.bn_reg2 = nn.BatchNorm2d(base)
+        self.dec_conv2_reg_out2 = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
+        
+        # class2
+        self.dec_conv2_class_head2 = nn.Conv2d(base, base, 3, padding=1)
+        self.bn_class2 = nn.BatchNorm2d(base)
+        self.dec_conv2_class_out2 = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
+        
         # HEAD3
         self.dec_conv2_pre_head3 = nn.Conv2d(base, base, 3, padding=1)
-        self.dec_conv2_reg_head3 = nn.Conv2d(base, 1, 3, padding=1)
-        self.dec_conv2_class_head3 = nn.Conv2d(base, 1, 3, padding=1)
         self.bn_head3 = nn.BatchNorm2d(base)
+
+        # reg3
+        self.dec_conv2_reg_head3 = nn.Conv2d(base, base, 3, padding=1)
+        self.bn_reg3 = nn.BatchNorm2d(base)
+        self.dec_conv2_reg_out3 = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
+        
+        # class3
+        self.dec_conv2_class_head3 = nn.Conv2d(base, base, 3, padding=1)
+        self.bn_class3 = nn.BatchNorm2d(base)
+        self.dec_conv2_class_out3 = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
 
         # # decoder_reg (upsampling)
         # self.upsample0_reg = nn.ConvTranspose2d(base*4, base*2, 2, stride= 2, padding= 0, output_padding= 0) # 4 -> 8
@@ -66,7 +91,6 @@ class HydraBNUNet(nn.Module):
 
         # self.dec_conv2_reg = nn.Conv2d(base, output_channels, 3, padding=1) 
         # #self.bn_dec_conv2_reg = nn.BatchNorm2d(output_channels)  # you sire you want one here?
-
 
         # # decoder_class (upsampling)
         # self.upsample0_class = nn.ConvTranspose2d(base*4, base*2, 2, stride= 2, padding= 0, output_padding= 0) # 4 -> 8
@@ -116,7 +140,11 @@ class HydraBNUNet(nn.Module):
         #H1
         H1_pre = F.relu(self.bn_head1(self.dec_conv2_pre_head1(d1)))
         H1_pre = self.dropout(H1_pre) # is this good?
+        
+        H1_reg = F.relu(self.bn_reg1(self.dec_conv2_reg_out1(H1_pre)))
         H1_reg = self.dec_conv2_reg_head1(H1_pre)
+        
+        H1_class = F.relu(self.bn_class1(self.dec_conv2_class_out1(H1_pre)))
         H1_class = self.dec_conv2_class_head1(H1_pre)
 
         out_reg1 = F.relu(H1_reg)
@@ -125,8 +153,13 @@ class HydraBNUNet(nn.Module):
         #H2
         H2_pre = F.relu(self.bn_head2(self.dec_conv2_pre_head2(d1)))
         H2_pre = self.dropout(H2_pre)
+        
+        H2_reg = F.relu(self.bn_reg2(self.dec_conv2_reg_out2(H2_pre)))
         H2_reg = self.dec_conv2_reg_head2(H2_pre)
+
+        H2_class = F.relu(self.bn_class2(self.dec_conv2_class_out2(H2_pre)))
         H2_class = self.dec_conv2_class_head2(H2_pre)
+
 
         out_reg2 = F.relu(H2_reg)
         out_class2 = torch.sigmoid(H2_class)
@@ -134,7 +167,11 @@ class HydraBNUNet(nn.Module):
         #H3
         H3_pre = F.relu(self.bn_head3(self.dec_conv2_pre_head3(d1)))
         H3_pre = self.dropout(H3_pre)
+        
+        H3_reg = F.relu(self.bn_reg3(self.dec_conv2_reg_out3(H3_pre)))        
         H3_reg = self.dec_conv2_reg_head3(H3_pre)
+        
+        H3_class = F.relu(self.bn_class3(self.dec_conv2_class_out3(H3_pre)))        
         H3_class = self.dec_conv2_class_head3(H3_pre)
 
         out_reg3 = F.relu(H3_reg)

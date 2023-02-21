@@ -33,7 +33,9 @@ from recurrentUnet import UNet
 from gatedrecurrentUnet_v01 import GUNet_v01
 from gatedrecurrentUnet_v02 import GUNet_v02
 from gatedrecurrentUnet_v03 import GUNet_v03
-from HydraBNrecurrentUnet import HydraBNUNet
+from HydraBNrecurrentUnet_01 import HydraBNUNet01
+from HydraBNrecurrentUnet_02 import HydraBNUNet02
+
 
 from BNrecurrentUnet import BNUNet
 #from focal import FocalLoss
@@ -112,8 +114,11 @@ def make(config):
     elif config.model == 'GUNet_v03':
         unet = GUNet_v03(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
-    elif config.model == 'HydraBNUNet':
-        unet = HydraBNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+    elif config.model == 'HydraBNUNet01':
+        unet = HydraBNUNet01(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
+    elif config.model == 'HydraBNUNet02':
+        unet = HydraBNUNet02(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'BNUNet':
         unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
