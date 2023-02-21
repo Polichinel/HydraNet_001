@@ -14,7 +14,7 @@ def get_swep_config():
         'model' : {'value' : 'HydraBNUNet'},
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'step'},
-        'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
+        'hidden_channels': {'value': 16}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 10},
         'samples': {'value': 800},
         "dropout_rate" : {'value' : 0.05},
