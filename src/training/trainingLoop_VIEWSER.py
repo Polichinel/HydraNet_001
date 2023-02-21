@@ -199,7 +199,10 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         #     nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
         #    nn.utils.clip_grad_value_(model.parameters(), 0.1)
             for p in model.parameters():
-                p.grad.data.clamp_(max=1)
+
+                max_g = torch.tensor(1.0) - torch.exp(torch.tensor(-100)) # almost 1. better numerical stability - or you can put it in the loss...
+
+                p.grad.data.clamp_(max = max_g)
 
         # else:
         #     pass

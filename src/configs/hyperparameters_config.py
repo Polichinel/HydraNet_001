@@ -3,7 +3,7 @@ def get_hp_config():
     
     hyperparameters = {
     "model" : 'HydraBNUNet', #'BNUNet',
-    "clip_grad_norm" : False,
+    "clip_grad_norm" : True,
     "scheduler" : 'step',
     "hidden_channels" : 16,
     "min_events" : 10,
