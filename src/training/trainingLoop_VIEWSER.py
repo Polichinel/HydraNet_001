@@ -91,7 +91,7 @@ def choose_loss(config):
 
     print(f'Regression loss: {criterion_reg}\n classification loss: {criterion_class}')
 
-    is_regression = torch.Tensor([True, True, True, False, False, False])
+    is_regression = torch.Tensor([True, True, True, False, False, False])   # for vea you can just have 1 extre False (classifcation) in the end for the kl... Or should it really be seen as a reg?
     multitaskloss_instance = MultiTaskLoss(is_regression, reduction = 'sum') # also try mean
 
     return(criterion_reg, criterion_class, multitaskloss_instance)
@@ -206,11 +206,17 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         if config.clip_grad_norm == True:
         #     nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
         #    nn.utils.clip_grad_value_(model.parameters(), 0.1)
-            for p in model.parameters():
+            clip_value = 1.0 # torch.tensor(1.0).to(device) - torch.exp(torch.tensor(-100)).to(device) # almost 1. better numerical stability - or you can put it in the loss...
+            nn.utils.clip_grad_value_(model.parameters(), clip_value=clip_value)
+            #nn.utils.clip_grad_norm_(model.parameters(), , max_norm=2.0, norm_type=2)
 
-                max_g = torch.tensor(1.0).to(device) - torch.exp(torch.tensor(-100)).to(device) # almost 1. better numerical stability - or you can put it in the loss...
+            # for p in model.parameters():
+
+                
                 # likely no reason to have these as tensors on device... Could just use numpy...
-                p.grad.data.clamp_(max = max_g)
+                #p.grad.data.clamp_(max = clip_value) # pretty sure this is wrong...
+
+                # p.register_hook(lambda grad: torch.clamp(grad, -clip_value, clip_value)) # this is likely right, but where to but it...
 
         # else:
         #     pass
@@ -466,7 +472,7 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
 
-        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_014_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
+        project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_015_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
 
         sweep_config = get_swep_config()
         sweep_config['parameters']['time_steps'] = {'value' : time_steps}
