@@ -16,7 +16,7 @@ def get_swep_config():
         'scheduler' : {'value': 'step'},
         'hidden_channels': {'value': 16}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 10},
-        'samples': {'value': 200}, # just speed running here..
+        'samples': {'value': 400}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},
@@ -26,7 +26,7 @@ def get_swep_config():
         'loss_class_gamma' : { 'values' : [0, 0.5, 1, 2, 5]},
         'loss_class_alpha' : { 'values' : [0.5, 0.75, 0.95]}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b'},
-        'loss_reg_a' : { 'value' : 2},
+        'loss_reg_a' : { 'values' : [2, 4, 8]},
         'loss_reg_c' : { 'values' : [0.01, 0.05, 0.1]},
         'test_samples': { 'value' : 128},
         'h_init' : {'value' : 'abs_rand_exp-100'}  # right now this is just as a note to self. Can't change it here     
