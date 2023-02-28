@@ -24,29 +24,49 @@ class stableBalancedFocalLossClass(nn.Module):
     def forward(self, input, target):
 
         input, target = input.unsqueeze(0), target.unsqueeze(0)
+        
+        # Numerical stabilityt pytorhc trick.
+        log_input = torch.clamp(torch.log(input), -100, 100)
+        log_input_rev = torch.clamp(torch.log(1-input), -100, 100)
 
-        # fo   r probs
-        min_ind = torch.exp(torch.tensor(-100).to(device)) # almost 0
-        max_ind = torch.tensor(1.0).to(device)- torch.exp(torch.tensor(-10).to(device)) # almost 1
-        input = torch.clamp(input, min = min_ind, max = max_ind) # so we do not log(0) or log(1) due to under- or overflow
-
-        pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
-        neg = (-(1-self.alpha) * (1-1-input)**self.gamma *  torch.log(1-input))
+        # for probs
+        pos = (-self.alpha * (1-input)**self.gamma * log_input)
+        neg = (-(1-self.alpha) * (1-1-input)**self.gamma * log_input_rev)
+        
         loss = (pos * target + neg * (1-target))
-
-        # Seem pytorch have something like this.. The gradient clipping like nullifies this anyway...
-        if loss.mean() >= max_ind:
-            multuplier = 10
-        else:
-            multuplier = 1
-
-        loss =  loss * 2 * multuplier # *2 is just a constant to make it more like BCE
 
         # averaging (or not) loss
         if self.size_average:
             return loss.mean()
         else:
             return loss.sum()
+
+
+
+        # input, target = input.unsqueeze(0), target.unsqueeze(0)
+
+        # # fo   r probs
+        # min_ind = torch.exp(torch.tensor(-100).to(device)) # almost 0
+        # max_ind = torch.tensor(1.0).to(device)- torch.exp(torch.tensor(-10).to(device)) # almost 1
+        # input = torch.clamp(input, min = min_ind, max = max_ind) # so we do not log(0) or log(1) due to under- or overflow
+
+        # pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
+        # neg = (-(1-self.alpha) * (1-1-input)**self.gamma *  torch.log(1-input))
+        # loss = (pos * target + neg * (1-target))
+
+        # # Seem pytorch have something like this.. The gradient clipping like nullifies this anyway...
+        # if loss.mean() >= max_ind:
+        #     multuplier = 10
+        # else:
+        #     multuplier = 1
+
+        # loss =  loss * 2 * multuplier # *2 is just a constant to make it more like BCE
+
+        # # averaging (or not) loss
+        # if self.size_average:
+        #     return loss.mean()
+        # else:
+        #     return loss.sum()
         
         # The same as above... 
         #pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
