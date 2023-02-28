@@ -78,9 +78,9 @@ class HydraBNUNet01_vae(nn.Module):
 
         # -----------------------------------------------------------------
         # VEA bottleneck (SIMPLE VERSION)
-        mu = self.bottleneck_conv_mu(self.bottleneck_conv(e1))
+        mu = self.bottleneck_conv_mu(e1)
         # sigma = torch.exp(self.bottleneck_conv_sigma(self.bottleneck_conv(e1)))
-        sigma = self.bottleneck_conv_sigma(self.bottleneck_conv(e1))
+        sigma = self.bottleneck_conv_sigma(e1)
         epsilon = torch.randn_like(sigma)
         z_reparametrized = mu + sigma * epsilon
         # ------------------------------------------------------------------
