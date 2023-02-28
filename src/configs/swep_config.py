@@ -11,7 +11,7 @@ def get_swep_config():
     sweep_config['metric'] = metric
 
     parameters_dict = {
-        'model' : {'values' : ['HydraBNUNet01', 'BNUNet']},
+        'model' : {'value' : 'HydraBNUNet01_vae'},
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'step'},
         'hidden_channels': {'value': 16}, # you like need 32, it seems from qualitative results
