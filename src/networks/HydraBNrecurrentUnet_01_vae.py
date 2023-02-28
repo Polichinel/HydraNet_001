@@ -131,7 +131,7 @@ class HydraBNUNet01_vae(nn.Module):
         out_reg = torch.concat([out_reg1, out_reg2, out_reg3], dim=1)        
         out_class = torch.concat([out_class1, out_class2, out_class3], dim=1)
 
-        return out_reg, out_class, h. mu, sigma # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
+        return out_reg, out_class, h, mu, sigma # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
 
 
     # YOU CAN MAKE HIDDEN STATE TAKE THE FIRST INPUT AND JUST BROADCAT IT OUT..
