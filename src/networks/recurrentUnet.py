@@ -81,6 +81,8 @@ class UNet(nn.Module):
         d2_class = self.dec_conv2_class(d1_class) # test bc I don't want negative values...
 
         d2_class = torch.sigmoid(d2_class)
+
+        #h = torch.tanh(e0s_) # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
         # return d2, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
         #return d2_reg, d2_class, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
@@ -92,7 +94,8 @@ class UNet(nn.Module):
     def init_h(self, hidden_channels, dim, train_tensor): # could have x as input and then take x.shape
 
         # NEW -----------------------------------------------------------
-        hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64)
+        # hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64)
+        hs = torch.abs(torch.randn((1,hidden_channels, dim, dim), dtype= torch.float64) * torch.exp(torch.tensor(-100))) 
         #hs = torch.randn((1,hidden_channels,dim,dim), dtype= torch.float64)
 
         #torch.randn(2, 3, 20)
@@ -108,7 +111,8 @@ class UNet(nn.Module):
     def init_hTtime(self, hidden_channels, H, W, test_tensor):
         
         # NEW -----------------------------------------------------------
-        hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+        # hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+        hs = torch.abs(torch.randn((1,hidden_channels, H, W), dtype= torch.float64) * torch.exp(torch.tensor(-100))) 
         #hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
 
         #hs_p = hs + test_tensor.detach().cpu() 
