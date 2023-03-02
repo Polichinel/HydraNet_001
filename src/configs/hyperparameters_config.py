@@ -2,7 +2,7 @@
 def get_hp_config():
     
     hyperparameters = {
-    "model" : 'BNUNet', #'BNUNet',
+    "model" : 'HydraBNUNet01', #'BNUNet',
     "clip_grad_norm" : True,
     "scheduler" : 'step',
     "hidden_channels" : 32,
@@ -17,8 +17,8 @@ def get_hp_config():
     'loss_class_gamma' : 2, # try with 1 here and 0.75 below # # gamma=0 no wieght. Between 0 and 1 seems very unstable... In general, this here above 0 seems unstable... At least the the reg values below 
     'loss_class_alpha' : 0.6, # try with 0.75 # alpha=0.5 even.
     "loss_reg": 'b',
-    'loss_reg_a' : 2, # new 
-    'loss_reg_c' :  0.05, # new
+    'loss_reg_a' : 4, # new 
+    'loss_reg_c' :  0.1, # new
     "test_samples": 128}
 
     return hyperparameters
