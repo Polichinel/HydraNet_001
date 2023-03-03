@@ -14,8 +14,8 @@ def get_hp_config():
     'input_channels' : 3,
     "output_channels" : 3,
     "loss_class": 'c',  # band c are is still unstable... 
-    'loss_class_gamma' : 2, # try with 1 here and 0.75 below # # gamma=0 no wieght. Between 0 and 1 seems very unstable... In general, this here above 0 seems unstable... At least the the reg values below 
-    'loss_class_alpha' : 0.6, # try with 0.75 # alpha=0.5 even.
+    'loss_class_gamma' : 0, # try with 1 here and 0.75 below # # gamma=0 no wieght. Between 0 and 1 seems very unstable... In general, this here above 0 seems unstable... At least the the reg values below 
+    'loss_class_alpha' : 0.5, # try with 0.75 # alpha=0.5 even.
     "loss_reg": 'b',
     'loss_reg_a' : 4, # new 
     'loss_reg_c' :  0.1, # new
