@@ -130,7 +130,7 @@ class HydraBNUNet02(nn.Module):
         H3_pre = F.relu(self.bn1_head3(self.dec_conv2_pre1_head3(d1)))
         H3_pre = self.dropout(H3_pre)
 
-        H3_pre = F.relu(self.bn2_head3(self.dec_conv2_pr2e_head3(H3_pre)))
+        H3_pre = F.relu(self.bn2_head3(self.dec_conv2_pre2_head3(H3_pre)))
         H3_pre = self.dropout(H3_pre)
 
         H3_reg = self.dec_conv2_reg_head3(H3_pre)
