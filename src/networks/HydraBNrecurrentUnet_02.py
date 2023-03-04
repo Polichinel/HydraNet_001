@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 # why can't import????
 # give everything better names at some point
-class HydraBNUNet01(nn.Module):
+class HydraBNUNet02(nn.Module):
     def __init__(self, input_channels, hidden_channels, output_channels, dropout_rate):
         super().__init__()
 
