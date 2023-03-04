@@ -35,6 +35,7 @@ from gatedrecurrentUnet_v02 import GUNet_v02
 from gatedrecurrentUnet_v03 import GUNet_v03
 from HydraBNrecurrentUnet_01 import HydraBNUNet01
 from HydraBNrecurrentUnet_02 import HydraBNUNet02
+from HydraBNrecurrentUnet_03 import HydraBNUNet03
 
 
 from BNrecurrentUnet import BNUNet
