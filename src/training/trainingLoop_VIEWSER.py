@@ -121,6 +121,9 @@ def make(config):
     elif config.model == 'HydraBNUNet02':
         unet = HydraBNUNet02(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
+    elif config.model == 'HydraBNUNet03':
+        unet = HydraBNUNet03(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
     elif config.model == 'BNUNet':
         unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
