@@ -18,7 +18,7 @@ def get_hp_config():
     'loss_class_alpha' : 0.5, # try with 0.75 # alpha=0.5 even.
     "loss_reg": 'b',
     'loss_reg_a' : 10, # new 
-    'loss_reg_c' :  0.2, # nest 0.2 and 0.5
+    'loss_reg_c' :  0.01, # nest 0.2 and 0.5
     "test_samples": 128}
 
     return hyperparameters
