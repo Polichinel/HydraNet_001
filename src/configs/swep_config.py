@@ -16,7 +16,7 @@ def get_swep_config():
         'scheduler' : {'value': 'step'},
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 10},
-        'samples': {'value': 600}, # just speed running here..
+        'samples': {'value': 800}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},
