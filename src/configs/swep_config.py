@@ -16,14 +16,14 @@ def get_swep_config():
         'scheduler' : {'value': 'step'},
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 10},
-        'samples': {'values': [256 ,512, 1024]}, # just speed running here..
+        'samples': {'values': [512, 1024, 2048]}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
-        'loss_class' : { 'value' : 'c'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
-        'loss_class_gamma' : {'values' : [0, 2]},
+        'loss_class' : { 'value' : 'a'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
+        'loss_class_gamma' : {'value' : 0},
         'loss_class_alpha' : {'value' : 0.5}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b'},
         'loss_reg_a' : { 'values' : [10, 12, 14]},
