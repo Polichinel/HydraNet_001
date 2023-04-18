@@ -24,14 +24,15 @@ class stableBalancedFocalLossClass(nn.Module):
     def forward(self, input, target):
 
         input, target = input.unsqueeze(0), target.unsqueeze(0)
-        
+
         # Numerical stabilityt pytorhc trick.
-        log_input = torch.clamp(torch.log(input), -100, 100)
-        log_input_rev = torch.clamp(torch.log(1-input), -100, 100)
+        floor = 0 + torch.exp(torch.tensor(-100, dtype = torch.float64))#1e-12 
+        ceiling = 1.0 - torch.exp(torch.tensor(-37, dtype = torch.float64))# This 1-e^37 is the highst value that does not results in nans... # 1e-12 
+        input = torch.clamp(input, min = floor.to(device), max = ceiling.to(device))
 
         # for probs
-        pos = (-self.alpha * (1-input)**self.gamma * log_input)
-        neg = (-(1-self.alpha) * (1-1-input)**self.gamma * log_input_rev)
+        pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
+        neg = (-(1-self.alpha) * (1-1-input)**self.gamma * torch.log(1-input))
         
         loss = (pos * target + neg * (1-target))
 
@@ -41,6 +42,41 @@ class stableBalancedFocalLossClass(nn.Module):
         else:
             return loss.sum()
 
+
+# class stableBalancedFocalLossClass(nn.Module):
+
+#     def __init__(self, gamma=0, alpha=0.5, size_average=True):
+#         super(stableBalancedFocalLossClass, self).__init__()
+
+#         self.gamma = gamma
+#         self.alpha = alpha.to(device)
+#         self.size_average = size_average
+
+#     def forward(self, input, target):
+
+#         input, target = input.unsqueeze(0), target.unsqueeze(0)
+        
+#         # Numerical stabilityt pytorhc trick.
+#         log_input = torch.clamp(torch.log(input), -100, 100)
+#         log_input_rev = torch.clamp(torch.log(1-input), -100, 100)
+
+#         # for probs
+#         pos = (-self.alpha * (1-input)**self.gamma * log_input)
+#         neg = (-(1-self.alpha) * (1-1-input)**self.gamma * log_input_rev)
+        
+#         loss = (pos * target + neg * (1-target))
+
+#         # averaging (or not) loss
+#         if self.size_average:
+#             return loss.mean()
+#         else:
+#             return loss.sum()
+
+
+
+
+
+# ---------------------------- old!!!!
 
 
         # input, target = input.unsqueeze(0), target.unsqueeze(0)
