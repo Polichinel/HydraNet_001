@@ -164,7 +164,7 @@ class HydraBNUNet01(nn.Module):
         
         # Hidden state
         # You could make a gate hare simply as a conv layer -> BN -> relu...
-        h = torch.tanh(e0s_) # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        #h = torch.tanh(e0s_) # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         # RESTRUCTURE TO FIT "OLD" FORMAT. dim 1 should be depth
         out_reg = torch.concat([out_reg1, out_reg2, out_reg3], dim=1)        
@@ -172,7 +172,7 @@ class HydraBNUNet01(nn.Module):
  
         # return d2, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
         #return d2_reg, d2_class, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
-        return out_reg, out_class, h # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
+        return out_reg, out_class, e0s_ # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
 
 
     # YOU CAN MAKE HIDDEN STATE TAKE THE FIRST INPUT AND JUST BROADCAT IT OUT..
