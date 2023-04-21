@@ -23,8 +23,8 @@ def get_swep_config():
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
         'loss_class' : { 'value' : 'c'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
-        'loss_class_gamma' : {'value' : 0},
-        'loss_class_alpha' : {'value' : 0.5}, # should be between 0.5 and 0.95...
+        'loss_class_gamma' : {'values' : [0,2,4]},
+        'loss_class_alpha' : {'values' : [0.5, 0.6, 0.6]}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b'},
         'loss_reg_a' : { 'values' : [10, 12, 14, 16, 18]},
         'loss_reg_c' : { 'value' : 0.01},
