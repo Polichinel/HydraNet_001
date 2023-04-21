@@ -7,7 +7,7 @@ import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, LinearLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, LinearLR, OneCycleLR
 from torch.optim.lr_scheduler import ChainedScheduler
 
 from torchvision import transforms
@@ -146,6 +146,14 @@ def make(config):
     elif config.scheduler == 'linear':
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = LinearLR(optimizer)
+
+    elif config.scheduler == 'OneCycleLR':
+
+        scheduler = OneCycleLR(optimizer, 
+                       max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
+                       steps_per_epoch = 8, # The number of steps per epoch to train for.
+                       epochs = 4, # The number of epochs to train for.
+                       anneal_strategy = 'cos') # Specifies the annealing strategy
 
     else:
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))

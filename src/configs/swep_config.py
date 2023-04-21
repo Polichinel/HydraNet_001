@@ -13,7 +13,7 @@ def get_swep_config():
     parameters_dict = {
         'model' : {'value' :'HydraBNUNet03'},
         'clip_grad_norm' : {'value': True},
-        'scheduler' : {'value': 'step'},
+        'scheduler' : {'value': 'OneCycleLR'},
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 10},
         'samples': {'value': 512}, # just speed running here..
