@@ -149,7 +149,8 @@ def make(config):
 
     elif config.scheduler == 'OneCycleLR':
 
-        scheduler = OneCycleLR(optimizer, 
+        scheduler = OneCycleLR(optimizer,
+                       total_steps=256, 
                        max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
                        anneal_strategy = 'cos') # Specifies the annealing strategy
 
