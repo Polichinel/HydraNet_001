@@ -156,7 +156,7 @@ def make(config):
 
     elif config.scheduler == 'CyclicLR':
 
-        scheduler = OneCycleLR(optimizer,
+        scheduler = CyclicLR(optimizer,
                        step_size_up=200,
                        base_lr = config.learning_rate * 0.1,
                        max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
