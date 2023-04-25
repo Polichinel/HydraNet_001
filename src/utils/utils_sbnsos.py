@@ -68,6 +68,16 @@ def standard(x, noise = False):
 
     return(x_standard)
 
+def my_decay(sample, min_events):
+    
+    max_events = min_events * 5
+    k = 0.01
+    adj_min_events = max_events/(1+np.exp( k *(sample - 128)))
+    adj_min_events += min_events
+    adj_min_events = adj_min_events.astype('int')
+
+    return(adj_min_events)
+
 
 def draw_window(views_vol, config, sample):
 
@@ -77,13 +87,16 @@ def draw_window(views_vol, config, sample):
     The windows are constrained to be sampled from an area with some
     minimum number of log_best events (min_events)."""
 
-    ln_best_sb_idx =  np.random.choice([5,6,7]) # 5 - now it can be from all the three kinds of vioelnce... 
-    last_feature_idx = ln_best_sb_idx + config.input_channels
+    ln_best_sb_idx = 5 # 5 = ln_best_sb 
+    last_feature_idx = ln_best_sb_idx + config.input_channels - 1 # 5 + 3 - 1 = 7 which is os
     min_events = config.min_events
 
     # so you get more dens observations in the beginning..
-    if sample <= min_events:
-        min_events = int((min_events + (min_events*4 - min_events) / (1 + np.exp(min_events)*0.1)))
+    min_events = my_decay(sample, min_events)
+
+    # if sample <= min_events:
+    #     min_events = int((min_events + (min_events*4 - min_events) / (1 + np.exp(min_events)*0.1))) # try setting this higher
+
 
     views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
 
@@ -144,7 +157,8 @@ def get_train_tensors(views_vol, sample, config, device):
             max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
             input_window = train_views_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, :]
-            assert input_window.shape[1] == window_dict['dim'] and input_window.shape[2] == window_dict['dim']            
+            assert input_window.shape[1] == window_dict['dim'] and input_window.shape[2] == window_dict['dim']
+
             break
 
         except:
