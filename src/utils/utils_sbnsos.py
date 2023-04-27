@@ -144,7 +144,7 @@ def get_train_tensors(views_vol, sample, config, device):
 
     train_views_vol = views_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
 
-    shift = 0  # TEST --------------------------------------------
+    shift = config.seed  # TEST --------------------------------------------
 
     # To handle "edge windows"
     while True:
