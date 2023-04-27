@@ -79,7 +79,7 @@ def my_decay(sample, min_events):
     return(adj_min_events)
 
 
-def draw_window(views_vol, config, sample):
+def draw_window(views_vol, config, sample, count): # count is just here so we do not get stuck on a bad seed!!!!
 
     """Draw/sample a window/patch from the traning tensor.
     The dimensions of the windows are HxWxD, 
@@ -109,7 +109,7 @@ def draw_window(views_vol, config, sample):
     # it is index... Not lat long.
     min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] 
     
-    np.random.seed(sample) # just a test --------------------------------------------------------------------------------------------------------------------------------
+    np.random.seed(sample+count) # just a test --------------------------------------------------------------------------------------------------------------------------------
 
     indx = np.random.choice(min_events_indx)
 
@@ -147,10 +147,15 @@ def get_train_tensors(views_vol, sample, config, device):
     train_views_vol = views_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
 
 
+    count = 0 #debug thing!!!!  -------------------------------------------------------------------
+
     # To handle "edge windows"
     while True:
+
+        count += 1 #debug thing!!!!  -------------------------------------------------------------------
+
         try:
-            window_dict = draw_window(views_vol = views_vol, config = config, sample = sample)
+            window_dict = draw_window(views_vol = views_vol, config = config, sample = sample, count)
             #print(window_dict)
 
             min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
