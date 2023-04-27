@@ -474,6 +474,8 @@ if __name__ == "__main__":
 
     wandb.login()
 
+    np.random.seed(42)
+
     time_steps_dict = {'a':12,
                        'b':24,
                        'c':36,
