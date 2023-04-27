@@ -109,7 +109,7 @@ def draw_window(views_vol, config, sample):
     # it is index... Not lat long.
     min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] 
 
-    indx = np.random.choice(min_events_indx)
+    indx = random.choice(min_events_indx)
 
     dim = np.random.choice([16, 32, 64]) 
 
