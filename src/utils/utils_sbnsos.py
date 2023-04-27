@@ -155,7 +155,7 @@ def get_train_tensors(views_vol, sample, config, device):
         count += 1 #debug thing!!!!  -------------------------------------------------------------------
 
         try:
-            window_dict = draw_window(views_vol = views_vol, config = config, sample = sample, count)
+            window_dict = draw_window(views_vol = views_vol, config = config, sample = sample, count = count)
             #print(window_dict)
 
             min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
