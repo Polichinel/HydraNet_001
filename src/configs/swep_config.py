@@ -29,7 +29,7 @@ def get_swep_config():
         'loss_reg_a' : { 'values' : [10, 12, 14, 16, 18]},
         'loss_reg_c' : { 'value' : 0.01},
         'test_samples': { 'value' : 128},
-        'seed' : {'values' : [0,42,666, 2023]},
+        'seed' : {'values' : [1, 43, 667, 2024]},
         'h_init' : {'value' : 'abs_rand_exp-100'}  # right now this is just as a note to self. Can't change it here     
         }
 
