@@ -109,8 +109,8 @@ def draw_window(views_vol, config, sample):
     # it is index... Not lat long.
     min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] 
 
-    indx = random.choice(min_events_indx)
-
+    #indx = random.choice(min_events_indx)
+    indx = min_events_indx[np.random.choice(len(min_events_indx))] # dumb but working solution of np.random instead of random
     dim = np.random.choice([16, 32, 64]) 
 
     # if you wnat a random temporal window, it is here.
