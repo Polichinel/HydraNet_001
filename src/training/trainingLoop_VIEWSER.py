@@ -474,8 +474,6 @@ if __name__ == "__main__":
 
     wandb.login()
 
-    np.random.seed(42)
-
     time_steps_dict = {'a':12,
                        'b':24,
                        'c':36,
@@ -493,6 +491,8 @@ if __name__ == "__main__":
     if do_sweep == 'a':
 
         print('Doing a sweep!')
+        np.random.seed(42)
+        print(f'random_test:{np.random.seed(42)} = 6?')
 
         project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_016_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
 
