@@ -492,7 +492,7 @@ if __name__ == "__main__":
 
         print('Doing a sweep!')
         np.random.seed(42)
-        print(f'random_test:{np.random.seed(42)} = 6?')
+        print(f'random_test:{np.random.randint(10)} = 6?')
 
         project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_016_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
 
