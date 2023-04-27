@@ -152,8 +152,6 @@ def get_train_tensors(views_vol, sample, config, device):
     # To handle "edge windows"
     while True:
 
-        count += 1 #debug thing!!!!  -------------------------------------------------------------------
-
         try:
             window_dict = draw_window(views_vol = views_vol, config = config, sample = sample, count = count)
             #print(window_dict)
@@ -170,6 +168,7 @@ def get_train_tensors(views_vol, sample, config, device):
 
         except:
             print('Resample edge...', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
+            count += 1 #debug thing!!!!  -------------------------------------------------------------------
             continue
 
     ln_best_sb_idx = 5
