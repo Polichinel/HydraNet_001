@@ -98,7 +98,7 @@ def draw_window(views_vol, config, sample):
     min_events = my_decay(sample, min_events)
 
     if sample == 0: # bisically, give me the index of the cells which saw the most violence the 4 first months...  # TEST --------------------------------------------
-        views_vol_count = np.count_nonzero(views_vol[0:4,:,:,0:3], axis = 0).sum(axis=2) 
+        views_vol_count = np.count_nonzero(views_vol[0:config.start_months,:,:,0:3], axis = 0).sum(axis=2) 
         min_events_index = np.where(views_vol_count >= views_vol_count.max())
 
     else: # TEST --------------------------------------------
