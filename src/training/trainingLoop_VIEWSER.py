@@ -165,7 +165,7 @@ def make(config):
 
     else:
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
-        scheduler = [] # coul set to None...
+        scheduler = [] # could set to None...
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
@@ -186,6 +186,11 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
     # initialize a hidden state
     h = model.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
+
+
+
+    # So you are updating after each month... Should you not just update after each sequence...
+
 
     for i in range(seq_len-1): # so your sequnce is the full time len - last month.
         print(f'\t\t month: {i+1}/{seq_len}...', end='\r')

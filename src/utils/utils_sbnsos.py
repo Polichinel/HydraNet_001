@@ -87,6 +87,9 @@ def draw_window(views_vol, config, sample):
     The windows are constrained to be sampled from an area with some
     minimum number of log_best events (min_events)."""
 
+
+    # BY NOW THIS IS PRETTY HACKY... SHOULD BE MADE MORE ELEGANT AT SOME POINT..
+
     ln_best_sb_idx = 5 # 5 = ln_best_sb 
     last_feature_idx = ln_best_sb_idx + config.input_channels - 1 # 5 + 3 - 1 = 7 which is os
     min_events = config.min_events
@@ -94,14 +97,13 @@ def draw_window(views_vol, config, sample):
     # so you get more dens observations in the beginning..
     min_events = my_decay(sample, min_events)
 
-    # if sample <= min_events:
-    #     min_events = int((min_events + (min_events*4 - min_events) / (1 + np.exp(min_events)*0.1))) # try setting this higher
+    if sample == 0: # bisically, give me the index of the cells which saw the most violence the 4 first months...  # TEST --------------------------------------------
+        views_vol_count = np.count_nonzero(views_vol[0:4,:,:,0:3], axis = 0).sum(axis=2) 
+        min_events_index = np.where(views_vol_count >= views_vol_count.max())
 
-
-    views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
-
-    # number of events so >= 1 or > 0 is the same as np.nonzero
-    min_events_index = np.where(views_vol_count >= min_events) 
+    else: # TEST --------------------------------------------
+        views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
+        min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
 
     min_events_row = min_events_index[0]
     min_events_col = min_events_index[1]
@@ -149,7 +151,7 @@ def get_train_tensors(views_vol, sample, config, device):
     # To handle "edge windows"
     while True:
 
-        np.random.seed(sample + shift)   # TEST --------------------------------------------
+        np.random.seed(sample + shift)   # TEST -------------------------------------------- ALRIGHT THIS WORKS; BUT FOR WIERD REASONS... I think it simply discurage the sampler from sampling the same...
 
         try:
             window_dict = draw_window(views_vol = views_vol, config = config, sample = sample)
