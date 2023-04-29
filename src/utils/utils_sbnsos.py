@@ -257,7 +257,7 @@ def get_train_tensors(views_vol, sample, config, device):
     # To handle "edge windows"
     while True:
 
-        #np.random.seed(sample + shift)   # TEST -------------------------------------------- ALRIGHT THIS WORKS; BUT FOR WIERD REASONS... I think it simply discurage the sampler from sampling the same...
+        np.random.seed(sample + shift)   # TEST -------------------------------------------- ALRIGHT THIS WORKS; BUT FOR WIERD REASONS... I think it simply discurage the sampler from sampling the same...
 
         try:
             window_dict = draw_window(views_vol = views_vol, config = config, sample = sample)
