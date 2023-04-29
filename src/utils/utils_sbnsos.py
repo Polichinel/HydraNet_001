@@ -109,14 +109,21 @@ def standard(x, noise = False):
 
     return(adj_min_events)
 
+# def my_decay(sample, min_events, max_events):
+
+#     k = 0.1
+#     adj_min_events = (max_events/(1 + np.exp(k*sample))) * 2
+#     adj_min_events = max(adj_min_events.astype('int'), min_events)
+
+#     return(adj_min_events)
+
+
 def my_decay(sample, min_events, max_events):
 
     k = 0.1
-    adj_min_events = (max_events/(1 + np.exp(k*sample))) * 2
-    adj_min_events = max(adj_min_events.astype('int'), min_events)
-
+    adj_min_events = ((max_events/(1 + np.exp(k*sample))) + min_events).astype('int')
+    
     return(adj_min_events)
-
 
 # def draw_window(views_vol, config, sample): 
 
@@ -181,16 +188,21 @@ def draw_window(views_vol, config, sample):
 
 
     # WITH THE NEW DECAY FUNCTION THIS IF STATEMENT SHOULD NOT MATTER!!!!
-    if sample == 0: # bisically, give me the index of the cells which saw the most violence the 4 first months...  # TEST -----------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
-        views_vol_count = np.count_nonzero(views_vol[:,:,:,0:3], axis = 0).sum(axis=2)
-        max_events = views_vol_count.max()
-        min_events_index = np.where(views_vol_count == max_events) # the observation with most events.
+    # if sample == 0: # bisically, give me the index of the cells which saw the most violence the 4 first months...  # TEST -----------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
+    #     views_vol_count = np.count_nonzero(views_vol[:,:,:,0:3], axis = 0).sum(axis=2)
+    #     max_events = views_vol_count.max()
+    #     min_events_index = np.where(views_vol_count == max_events) # the observation with most events.
 
-    else: # TEST --------------------------------------------
-        views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
-        max_events = views_vol_count.max()
-        min_events = my_decay(sample, min_events, max_events)
-        min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
+    # else: # TEST --------------------------------------------
+    #     views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
+    #     max_events = views_vol_count.max()
+    #     min_events = my_decay(sample, min_events, max_events)
+    #     min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
+
+    views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
+    max_events = views_vol_count.max()
+    min_events = my_decay(sample, min_events, max_events)
+    min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
 
     min_events_row = min_events_index[0]
     min_events_col = min_events_index[1]
