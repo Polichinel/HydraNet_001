@@ -86,17 +86,36 @@ def standard(x, noise = False):
 
 #     return(adj_min_events)
 
-def my_decay(sample, min_events, max_events):
+# def my_decay(sample, min_events, max_events): # ---------------------------------------------- works!
 
-    k = 0.01
-    adj_min_events = max_events/(1 + np.exp(k*sample))
-    adj_min_events += min_events
-    adj_min_events = adj_min_events.astype('int')
+#     k = 0.01
+#     adj_min_events = max_events/(1 + np.exp(k*sample))
+#     adj_min_events += min_events
+#     adj_min_events = adj_min_events.astype('int')
+
+#     #adj_min_events = max(adj_min_events.astype('int'), min_events)
+
+#     return(adj_min_events)
+
+# def my_decay(sample, min_events, max_events):# ---------------------------------------------- works!
+
+
+#     k = 0.01
+#     adj_min_events = max_events/(1 + np.exp(k*sample))
+#     adj_min_events += min_events
+#     adj_min_events = adj_min_events.astype('int')
 
     #adj_min_events = max(adj_min_events.astype('int'), min_events)
 
     return(adj_min_events)
 
+def my_decay(sample, min_events, max_events):
+
+    k = 0.1
+    adj_min_events = (max_events/(1 + np.exp(k*sample))) * 2
+    adj_min_events = max(adj_min_events.astype('int'), min_events)
+
+    return(adj_min_events)
 
 
 # def draw_window(views_vol, config, sample): 
@@ -160,6 +179,8 @@ def draw_window(views_vol, config, sample):
     #min_events = my_decay(sample, min_events) # ----------------------------------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
 
 
+
+    # WITH THE NEW DECAY FUNCTION THIS IF STATEMENT SHOULD NOT MATTER!!!!
     if sample == 0: # bisically, give me the index of the cells which saw the most violence the 4 first months...  # TEST -----------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
         views_vol_count = np.count_nonzero(views_vol[:,:,:,0:3], axis = 0).sum(axis=2)
         max_events = views_vol_count.max()
