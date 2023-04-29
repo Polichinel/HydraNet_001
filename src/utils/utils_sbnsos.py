@@ -77,12 +77,23 @@ def standard(x, noise = False):
 
 #     return(adj_min_events)
 
-def my_decay(draw, min_events, max_events):
+# def my_decay(draw, min_events, max_events):
     
+#     k = 0.01
+#     adj_min_events = max_events/(1+np.exp( k *(draw - 256)))
+#     adj_min_events += min_events
+#     adj_min_events = adj_min_events.astype('int')
+
+#     return(adj_min_events)
+
+def my_decay(sample, min_events, max_events):
+
     k = 0.01
-    adj_min_events = max_events/(1+np.exp( k *(draw - 256)))
+    adj_min_events = max_events/(1 + np.exp(k*sample))
     adj_min_events += min_events
     adj_min_events = adj_min_events.astype('int')
+
+    #adj_min_events = max(adj_min_events.astype('int'), min_events)
 
     return(adj_min_events)
 
