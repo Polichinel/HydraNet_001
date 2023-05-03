@@ -13,10 +13,10 @@ def get_swep_config():
     parameters_dict = {
         'model' : {'value' :'HydraBNUNet03'},
         'clip_grad_norm' : {'value': True},
-        'scheduler' : {'value': 'linear'}, # 'OneCycleLR'
+        'scheduler' : {'values': ['linear', 'OneCycleLR']}, # 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 10},
-        'samples': {'values': [252,1024]}, # just speed running here..
+        'samples': {'values': [252, 1024, 2048]}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},
@@ -30,8 +30,8 @@ def get_swep_config():
         'loss_reg_c' : { 'value' : 0.01},
         'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
-        'seed' : {'values' : [1,2,3,4,5]},
-        'dim' : {'values' : [32,16]},
+        'seed' : {'values' : [3,4,5]},
+        #'dim' : {'values' : [32,16]},
         'h_init' : {'value' : 'abs_rand_exp-100'}  # right now this is just as a note to self. Can't change it here     
         }
 

@@ -213,13 +213,13 @@ def draw_window(views_vol, config, sample):
     #indx = random.choice(min_events_indx)
     indx = min_events_indx[np.random.choice(len(min_events_indx))] # dumb but working solution of np.random instead of random
     
-    # if sample == 0:
-    #     dim = 64
+    if sample <= 4:
+        dim = 32
 
-    # else:
-    #     dim = np.random.choice([16, 32, 64]) 
+    else:
+        dim = np.random.choice([16, 32]) 
 
-    dim = config.dim
+    #dim = config.dim
 
     # if you wnat a random temporal window, it is here.
     window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} 
