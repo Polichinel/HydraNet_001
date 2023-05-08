@@ -213,7 +213,7 @@ def draw_window(views_vol, config, sample):
     #indx = random.choice(min_events_indx)
     indx = min_events_indx[np.random.choice(len(min_events_indx))] # dumb but working solution of np.random instead of random
     
-    if sample <= 4:
+    if sample <= 4: # a bit more infor in the beginning
         dim = 32
 
     else:
