@@ -215,11 +215,13 @@ def draw_window(views_vol, config, sample):
 
 
     # more deterministik solution:
-    if sample <= int(config.samples/2):
-        dim = 32
+    # if sample <= int(config.samples/2):
+    #     dim = 32
 
-    else:
-        dim = 16
+    # else:
+    #     dim = 16
+
+    dim = 32 # just if this is more consistent..... 
 
     # if sample <= 4: # a bit more infor in the beginning
     #     dim = 32
