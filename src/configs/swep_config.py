@@ -15,8 +15,8 @@ def get_swep_config():
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'linear'}, # 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
-        'min_events': {'value': 10},
-        'samples': {'values': [900, 1000, 1100, 1200, 1500, 1600, 1700, 1900, 2000]}, # just speed running here..
+        'min_events': {'values': [10,20,30,40]},
+        'samples': {'value': 512}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.0001},
         "weight_decay" : {'value' : 0.1},

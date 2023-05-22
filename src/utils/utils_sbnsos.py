@@ -212,12 +212,20 @@ def draw_window(views_vol, config, sample):
 
     #indx = random.choice(min_events_indx)
     indx = min_events_indx[np.random.choice(len(min_events_indx))] # dumb but working solution of np.random instead of random
-    
-    if sample <= 4: # a bit more infor in the beginning
+
+
+    # more deterministik solution:
+    if sample <= int(config.samples/2):
         dim = 32
 
     else:
-        dim = np.random.choice([16, 32]) 
+        dim = 16
+
+    # if sample <= 4: # a bit more infor in the beginning
+    #     dim = 32
+
+    # else:
+    #     dim = np.random.choice([16, 32]) 
 
     #dim = config.dim
 
@@ -254,12 +262,12 @@ def get_train_tensors(views_vol, sample, config, device):
 
     train_views_vol = views_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
 
-    shift = config.seed  # TEST --------------------------------------------
+    shift = config.seed  # TEST -------------------------------------------- try REMOVE!
 
     # To handle "edge windows"
     while True:
 
-        np.random.seed(sample + shift)   # TEST -------------------------------------------- ALRIGHT THIS WORKS; BUT FOR WIERD REASONS... I think it simply discurage the sampler from sampling the same...
+        np.random.seed(sample + shift)   # TEST -------------------------------------------- ALRIGHT THIS WORKS; BUT FOR WIERD REASONS... I think it simply discurage the sampler from sampling the same... try REMOVE!
 
         try:
             window_dict = draw_window(views_vol = views_vol, config = config, sample = sample)
@@ -282,6 +290,9 @@ def get_train_tensors(views_vol, sample, config, device):
     ln_best_sb_idx = 5
     last_feature_idx = ln_best_sb_idx + config.input_channels
     train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
+
+
+    #wandb.log({"index": })
 
     #print(f'train_tensor: {train_tensor.shape}')  # debug
     return(train_tensor)
