@@ -118,10 +118,35 @@ def standard(x, noise = False):
 #     return(adj_min_events)
 
 
-def my_decay(sample, min_events, max_events):
+# def my_decay(sample, min_events, max_events):
 
-    k = 0.1
-    adj_min_events = ((max_events/(1 + np.exp(k*sample))) + min_events).astype('int')
+#     k = 0.1
+#     adj_min_events = ((max_events/(1 + np.exp(k*sample))) + min_events).astype('int')
+    
+#     return(adj_min_events)
+
+
+
+def my_decay(sample, samples, min_events, max_events):
+
+    if min_events == 10:
+        coef = 6
+
+    elif min_events == 15:
+        coef = 4
+
+    elif min_events == 20:
+        coef = 3
+
+    elif min_events == 30:
+        coef = 2
+
+    else:
+        print('wrong min_events. Must be either 10, 15, 20 or 30. Now set to 10 as default..')
+        coef = 6
+
+    k = np.log(coef)/samples #now, with 6, min_events will alway be 10. 4 is 15, 2 is 30 
+    adj_min_events =((max_events/(np.exp(k*sample)))).astype('int')
     
     return(adj_min_events)
 
@@ -181,6 +206,7 @@ def draw_window(views_vol, config, sample):
     ln_best_sb_idx = 5 # 5 = ln_best_sb 
     last_feature_idx = ln_best_sb_idx + config.input_channels - 1 # 5 + 3 - 1 = 7 which is os
     min_events = config.min_events
+    samples = config.samples
 
     # so you get more dens observations in the beginning..
     #min_events = my_decay(sample, min_events) # ----------------------------------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
@@ -201,7 +227,7 @@ def draw_window(views_vol, config, sample):
 
     views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
     max_events = views_vol_count.max()
-    min_events = my_decay(sample, min_events, max_events)
+    min_events = my_decay(sample, samples, min_events, max_events)
     min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
 
     min_events_row = min_events_index[0]
@@ -221,7 +247,7 @@ def draw_window(views_vol, config, sample):
     # else:
     #     dim = 16
 
-    dim = 32 # just if this is more consistent..... 
+    #dim = 32 # just if this is more consistent..... 
 
     # if sample <= 4: # a bit more infor in the beginning
     #     dim = 32
@@ -230,6 +256,8 @@ def draw_window(views_vol, config, sample):
     #     dim = np.random.choice([16, 32]) 
 
     #dim = config.dim
+
+    dim = np.random.choice([16, 32]) 
 
     # if you wnat a random temporal window, it is here.
     window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} 
