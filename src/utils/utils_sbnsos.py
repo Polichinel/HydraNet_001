@@ -129,36 +129,36 @@ def standard(x, noise = False):
 
 
 # NOT BAD!!!!
-# def my_decay(sample, samples, min_events, max_events):
+def my_decay(sample, samples, min_events, max_events):
 
-#     if min_events == 10:
-#         coef = 6
+    if min_events == 10:
+        coef = 6
 
-#     elif min_events == 15:
-#         coef = 4
+    elif min_events == 15:
+        coef = 4
 
-#     elif min_events == 20:
-#         coef = 3
+    elif min_events == 20:
+        coef = 3
 
-#     elif min_events == 30:
-#         coef = 2
+    elif min_events == 30:
+        coef = 2
 
-#     else:
-#         print('wrong min_events. Must be either 10, 15, 20 or 30. Now set to 10 as default..')
-#         coef = 6
+    else:
+        print('wrong min_events. Must be either 10, 15, 20 or 30. Now set to 10 as default..')
+        coef = 6
 
-#     k = np.log(coef)/samples #now, with 6, min_events will alway be 10. 4 is 15, 2 is 30 
-#     adj_min_events =((max_events/(np.exp(k*sample)))).astype('int')
+    k = np.log(coef)/samples #now, with 6, min_events will alway be 10. 4 is 15, 2 is 30 
+    adj_min_events =((max_events/(np.exp(k*sample)))).astype('int')
     
 #     return(adj_min_events)
 
 
+# NOT BAD!!!!
+# def my_decay(sample, samples, min_events, max_events):
 
-def my_decay(sample, samples, min_events, max_events):
-
-    y = (max_events + ((-max_events + min_events)/samples) * sample).astype('int')
+#     y = (max_events + ((-max_events + min_events)/samples) * sample).astype('int')
     
-    return(y)
+#     return(y)
 
 
 # def draw_window(views_vol, config, sample): 
