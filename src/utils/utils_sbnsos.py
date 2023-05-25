@@ -169,14 +169,14 @@ def standard(x, noise = False):
 def my_decay(sample, samples, min_events, max_events, slope_ratio):
 
     
-    if sample < int(samples*slope_ratio):
+    if sample < samples*slope_ratio:
 
         b = ((-max_events + min_events)/(samples*slope_ratio))
 
         y = (max_events + b * sample).astype('int')
 
     else:
-        y = min_events
+        y = int(min_events)
     
     return(y)
 
@@ -237,7 +237,7 @@ def draw_window(views_vol, config, sample):
     last_feature_idx = ln_best_sb_idx + config.input_channels - 1 # 5 + 3 - 1 = 7 which is os
     min_events = config.min_events
     samples = config.samples
-    samples = config.slope_ratio
+    slope_ratio = config.slope_ratio
 
     # so you get more dens observations in the beginning..
     #min_events = my_decay(sample, min_events) # ----------------------------------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
