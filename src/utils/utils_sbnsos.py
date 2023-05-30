@@ -107,7 +107,7 @@ def standard(x, noise = False):
 
     #adj_min_events = max(adj_min_events.astype('int'), min_events)
 
-    return(adj_min_events)
+#    return(adj_min_events)
 
 # def my_decay(sample, min_events, max_events):
 
@@ -323,12 +323,12 @@ def get_train_tensors(views_vol, sample, config, device):
 
     train_views_vol = views_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
 
-    shift = config.seed  # TEST -------------------------------------------- try REMOVE!
+    #shift = config.seed  # TEST -------------------------------------------- try REMOVE!
 
     # To handle "edge windows"
     while True:
 
-        np.random.seed(sample + shift)   # TEST -------------------------------------------- ALRIGHT THIS WORKS; BUT FOR WIERD REASONS... I think it simply discurage the sampler from sampling the same... try REMOVE!
+        #np.random.seed(sample + shift)   # TEST -------------------------------------------- ALRIGHT THIS WORKS; BUT FOR WIERD REASONS... I think it simply discurage the sampler from sampling the same... try REMOVE!
 
         try:
             window_dict = draw_window(views_vol = views_vol, config = config, sample = sample)
