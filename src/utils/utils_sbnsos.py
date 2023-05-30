@@ -345,7 +345,7 @@ def get_train_tensors(views_vol, sample, config, device):
 
         except:
             print('Resample edge...', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
-            shift += 1   # TEST --------------------------------------------
+            #shift += 1   # TEST --------------------------------------------
             continue
 
     ln_best_sb_idx = 5
