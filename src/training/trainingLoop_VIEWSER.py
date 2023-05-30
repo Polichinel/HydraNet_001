@@ -459,6 +459,7 @@ def model_pipeline(config=None, project=None):
 
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
+        np.random.seed(sweep_config.seed)  # NEW
 
         views_vol = get_data(config.run_type)
 
@@ -505,8 +506,6 @@ if __name__ == "__main__":
         sweep_config['parameters']['time_steps'] = {'value' : time_steps}
         sweep_config['parameters']['run_type'] = {'value' : run_type}
         sweep_config['parameters']['sweep'] = {'value' : True}
-
-        np.random.seed(sweep_config.seed)  # NEW
 
         sweep_id = wandb.sweep(sweep_config, project=project) # and then you put in the right project name
 
