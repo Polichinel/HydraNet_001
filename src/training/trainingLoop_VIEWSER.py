@@ -459,7 +459,7 @@ def model_pipeline(config=None, project=None):
 
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
-        np.random.seed(config.seed)  # NEW
+        #np.random.seed(config.seed)  # NEW
 
         views_vol = get_data(config.run_type)
 
