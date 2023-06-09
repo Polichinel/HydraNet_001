@@ -46,7 +46,7 @@ from balanced_focal_class import BalancedFocalLossClass
 from shrinkage import ShrinkageLoss
 from stable_balanced_focal_class import stableBalancedFocalLossClass
 
-from shrinkage_june import ShrinkageLoss_new
+from shringkage_june import ShrinkageLoss_new
 from focal_june import FocalLoss_new
 
 #from rmsle import RMSLELoss
