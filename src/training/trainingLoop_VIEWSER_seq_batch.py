@@ -46,6 +46,9 @@ from balanced_focal_class import BalancedFocalLossClass
 from shrinkage import ShrinkageLoss
 from stable_balanced_focal_class import stableBalancedFocalLossClass
 
+from shrinkage_june import ShrinkageLoss_new
+from focal_june import FocalLoss_new
+
 #from rmsle import RMSLELoss
 
 #from utils import *
@@ -60,8 +63,11 @@ def choose_loss(config):
     if config.loss_reg == 'a':
         criterion_reg = nn.MSELoss().to(device)
 
-    elif config.loss_reg == 'b':
+    elif config.loss_reg == 'b': # you are using this mostly
         criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
+
+    elif config.loss_reg == 'c':
+        criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
 
     else:
         print('Wrong reg loss...')
@@ -76,8 +82,11 @@ def choose_loss(config):
     elif config.loss_class == 'b':
         criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
-    elif config.loss_class == 'c':
+    elif config.loss_class == 'c': # and this
         criterion_class =  stableBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
+
+    elif config.loss_class == 'd': 
+        criterion_class =  FocalLoss_new(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
     else:
         print('Wrong class loss...')
@@ -187,10 +196,6 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     # initialize a hidden state
     h = model.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
 
-
-
-    # So you are updating after each month... Should you not just update after each sequence...
-
     total_loss = 0
     for i in range(seq_len-1): # so your sequnce is the full time len - last month.
         print(f'\t\t month: {i+1}/{seq_len}...', end='\r')
@@ -202,55 +207,21 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
         # forward-pass
         t1_pred, t1_pred_class, h = model(t0, h.detach())
-
-        #print(t1_pred.shape) # debug
-        #optimizer.zero_grad()
-
     
         losses_list = []
 
-        for i in range(config.output_channels):
+        for j in range(config.output_channels):
 
-            losses_list.append(criterion_reg(t1_pred[:,i,:,:], t1[:,i,:,:])) #  works
+            losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
 
 
-        for i in range(config.output_channels):
+        for j in range(config.output_channels):
 
-            losses_list.append(criterion_class(t1_pred_class[:,i,:,:], t1_binary[:,i,:,:]))
-
+            losses_list.append(criterion_class(t1_pred_class[:,j,:,:], t1_binary[:,j,:,:]))
 
         losses = torch.stack(losses_list)
         loss = multitaskloss_instance(losses)
         total_loss += loss
-
-        # backward-pass
-        # loss.backward() NEW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        # if config.clip_grad_norm == True:
-        # #     nn.utils.clip_grad_norm_(model.parameters(), 1)  # you cen try this also... --------------------------------------------------------------------------------------
-        # #    nn.utils.clip_grad_value_(model.parameters(), 0.1)
-        #     clip_value = 1.0 # torch.tensor(1.0).to(device) - torch.exp(torch.tensor(-100)).to(device) # almost 1. better numerical stability - or you can put it in the loss...
-        #     nn.utils.clip_grad_value_(model.parameters(), clip_value=clip_value)
-        #     #nn.utils.clip_grad_norm_(model.parameters(), , max_norm=2.0, norm_type=2)
-
-            # for p in model.parameters():
-
-                
-                # likely no reason to have these as tensors on device... Could just use numpy...
-                #p.grad.data.clamp_(max = clip_value) # pretty sure this is wrong...
-
-                # p.register_hook(lambda grad: torch.clamp(grad, -clip_value, clip_value)) # this is likely right, but where to but it...
-
-        # else:
-        #     pass
-
-        # optimizer.step()  # update weights
-
-        # if type(scheduler) != list: # becaus you use an empty list
-        #     scheduler.step(loss)
-
-        # else:
-        #     pass
 
         # traning output
         loss_reg = losses[:config.output_channels].sum()
@@ -266,10 +237,19 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     # Backpropagation and optimization - after a full sequence... 
     optimizer.zero_grad()
     total_loss.backward()
+
+    # Gradient Clipping
+    if config.clip_grad_norm == True:
+        clip_value = 1.0
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=clip_value)
+
+    else:
+        pass
+
     optimizer.step()
 
     # Adjust learning rate based on the loss
-    scheduler.step(total_loss)
+    scheduler.step(total_loss) # seems like you do not need to input total loss. Chack documentation..
 
 
 
@@ -279,7 +259,7 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
     # add spatail transformer
     transformer = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
-    avg_losses = []
+    #avg_losses = []
 
     criterion_reg, criterion_class, multitaskloss_instance = criterion
 
