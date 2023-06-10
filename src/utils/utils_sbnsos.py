@@ -24,7 +24,6 @@ def get_data(run_type):
     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
 
     # The viewser data
-
     if run_type == 'calib':
         file_name = "/viewser_monthly_vol_calib_sbnsos.pkl"
 
@@ -68,102 +67,6 @@ def standard(x, noise = False):
 
     return(x_standard)
 
-# def my_decay(draw, min_events, max_events):
-    
-#     k = 0.01
-#     adj_min_events = max_events/(1+np.exp( k *(draw - 256)))
-#     adj_min_events += min_events
-#     adj_min_events = adj_min_events.astype('int')
-
-#     return(adj_min_events)
-
-# def my_decay(draw, min_events, max_events):
-    
-#     k = 0.01
-#     adj_min_events = max_events/(1+np.exp( k *(draw - 256)))
-#     adj_min_events += min_events
-#     adj_min_events = adj_min_events.astype('int')
-
-#     return(adj_min_events)
-
-# def my_decay(sample, min_events, max_events): # ---------------------------------------------- works!
-
-#     k = 0.01
-#     adj_min_events = max_events/(1 + np.exp(k*sample))
-#     adj_min_events += min_events
-#     adj_min_events = adj_min_events.astype('int')
-
-#     #adj_min_events = max(adj_min_events.astype('int'), min_events)
-
-#     return(adj_min_events)
-
-# def my_decay(sample, min_events, max_events):# ---------------------------------------------- works!
-
-
-#     k = 0.01
-#     adj_min_events = max_events/(1 + np.exp(k*sample))
-#     adj_min_events += min_events
-#     adj_min_events = adj_min_events.astype('int')
-
-    #adj_min_events = max(adj_min_events.astype('int'), min_events)
-
-#    return(adj_min_events)
-
-# def my_decay(sample, min_events, max_events):
-
-#     k = 0.1
-#     adj_min_events = (max_events/(1 + np.exp(k*sample))) * 2
-#     adj_min_events = max(adj_min_events.astype('int'), min_events)
-
-#     return(adj_min_events)
-
-
-# def my_decay(sample, min_events, max_events):
-
-#     k = 0.1
-#     adj_min_events = ((max_events/(1 + np.exp(k*sample))) + min_events).astype('int')
-    
-#     return(adj_min_events)
-
-
-
-
-# NOT BAD!!!!
-# def my_decay(sample, samples, min_events, max_events):
-
-#     if min_events == 5:
-#         coef = 11
-
-#     elif min_events == 10:
-#         coef = 6
-
-#     elif min_events == 15:
-#         coef = 4
-
-#     elif min_events == 20:
-#         coef = 3
-
-#     elif min_events == 30:
-#         coef = 2
-
-#     else:
-#         print('wrong min_events. Must be either 10, 15, 20 or 30. Now set to 10 as default..')
-#         coef = 6
-
-#     k = np.log(coef)/samples #now, with 6, min_events will alway be 10. 4 is 15, 2 is 30 
-#     adj_min_events = ((max_events/(np.exp(k*sample)))).astype('int')
-    
-#     return(adj_min_events)
-    
-#     return(adj_min_events)
-
-
-# NOT BAD!!!!
-# def my_decay(sample, samples, min_events, max_events):
-
-#     y = (max_events + ((-max_events + min_events)/samples) * sample).astype('int')
-    
-#     return(y)
 
 
 def my_decay(sample, samples, min_events, max_events, slope_ratio):
@@ -180,46 +83,6 @@ def my_decay(sample, samples, min_events, max_events, slope_ratio):
     
     return(y)
 
-# def draw_window(views_vol, config, sample): 
-
-#     """Draw/sample a window/patch from the traning tensor.
-#     The dimensions of the windows are HxWxD, 
-#     where H=D in {16,32,64} and D is the number of months in the training data.
-#     The windows are constrained to be sampled from an area with some
-#     minimum number of log_best events (min_events)."""
-
-
-#     # BY NOW THIS IS PRETTY HACKY... SHOULD BE MADE MORE ELEGANT AT SOME POINT..
-
-#     ln_best_sb_idx = 5 # 5 = ln_best_sb 
-#     last_feature_idx = ln_best_sb_idx + config.input_channels - 1 # 5 + 3 - 1 = 7 which is os
-#     min_events = config.min_events
-
-#     # so you get more dens observations in the beginning..
-#     min_events = my_decay(sample, min_events) # ----------------------------------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
-
-#     if sample == 0: # bisically, give me the index of the cells which saw the most violence the 4 first months...  # TEST -----------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
-#         views_vol_count = np.count_nonzero(views_vol[:,:,:,0:3], axis = 0).sum(axis=2)
-#         min_events_index = np.where(views_vol_count >= views_vol_count.max()) # the observation with most events.
-
-#     else: # TEST --------------------------------------------
-#         views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
-#         min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
-
-#     min_events_row = min_events_index[0]
-#     min_events_col = min_events_index[1]
-
-#     # it is index... Not lat long.
-#     min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] 
-
-#     #indx = random.choice(min_events_indx)
-#     indx = min_events_indx[np.random.choice(len(min_events_indx))] # dumb but working solution of np.random instead of random
-#     dim = np.random.choice([16, 32, 64]) 
-
-#     # if you wnat a random temporal window, it is here.
-#     window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} 
-
-#     return(window_dict)
 
 
 def draw_window(views_vol, config, sample): 
@@ -239,26 +102,11 @@ def draw_window(views_vol, config, sample):
     samples = config.samples
     slope_ratio = config.slope_ratio
 
-    # so you get more dens observations in the beginning..
-    #min_events = my_decay(sample, min_events) # ----------------------------------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
-
-
-
-    # WITH THE NEW DECAY FUNCTION THIS IF STATEMENT SHOULD NOT MATTER!!!!
-    # if sample == 0: # bisically, give me the index of the cells which saw the most violence the 4 first months...  # TEST -----------------------------------------------------------------------------------------------------------wrong!!! Sample is not month!!!
-    #     views_vol_count = np.count_nonzero(views_vol[:,:,:,0:3], axis = 0).sum(axis=2)
-    #     max_events = views_vol_count.max()
-    #     min_events_index = np.where(views_vol_count == max_events) # the observation with most events.
-
-    # else: # TEST --------------------------------------------
-    #     views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
-    #     max_events = views_vol_count.max()
-    #     min_events = my_decay(sample, min_events, max_events)
-    #     min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
-
     views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
+    
     max_events = views_vol_count.max()
     min_events = my_decay(sample, samples, min_events, max_events, slope_ratio)
+    
     min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
 
     min_events_row = min_events_index[0]
@@ -267,28 +115,10 @@ def draw_window(views_vol, config, sample):
     # it is index... Not lat long.
     min_events_indx = [(row, col) for row, col in zip(min_events_row, min_events_col)] 
 
-    #indx = random.choice(min_events_indx)
+    #indx = random.choice(min_events_indx) RANDOMENESS!!!!
     indx = min_events_indx[np.random.choice(len(min_events_indx))] # dumb but working solution of np.random instead of random
 
-
-    # more deterministik solution:
-    # if sample <= int(config.samples/2):
-    #     dim = 32
-
-    # else:
-    #     dim = 16
-
-    #dim = 32 # just if this is more consistent..... 
-
-    # if sample <= 4: # a bit more infor in the beginning
-    #     dim = 32
-
-    # else:
-    #     dim = np.random.choice([16, 32]) 
-
-    #dim = config.dim
-
-    dim = np.random.choice([16, 32]) 
+    dim = 32 #np.random.choice([16, 32]) 
 
     # if you wnat a random temporal window, it is here.
     window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} 
@@ -307,16 +137,9 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
     avg_loss = np.mean(avg_loss_list)
     avg_loss_reg = np.mean(avg_loss_reg_list)
     avg_loss_class = np.mean(avg_loss_class_list)
-    # # Where the magic happens
     
-    # this can be put inyo one statment!
     # also log maps...
     wandb.log({"avg_loss": avg_loss, "avg_loss_reg": avg_loss_reg, "avg_loss_class": avg_loss_class})
-
-    # wandb.log({"avg_loss": avg_loss})
-    # wandb.log({"avg_loss_reg": avg_loss_reg})
-    # wandb.log({"avg_loss_class": avg_loss_class})
-
 
 
 def get_train_tensors(views_vol, sample, config, device):
