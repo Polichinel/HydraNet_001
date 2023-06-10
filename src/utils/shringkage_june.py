@@ -11,7 +11,7 @@ class ShrinkageLoss_new(nn.Module):
 
     def forward(self, input, target):
 
-        # input, target = input.unsqueeze(0), target.unsqueeze(0) 
+        input, target = input.unsqueeze(0), target.unsqueeze(0) 
 
         l = torch.abs(target - input)  # Absolute difference between target and input
         exp_term = torch.exp(self.a * (self.c - l))  # Exponential term to ensure numerical stability

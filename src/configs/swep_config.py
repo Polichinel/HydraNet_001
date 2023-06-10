@@ -23,10 +23,10 @@ def get_swep_config():
         "slope_ratio" : {'value' : 0.75},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
-        'loss_class' : { 'value' : 'c'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
+        'loss_class' : { 'value' : 'd'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
         'loss_class_gamma' : {'value' : 2},
         'loss_class_alpha' : {'value' : 0.5}, # should be between 0.5 and 0.95...
-        'loss_reg' : { 'value' : 'b', },
+        'loss_reg' : { 'value' : 'c', },
         'loss_reg_a' : { 'value' : 14},
         'loss_reg_c' : { 'value' : 0.01},
         'test_samples': { 'value' : 128},
