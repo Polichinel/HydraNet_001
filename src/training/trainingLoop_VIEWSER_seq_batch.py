@@ -246,11 +246,11 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     else:
         pass
 
+    # optimize
     optimizer.step()
 
     # Adjust learning rate based on the loss
-    scheduler.step(total_loss) # seems like you do not need to input total loss. Chack documentation..
-
+    scheduler.step()
 
 
 
