@@ -259,11 +259,11 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
     # add spatail transformer
     transformer = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
-    #avg_losses = []
-
     criterion_reg, criterion_class, multitaskloss_instance = criterion
 
-    print('Training initiated...')
+    np.random.seed(config.seed)
+    torch.manual_seed(config.seed)
+    print(f'Training initiated at seed {config.seed}...')
 
     for sample in range(config.samples):
 
@@ -447,7 +447,6 @@ def model_pipeline(config=None, project=None):
 
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
-        #np.random.seed(config.seed)  # NEW
 
         views_vol = get_data(config.run_type)
 
@@ -485,8 +484,6 @@ if __name__ == "__main__":
     if do_sweep == 'a':
 
         print('Doing a sweep!')
-        #np.random.seed(42)
-        #print(f'random_test:{np.random.randint(10)} = 6?')
 
         project = f"RUNET_VIEWSER_{time_steps}_{run_type}_experiments_016_sbnsos" # 4 is without h freeze... See if you have all the outputs now???
 

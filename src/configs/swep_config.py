@@ -16,9 +16,9 @@ def get_swep_config():
         'scheduler' : {'value': 'linear'}, # 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 5},
-        'samples': {'values':  [800, 1000, 1200]}, # just speed running here..
+        'samples': {'values':  [700, 800, 900]}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
-        'learning_rate': {'values' : [0.001, 0.0005]},
+        'learning_rate': {'value' : 0.001},
         "weight_decay" : {'value' : 0.1},
         "slope_ratio" : {'value' : 0.75},
         'input_channels' : {'value' : 3},
@@ -31,7 +31,7 @@ def get_swep_config():
         'loss_reg_c' : { 'value' : 0.01},
         'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
-        'seed' : {'values' : [3,4,5]},
+        'seed' : {'values' : [3,3,4,4,5,5]},
         #'dim' : {'values' : [32,16]},
         'h_init' : {'value' : 'abs_rand_exp-100'}  # right now this is just as a note to self. Can't change it here     
         }
