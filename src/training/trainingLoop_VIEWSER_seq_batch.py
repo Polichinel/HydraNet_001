@@ -261,9 +261,9 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
     criterion_reg, criterion_class, multitaskloss_instance = criterion
 
-    np.random.seed(config.seed)
-    torch.manual_seed(config.seed)
-    print(f'Training initiated at seed {config.seed}...')
+    np.random.seed(config.np_seed)
+    torch.manual_seed(config.torch_seed)
+    print(f'Training initiated...')
 
     for sample in range(config.samples):
 

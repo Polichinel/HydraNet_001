@@ -83,12 +83,22 @@ def standard(x, noise = False):
     
 #     return(y)
 
+# def my_decay(sample, samples, min_events, max_events, slope_ratio):
+
+#     b = ((-max_events + min_events)/(samples*slope_ratio))
+#     y = (max_events + b * sample)
+    
+#     y = min(y, max_events*0.85)
+#     y = max(y, min_events)
+    
+#     return(int(y))
+
 def my_decay(sample, samples, min_events, max_events, slope_ratio):
 
     b = ((-max_events + min_events)/(samples*slope_ratio))
     y = (max_events + b * sample)
     
-    y = min(y, max_events*0.85)
+    # y = min(y, max_events*0.85)
     y = max(y, min_events)
     
     return(int(y))
