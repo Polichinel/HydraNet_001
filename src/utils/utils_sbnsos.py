@@ -69,21 +69,29 @@ def standard(x, noise = False):
 
 
 
+# def my_decay(sample, samples, min_events, max_events, slope_ratio):
+
+    
+#     if sample < samples*slope_ratio:
+
+#         b = ((-max_events + min_events)/(samples*slope_ratio))
+
+#         y = (max_events + b * sample).astype('int')
+
+#     else:
+#         y = int(min_events)
+    
+#     return(y)
+
 def my_decay(sample, samples, min_events, max_events, slope_ratio):
 
+    b = ((-max_events + min_events)/(samples*slope_ratio))
+    y = (max_events + b * sample)
     
-    if sample < samples*slope_ratio:
-
-        b = ((-max_events + min_events)/(samples*slope_ratio))
-
-        y = (max_events + b * sample).astype('int')
-
-    else:
-        y = int(min_events)
+    y = min(y, max_events*0.85)
+    y = max(y, min_events)
     
-    return(y)
-
-
+    return(int(y))
 
 def draw_window(views_vol, config, sample): 
 
