@@ -21,6 +21,7 @@ def get_swep_config():
         'learning_rate': {'value' : 0.001},
         "weight_decay" : {'value' : 0.1},
         "slope_ratio" : {'value' : 0.75},
+        "roof_ratio" : {'values' : [0.5, 0.6, 0.7, 0.8]},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
         'loss_class' : { 'value' : 'c'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
@@ -31,8 +32,8 @@ def get_swep_config():
         'loss_reg_c' : { 'value' : 0.01},
         'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
-        'np_seed' : {'values' : [1,2,3,4,5,6]},
-        'torch_seed' : {'values' : [1,2,3,4,5,6]},
+        'np_seed' : {'values' : [3,4,5]},
+        'torch_seed' : {'values' : [3,4,5]},
         #'dim' : {'values' : [32,16]},
         'h_init' : {'value' : 'abs_rand_exp-100'}  # right now this is just as a note to self. Can't change it here     
         }

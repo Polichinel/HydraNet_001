@@ -93,12 +93,12 @@ def standard(x, noise = False):
     
 #     return(int(y))
 
-def my_decay(sample, samples, min_events, max_events, slope_ratio):
+def my_decay(sample, samples, min_events, max_events, slope_ratio, roof_ratio):
 
     b = ((-max_events + min_events)/(samples*slope_ratio))
     y = (max_events + b * sample)
     
-    # y = min(y, max_events*0.85)
+    y = min(y, max_events*roof_ratio)
     y = max(y, min_events)
     
     return(int(y))
@@ -119,11 +119,12 @@ def draw_window(views_vol, config, sample):
     min_events = config.min_events
     samples = config.samples
     slope_ratio = config.slope_ratio
+    roof_ratio = config.roof_ratio
 
     views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
     
     max_events = views_vol_count.max()
-    min_events = my_decay(sample, samples, min_events, max_events, slope_ratio)
+    min_events = my_decay(sample, samples, min_events, max_events, slope_ratio, roof_ratio)
     
     min_events_index = np.where(views_vol_count >= min_events) # number of events so >= 1 or > 0 is the same as np.nonzero
 
