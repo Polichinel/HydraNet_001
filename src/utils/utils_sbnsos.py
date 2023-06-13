@@ -123,12 +123,10 @@ def draw_window(views_vol, config, sample):
 
     # NEW----------------------------------------------------------------------------------------------------------------------------
     fatcats = np.arange(ln_best_sb_idx, last_feature_idx, 1)
-
     n_fatcats = len(fatcats)
 
-    for i in range(100):
-        fatcat = fatcats[i % n_fatcats]
-        views_vol_count = np.count_nonzero(views_vol[:,:,:,fatcat], axis = 0).sum(axis=2) #for either sb, ns, os
+    fatcat = fatcats[sample % n_fatcats]
+    views_vol_count = np.count_nonzero(views_vol[:,:,:,fatcat], axis = 0).sum(axis=2) #for either sb, ns, os
     
     # --------------------------------------------------------------------------------------------------------------------------------
 
