@@ -15,13 +15,13 @@ def get_swep_config():
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'linear'}, # 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
-        'min_events': {'value': 5},
-        'samples': {'value':  700,}, # just speed running here..
+        'min_events': {'values': [0,1,5]},
+        'samples': {'values':  [700, 1000]}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' : 0.001},
         "weight_decay" : {'value' : 0.1},
         "slope_ratio" : {'value' : 0.75},
-        "roof_ratio" : {'values' : [0.5, 0.6, 0.7, 0.8]},
+        "roof_ratio" : {'values' : [0.4, 0.5, 0.6, 0.7]},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 3},
         'loss_class' : { 'value' : 'c'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
