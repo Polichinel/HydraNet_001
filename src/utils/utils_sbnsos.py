@@ -121,8 +121,17 @@ def draw_window(views_vol, config, sample):
     slope_ratio = config.slope_ratio
     roof_ratio = config.roof_ratio
 
-    views_vol_count = np.count_nonzero(views_vol[:,:,:,ln_best_sb_idx:last_feature_idx], axis = 0).sum(axis=2) #for either sb, ns, os
+    # NEW----------------------------------------------------------------------------------------------------------------------------
+    fatcats = np.arange(ln_best_sb_idx, last_feature_idx, 1)
+
+    n_fatcats = len(fatcats)
+
+    for i in range(100):
+        fatcat = fatcats[i % n_fatcats]
+        views_vol_count = np.count_nonzero(views_vol[:,:,:,fatcat], axis = 0).sum(axis=2) #for either sb, ns, os
     
+    # --------------------------------------------------------------------------------------------------------------------------------
+
     max_events = views_vol_count.max()
     min_events = my_decay(sample, samples, min_events, max_events, slope_ratio, roof_ratio)
     
