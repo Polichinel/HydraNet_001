@@ -1,5 +1,5 @@
 import numpy as np
-import random
+#import random
 import pickle
 import time
 import sys
@@ -8,9 +8,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, LinearLR, OneCycleLR, CyclicLR
-from torch.optim.lr_scheduler import ChainedScheduler
+#from torch.optim.lr_scheduler import ChainedScheduler
 
-from torchvision import transforms
+#from torchvision import transforms
 #import geomloss # New loss. also needs: pip install pykeops
 
 from sklearn.preprocessing import MinMaxScaler
@@ -179,57 +179,69 @@ def make(config):
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
 
-def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitaskloss_instance, train_tensor, config, device):
+def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitaskloss_instance, views_vol, sample, config, device): # views vol and sample
 
     wandb.watch(model, [criterion_reg, criterion_class], log= None, log_freq=2048)
+
+ 
 
     avg_loss_reg_list = []
     avg_loss_class_list = []
     avg_loss_list = []
+    total_loss = 0
 
     model.train()  # train mode
     multitaskloss_instance.train() # meybe another place...
 
-    seq_len = train_tensor.shape[1]
-    window_dim = train_tensor.shape[-1] # the last dim should always be a spatial dim (H or W)
 
-    # initialize a hidden state
-    h = model.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
+    # Batch loops:# -----------------------------------------------------------------------------------------------------------
+    for batch in range(config.batch_size):
 
-    total_loss = 0
-    for i in range(seq_len-1): # so your sequnce is the full time len - last month.
-        print(f'\t\t month: {i+1}/{seq_len}...', end='\r')
+        # Getting the train_tensor
+        train_tensor = get_train_tensors(views_vol, sample, config, device)
+        seq_len = train_tensor.shape[1]
+        window_dim = train_tensor.shape[-1] # the last dim should always be a spatial dim (H or W)
 
-        t0 = train_tensor[:, i, :, :, :]
+        # initialize a hidden state
+        h = model.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
 
-        t1 = train_tensor[:, i+1, :, :, :]
-        t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
+        # Sequens loop rnn style
+        for i in range(seq_len-1): # so your sequnce is the full time len - last month.
+            print(f'\t\t month: {i+1}/{seq_len}...', end='\r')
 
-        # forward-pass
-        t1_pred, t1_pred_class, h = model(t0, h.detach())
-    
-        losses_list = []
+            t0 = train_tensor[:, i, :, :, :]
 
-        for j in range(config.output_channels):
+            t1 = train_tensor[:, i+1, :, :, :]
+            t1_binary = (t1.clone().detach().requires_grad_(True) > 0) * 1.0 # 1.0 to ensure float. Should avoid cloning warning now.
 
-            losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
+            # forward-pass
+            t1_pred, t1_pred_class, h = model(t0, h.detach())
+        
+            losses_list = []
+
+            for j in range(config.output_channels):
+
+                losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
 
 
-        for j in range(config.output_channels):
+            for j in range(config.output_channels):
 
-            losses_list.append(criterion_class(t1_pred_class[:,j,:,:], t1_binary[:,j,:,:]))
+                losses_list.append(criterion_class(t1_pred_class[:,j,:,:], t1_binary[:,j,:,:]))
 
-        losses = torch.stack(losses_list)
-        loss = multitaskloss_instance(losses)
-        total_loss += loss
+            losses = torch.stack(losses_list)
+            loss = multitaskloss_instance(losses)
+            total_loss += loss
 
-        # traning output
-        loss_reg = losses[:config.output_channels].sum()
-        loss_class = losses[-config.output_channels:].sum()
+            # traning output
+            loss_reg = losses[:config.output_channels].sum()
+            loss_class = losses[-config.output_channels:].sum()
 
-        avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
-        avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
-        avg_loss_list.append(loss.detach().cpu().numpy().item())
+            avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
+            avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
+            avg_loss_list.append(loss.detach().cpu().numpy().item())
+
+
+    # ---------------------------------------------------------------------------------
 
     # log each sequence/timeline/batch
     train_log(avg_loss_reg_list, avg_loss_class_list, avg_loss_list)
@@ -253,11 +265,16 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     scheduler.step()
 
 
+    # ----------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------
+
+
+
 
 def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
-    # add spatail transformer
-    transformer = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
+    # # add spatail transformer
+    # transformer = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
     criterion_reg, criterion_class, multitaskloss_instance = criterion
 
@@ -269,31 +286,30 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
         print(f'Sample: {sample+1}/{config.samples}', end = '\r')
 
-        train_tensor = get_train_tensors(views_vol, sample, config, device)
+        #train_tensor = get_train_tensors(views_vol, sample, config, device) # ONCE THE THING BELOW IS IN get_train_tensors MOVE get_train_tensors INTO train() SO YOU CAN SET BATCH LOOP 
 
 
-        # -------------------------------------------------------------------
-        # Could be in get train tnesor
+        # -------------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # SHOULD!!!! be in get train tnesor
 
         # Should really be N x C x D x H x W. Rigth now you do N x D x C x H x W (in your head, but it might bit really relevant)
 
-        N = train_tensor.shape[0] # batch size. Always 1
-        C = train_tensor.shape[1] # months
-        D = config.input_channels # features
-        H = train_tensor.shape[3] # height
-        W =  train_tensor.shape[4] # width
+        # N = train_tensor.shape[0] # batch size. Always 1
+        # C = train_tensor.shape[1] # months
+        # D = config.input_channels # features
+        # H = train_tensor.shape[3] # height
+        # W =  train_tensor.shape[4] # width
 
-        # data augmentation (can be turned of for final experiments)
-        train_tensor = train_tensor.reshape(N, C*D, H, W)
-        train_tensor = transformer(train_tensor[:,:,:,:])
-        train_tensor = train_tensor.reshape(N, C, D, H, W)
+        # # data augmentation (can be turned of for final experiments)
+        # train_tensor = train_tensor.reshape(N, C*D, H, W)
+        # train_tensor = transformer(train_tensor[:,:,:,:])
+        # train_tensor = train_tensor.reshape(N, C, D, H, W)
 
-        # -------------------------------------------------------------------
-
+        # -------------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         # Should be an assert thing here..
 
-        train(model, optimizer, scheduler , criterion_reg, criterion_class, multitaskloss_instance, train_tensor, config, device)
+        train(model, optimizer, scheduler , criterion_reg, criterion_class, multitaskloss_instance, views_vol, sample, config, device)
 
     print('training done...')
 

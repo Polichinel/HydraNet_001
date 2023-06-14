@@ -201,10 +201,22 @@ def get_train_tensors(views_vol, sample, config, device):
     last_feature_idx = ln_best_sb_idx + config.input_channels
     train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
+    # Reshape
+    N = train_tensor.shape[0] # batch size. Always 1 - you do batch a different way here
+    C = train_tensor.shape[1] # months
+    D = config.input_channels # features
+    H = train_tensor.shape[3] # height
+    W =  train_tensor.shape[4] # width
 
-    #wandb.log({"index": })
+    # add spatail transformer
+    transformer = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
-    #print(f'train_tensor: {train_tensor.shape}')  # debug
+    # data augmentation (can be turned of for final experiments)
+    train_tensor = train_tensor.reshape(N, C*D, H, W)
+    train_tensor = transformer(train_tensor[:,:,:,:])
+    train_tensor = train_tensor.reshape(N, C, D, H, W)
+
+
     return(train_tensor)
 
 
