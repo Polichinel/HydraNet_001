@@ -16,10 +16,10 @@ def get_swep_config():
         'scheduler' : {'value': 'linear'}, # 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 5},
-        'samples': {'value':   256}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
+        'samples': {'values':   [256, 512]}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
         'batch_size': {'value':  3}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
-        'learning_rate': {'value' : 0.001},
+        'learning_rate': {'values' : [0.005, 0.001]},
         "weight_decay" : {'value' : 0.1},
         "slope_ratio" : {'value' : 0.75},
         "roof_ratio" : {'value' :  0.7},
