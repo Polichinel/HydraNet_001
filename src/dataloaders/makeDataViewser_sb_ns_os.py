@@ -156,11 +156,11 @@ def compile():
     partitioner = input(f'a) Calibration \nb) Test \nc) Future\n')
 
     if partitioner == 'a':
-        partitioner_dict = {"train":(121,396),"predict":(397,444)} # calib_partitioner_dict - 01/01/1989 - 12/31/2011 - 01/01/2012 - 31/12/2015
+        partitioner_dict = {"train":(121,396),"predict":(397,444)} # calib_partitioner_dict - (01/01/1990 - 12/31/2012) : (01/01/2013 - 31/12/2015)
         file_name = "/viewser_monthly_vol_calib_sbnsos.pkl"
 
     elif partitioner == 'b':
-        partitioner_dict = {"train":(121,444),"predict":(445,492)} # test_partitioner_dict - 01/01/1989 - 31/12/2015 - 01/01/2016 - 31/12/2019
+        partitioner_dict = {"train":(121,444),"predict":(445,492)} # test_partitioner_dict - (01/01/1990 - 31/12/2015) : (01/01/2016 - 31/12/2018)
         file_name = "/viewser_monthly_vol_test_sbnsos.pkl"
 
     elif partitioner == 'c':
