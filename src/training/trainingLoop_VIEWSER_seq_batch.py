@@ -274,7 +274,6 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
     # # add spatail transformer
-    # transformer = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
     criterion_reg, criterion_class, multitaskloss_instance = criterion
 
@@ -285,29 +284,6 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
     for sample in range(config.samples):
 
         print(f'Sample: {sample+1}/{config.samples}', end = '\r')
-
-        #train_tensor = get_train_tensors(views_vol, sample, config, device) # ONCE THE THING BELOW IS IN get_train_tensors MOVE get_train_tensors INTO train() SO YOU CAN SET BATCH LOOP 
-
-
-        # -------------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        # SHOULD!!!! be in get train tnesor
-
-        # Should really be N x C x D x H x W. Rigth now you do N x D x C x H x W (in your head, but it might bit really relevant)
-
-        # N = train_tensor.shape[0] # batch size. Always 1
-        # C = train_tensor.shape[1] # months
-        # D = config.input_channels # features
-        # H = train_tensor.shape[3] # height
-        # W =  train_tensor.shape[4] # width
-
-        # # data augmentation (can be turned of for final experiments)
-        # train_tensor = train_tensor.reshape(N, C*D, H, W)
-        # train_tensor = transformer(train_tensor[:,:,:,:])
-        # train_tensor = train_tensor.reshape(N, C, D, H, W)
-
-        # -------------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        # Should be an assert thing here..
 
         train(model, optimizer, scheduler , criterion_reg, criterion_class, multitaskloss_instance, views_vol, sample, config, device)
 
