@@ -16,8 +16,8 @@ def get_swep_config():
         'scheduler' : {'value': 'linear'}, # 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 5},
-        'samples': {'values':   [256, 512, 1024]}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
-        'batch_size': {'values':  [3,6,9]}, # just speed running here..
+        'samples': {'values':   [512, 1024]}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
+        'batch_size': {'values':  [6,9]}, # just speed running here..
         "dropout_rate" : {'value' : 0.05},
         'learning_rate': {'value' :  0.001}, #0.001 default, but 0.005 might be better
         "weight_decay" : {'value' : 0.1},
@@ -35,7 +35,7 @@ def get_swep_config():
         #'start_months' :{'values' : [1,2,4,6,8,12]},
         'np_seed' : {'values' : [3,4]},
         'torch_seed' : {'values' : [3,4]},
-        #'dim' : {'values' : [32,16]},
+        'window_dim' : {'value' : 32},
         'h_init' : {'value' : 'abs_rand_exp-100'}  # right now this is just as a note to self. Can't change it here     
         }
 

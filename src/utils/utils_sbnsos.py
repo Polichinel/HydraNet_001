@@ -103,9 +103,9 @@ def my_decay(sample, samples, min_events, max_events, slope_ratio, roof_ratio):
     
     return(int(y))
 
-def draw_window(views_vol, config, sample): 
+def get_window_index(views_vol, config, sample): 
 
-    """Draw/sample a window/patch from the traning tensor.
+    """Draw/sample a cell which serves as the ancor for the sampeled window/patch drawn from the traning tensor.
     The dimensions of the windows are HxWxD, 
     where H=D in {16,32,64} and D is the number of months in the training data.
     The windows are constrained to be sampled from an area with some
@@ -144,25 +144,37 @@ def draw_window(views_vol, config, sample):
     #indx = random.choice(min_events_indx) RANDOMENESS!!!!
     indx = min_events_indx[np.random.choice(len(min_events_indx))] # dumb but working solution of np.random instead of random
 
-    dim = 32
-
-    # if sample > (samples * 0.5):
-    #     dim = 32 #np.random.choice([16, 32])
-
-    # else:
-
 
     # if you want a random temporal window, it is here.
-    window_dict = {'lat_indx':indx[0], 'long_indx':indx[1], 'dim' : dim} 
+    window_index = {'lat_indx':indx[0], 'long_indx':indx[1]} 
 
-    return(window_dict)
+    return(window_index)
 
+
+def get_window_coords(window_index, config):
+
+    # you can change this back to random if you want
+    window_dim = config.window_dim
+
+    # Randomly select the position of lat_indx and long_indx within the sampled tensor
+    min_lat = np.random.randint(0, window_dim)
+    max_lat =  window_dim - min_lat
+    min_long = np.random.randint(0, window_dim)
+    max_long =  window_dim - min_long
+
+    min_lat_indx = int(window_index['lat_indx'] - min_lat) 
+    max_lat_indx = int(window_index['lat_indx'] + max_lat)
+    min_long_indx = int(window_index['long_indx'] - min_long)
+    max_long_indx = int(window_index['long_indx'] + max_long)
+
+    window_coords = {'min_lat_indx':min_lat_indx, 'max_lat_indx':max_lat_indx, 'min_long_indx':min_long_indx, 'max_long_indx':max_long_indx, 'dim':window_dim}
+
+    return(window_coords)
 
 
 def apply_dropout(m):
     if type(m) == nn.Dropout:
         m.train()
-
 
 def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
 
@@ -176,21 +188,24 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
 
 def get_train_tensors(views_vol, sample, config, device):
 
-    train_views_vol = views_vol[:-config.time_steps] # not tha last 36 months - these ar for test set
+    # Not using the last 36 months - these ar for test set
+    train_views_vol = views_vol[:-config.time_steps] 
 
-    # To handle "edge windows"
+    # Keep trying until we get a valid sampled - i.e. not "edge windows"
     while True:
 
         try:
-            window_dict = draw_window(views_vol = views_vol, config = config, sample = sample)
+            # note that both functions below, get_window_index and get_window_coords induce randomness... 
+            window_index = get_window_index(views_vol = views_vol, config = config, sample = sample)
+            window_coords = get_window_coords(window_index = window_index, config = config)
 
-            min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
-            max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
-            min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
-            max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
+            # min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
+            # max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
+            # min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
+            # max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
-            input_window = train_views_vol[ : , min_lat_indx : max_lat_indx , min_long_indx : max_long_indx, :]
-            assert input_window.shape[1] == window_dict['dim'] and input_window.shape[2] == window_dict['dim']
+            input_window = train_views_vol[ : , window_coords['min_lat_indx'] : window_coords['max_lat_indx'] , window_coords['min_long_indx'] : window_coords['max_long_indx'], :]
+            assert input_window.shape[1] == window_coords['dim'] and input_window.shape[2] == window_coords['dim']
             break
 
         except:
@@ -259,3 +274,5 @@ def get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, ou
         log_dict[f"monthly/brier_score_loss{j}"] = brier
 
     return (log_dict)
+
+
