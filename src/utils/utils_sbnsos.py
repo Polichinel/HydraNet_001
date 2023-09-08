@@ -60,6 +60,7 @@ def unit_norm(x, noise = False):
 def standard(x, noise = False):
 
     """Return a standardnized x """
+
     x_standard = (x - x.mean()) / x.std()
 
     if noise == True:
@@ -69,31 +70,11 @@ def standard(x, noise = False):
 
 
 
-# def my_decay(sample, samples, min_events, max_events, slope_ratio):
-
-    
-#     if sample < samples*slope_ratio:
-
-#         b = ((-max_events + min_events)/(samples*slope_ratio))
-
-#         y = (max_events + b * sample).astype('int')
-
-#     else:
-#         y = int(min_events)
-    
-#     return(y)
-
-# def my_decay(sample, samples, min_events, max_events, slope_ratio):
-
-#     b = ((-max_events + min_events)/(samples*slope_ratio))
-#     y = (max_events + b * sample)
-    
-#     y = min(y, max_events*0.85)
-#     y = max(y, min_events)
-    
-#     return(int(y))
-
 def my_decay(sample, samples, min_events, max_events, slope_ratio, roof_ratio):
+
+    """Return a number of events (y) sampled from a linear decay function. 
+    The decay function is defined by the slope_ratio and the number of samples.
+    It has a roof at roof_ratio*max_events and a floor at min_events"""
 
     b = ((-max_events + min_events)/(samples*slope_ratio))
     y = (max_events + b * sample)
@@ -102,6 +83,7 @@ def my_decay(sample, samples, min_events, max_events, slope_ratio, roof_ratio):
     y = max(y, min_events)
     
     return(int(y))
+
 
 def get_window_index(views_vol, config, sample): 
 
@@ -144,32 +126,59 @@ def get_window_index(views_vol, config, sample):
     #indx = random.choice(min_events_indx) RANDOMENESS!!!!
     indx = min_events_indx[np.random.choice(len(min_events_indx))] # dumb but working solution of np.random instead of random
 
-
     # if you want a random temporal window, it is here.
-    window_index = {'lat_indx':indx[0], 'long_indx':indx[1]} 
+    window_index = {'row_indx':indx[0], 'col_indx':indx[1]} 
 
     return(window_index)
 
 
+# def get_window_coords(window_index, config):
+
+#     # you can change this back to random if you want
+#     window_dim = config.window_dim
+
+#     # Randomly select the position of lat_indx and long_indx within the sampled tensor
+#     min_lat = np.random.randint(0, window_dim)
+#     max_lat =  window_dim - min_lat
+#     min_long = np.random.randint(0, window_dim)
+#     max_long =  window_dim - min_long
+
+#     min_lat_indx = int(window_index['lat_indx'] - min_lat) 
+#     max_lat_indx = int(window_index['lat_indx'] + max_lat)
+#     min_long_indx = int(window_index['long_indx'] - min_long)
+#     max_long_indx = int(window_index['long_indx'] + max_long)
+
+#     window_coords = {'min_lat_indx':min_lat_indx, 'max_lat_indx':max_lat_indx, 'min_long_indx':min_long_indx, 'max_long_indx':max_long_indx, 'dim':window_dim}
+
+#     return(window_coords)
+
+
+# ----------------------------------------------------------------------------------------------------
 def get_window_coords(window_index, config):
+    """Return the coordinates of the window around the sampled index. 
+    This implementaions ensures that the window does never go out of bounds.
+    (Thus no need for sampling until a window is found that does not go out of bounds)."""
 
     # you can change this back to random if you want
     window_dim = config.window_dim
 
-    # Randomly select the position of lat_indx and long_indx within the sampled tensor
-    min_lat = np.random.randint(0, window_dim)
-    max_lat =  window_dim - min_lat
-    min_long = np.random.randint(0, window_dim)
-    max_long =  window_dim - min_long
+    # Randomly select a window around the sampled index. np.clip is used to ensure that the window does not go out of bounds
+    min_row_indx = np.clip(int(window_index['row_indx'] - np.random.randint(0, window_dim)), 0, 180 - window_dim)
+    max_row_indx = min_row_indx + window_dim
+    min_col_indx = np.clip(int(window_index['col_indx'] - np.random.randint(0, window_dim)), 0, 180 - window_dim)
+    max_col_indx = min_col_indx + window_dim
 
-    min_lat_indx = int(window_index['lat_indx'] - min_lat) 
-    max_lat_indx = int(window_index['lat_indx'] + max_lat)
-    min_long_indx = int(window_index['long_indx'] - min_long)
-    max_long_indx = int(window_index['long_indx'] + max_long)
-
-    window_coords = {'min_lat_indx':min_lat_indx, 'max_lat_indx':max_lat_indx, 'min_long_indx':min_long_indx, 'max_long_indx':max_long_indx, 'dim':window_dim}
+    # make dict of window coords to return
+    window_coords = {
+        'min_row_indx':min_row_indx, 
+        'max_row_indx':max_row_indx, 
+        'min_col_indx':min_col_indx, 
+        'max_col_indx':max_col_indx, 
+        'dim':window_dim}
 
     return(window_coords)
+
+# ----------------------------------------------------------------------------------------------------
 
 
 def apply_dropout(m):
@@ -188,6 +197,10 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
 
 def get_train_tensors(views_vol, sample, config, device):
 
+    """Uses the get_window_index and get_window_coords functions to sample a window from the training tensor. 
+    The window is returned as a tensor of size 1 x config.time_steps x config.input_channels x 180 x 180.
+    A few spatial transformations are applied to the tensor at the end."""
+
     # Not using the last 36 months - these ar for test set
     train_views_vol = views_vol[:-config.time_steps] 
 
@@ -196,13 +209,8 @@ def get_train_tensors(views_vol, sample, config, device):
 
         try:
             # note that both functions below, get_window_index and get_window_coords induce randomness... 
-            window_index = get_window_index(views_vol = views_vol, config = config, sample = sample)
+            window_index = get_window_index(views_vol = views_vol, config = config, sample = sample) # you should try and take this out of the loop - so you keep the index but changes the window_coords!!!
             window_coords = get_window_coords(window_index = window_index, config = config)
-
-            # min_lat_indx = int(window_dict['lat_indx'] - (window_dict['dim']/2)) 
-            # max_lat_indx = int(window_dict['lat_indx'] + (window_dict['dim']/2))
-            # min_long_indx = int(window_dict['long_indx'] - (window_dict['dim']/2))
-            # max_long_indx = int(window_dict['long_indx'] + (window_dict['dim']/2))
 
             input_window = train_views_vol[ : , window_coords['min_lat_indx'] : window_coords['max_lat_indx'] , window_coords['min_long_indx'] : window_coords['max_long_indx'], :]
             assert input_window.shape[1] == window_coords['dim'] and input_window.shape[2] == window_coords['dim']
@@ -223,7 +231,7 @@ def get_train_tensors(views_vol, sample, config, device):
     H = train_tensor.shape[3] # height
     W =  train_tensor.shape[4] # width
 
-    # add spatail transformer
+    # add spatial transformer
     transformer = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5), transforms.RandomVerticalFlip(p=0.5)])
 
     # data augmentation (can be turned of for final experiments)
@@ -237,15 +245,20 @@ def get_train_tensors(views_vol, sample, config, device):
 
 def get_test_tensor(views_vol, config, device):
 
+    """Uses to get the features for the test tensor. The test tensor is of size 1 x config.time_steps x config.input_channels x 180 x 180."""
+
     ln_best_sb_idx = 5
     last_feature_idx = ln_best_sb_idx + config.input_channels
+
+    # THIS MIGHT BE WHERE TO CHANGE THE TEST SET TO NOT BE NORMALIZED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
-    #print(f'test_tensor: {test_tensor.shape}') # debug
     return test_tensor
 
 
 def get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, out_of_sample_vol, config):
+
+    """Return a dictionary of metrics for the monthly out-of-sample predictions for W&B."""
 
     log_dict = {}
     log_dict["monthly/out_sample_month"] = i
