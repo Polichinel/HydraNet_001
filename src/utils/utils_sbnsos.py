@@ -212,7 +212,7 @@ def get_train_tensors(views_vol, sample, config, device):
             window_index = get_window_index(views_vol = views_vol, config = config, sample = sample) # you should try and take this out of the loop - so you keep the index but changes the window_coords!!!
             window_coords = get_window_coords(window_index = window_index, config = config)
 
-            input_window = train_views_vol[ : , window_coords['min_lat_indx'] : window_coords['max_lat_indx'] , window_coords['min_long_indx'] : window_coords['max_long_indx'], :]
+            input_window = train_views_vol[ : , window_coords['min_row_indx'] : window_coords['max_row_indx'] , window_coords['min_col_indx'] : window_coords['max_col_indx'], :]
             assert input_window.shape[1] == window_coords['dim'] and input_window.shape[2] == window_coords['dim']
             break
 
