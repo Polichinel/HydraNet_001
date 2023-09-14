@@ -209,22 +209,6 @@ def get_train_tensors(views_vol, sample, config, device):
 
     input_window = train_views_vol[ : , window_coords['min_row_indx'] : window_coords['max_row_indx'] , window_coords['min_col_indx'] : window_coords['max_col_indx'], :]
 
-    # Keep trying until we get a valid sampled - i.e. not "edge windows"
-    # while True:
-
-        # try:
-        #     # note that both functions below, get_window_index and get_window_coords induce randomness... 
-        #     window_index = get_window_index(views_vol = views_vol, config = config, sample = sample) # you should try and take this out of the loop - so you keep the index but changes the window_coords!!!
-        #     window_coords = get_window_coords(window_index = window_index, config = config)
-
-        #     input_window = train_views_vol[ : , window_coords['min_row_indx'] : window_coords['max_row_indx'] , window_coords['min_col_indx'] : window_coords['max_col_indx'], :]
-        #     assert input_window.shape[1] == window_coords['dim'] and input_window.shape[2] == window_coords['dim']
-        #     break
-
-        # except:
-        #     print('Resample edge...', end= '\r') # if you don't like this, simply pad to whol volume from 180x180 to 192x192. But there is a point to a avoide edges that might have wierd artifacts.
-        #     continue
-
     ln_best_sb_idx = 5
     last_feature_idx = ln_best_sb_idx + config.input_channels
     train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
