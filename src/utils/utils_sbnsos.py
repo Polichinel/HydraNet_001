@@ -132,27 +132,6 @@ def get_window_index(views_vol, config, sample):
     return(window_index)
 
 
-# def get_window_coords(window_index, config):
-
-#     # you can change this back to random if you want
-#     window_dim = config.window_dim
-
-#     # Randomly select the position of lat_indx and long_indx within the sampled tensor
-#     min_lat = np.random.randint(0, window_dim)
-#     max_lat =  window_dim - min_lat
-#     min_long = np.random.randint(0, window_dim)
-#     max_long =  window_dim - min_long
-
-#     min_lat_indx = int(window_index['lat_indx'] - min_lat) 
-#     max_lat_indx = int(window_index['lat_indx'] + max_lat)
-#     min_long_indx = int(window_index['long_indx'] - min_long)
-#     max_long_indx = int(window_index['long_indx'] + max_long)
-
-#     window_coords = {'min_lat_indx':min_lat_indx, 'max_lat_indx':max_lat_indx, 'min_long_indx':min_long_indx, 'max_long_indx':max_long_indx, 'dim':window_dim}
-
-#     return(window_coords)
-
-
 # ----------------------------------------------------------------------------------------------------
 def get_window_coords(window_index, config):
     """Return the coordinates of the window around the sampled index. 
