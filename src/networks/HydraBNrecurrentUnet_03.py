@@ -170,7 +170,7 @@ class HydraBNUNet03(nn.Module):
         # return d2, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
         #return d2_reg, d2_class, e0s # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
 
-        return out_reg, out_class, F.tanh(e0s_) # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
+        return out_reg, out_class, e0s_ # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
 
 
     # YOU CAN MAKE HIDDEN STATE TAKE THE FIRST INPUT AND JUST BROADCAT IT OUT..
@@ -179,7 +179,11 @@ class HydraBNUNet03(nn.Module):
 
         # NEW -----------------------------------------------------------
         #hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64) # + torch.exp(torch.tensor(-100)
-        hs = torch.abs(torch.randn((1,hidden_channels, dim, dim), dtype= torch.float64) * torch.exp(torch.tensor(-100))) 
+        
+        # works
+        #hs = torch.abs(torch.randn((1,hidden_channels, dim, dim), dtype= torch.float64) * torch.exp(torch.tensor(-100))) 
+        hs = torch.zeros((1,hidden_channels,dim,dim), dtype= torch.float64)
+        
         #hs = torch.randn((1,hidden_channels,dim,dim), dtype= torch.float64)
 
         #torch.randn(2, 3, 20)
@@ -196,10 +200,16 @@ class HydraBNUNet03(nn.Module):
         
         # NEW -----------------------------------------------------------
         #hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64) # + torch.exp(torch.tensor(-100)
+        
+        # works
         hs = torch.abs(torch.randn((1,hidden_channels, H, W), dtype= torch.float64) * torch.exp(torch.tensor(-100))) 
+        
         #hs = torch.randn((1,hidden_channels, H, W), dtype= torch.float64)   
 
         #hs_p = hs + test_tensor.detach().cpu() 
+
+        hs = torch.zeros((1,hidden_channels, H, W), dtype= torch.float64)
+
         return hs
         # NEW -----------------------------------------------------------
         
