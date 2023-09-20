@@ -1,3 +1,5 @@
+# https://pytorch.org/vision/stable/_modules/torchvision/ops/focal_loss.html
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,13 +15,37 @@ class FocalLoss_new(nn.Module):
 
         logits, targets = logits.unsqueeze(0), targets.unsqueeze(0)
 
-        ce_loss = F.cross_entropy(logits, targets, reduction='none')  # Calculate the cross-entropy loss
-        pt = torch.exp(-ce_loss)  # Calculate the probability of the true class
-        focal_loss = self.alpha * (1 - pt) ** self.gamma * ce_loss  # Compute the focal loss
+        p = torch.sigmoid(logits)
+
+        ce_loss = F.binary_cross_entropy_with_logits(logits, targets, reduction="none")# Calculate the cross-entropy loss. inputs should be Predicted unnormalized logits according to the documentation         
+        p_t = p * targets + (1 - p) * (1 - targets) # Calculate the probability of the true class
+        loss = ce_loss * ((1 - p_t) ** self.gamma)
+
+        if self.alpha >= 0:
+            alpha_t = self.alpha * targets + (1 - self.alpha) * (1 - targets) 
+            loss = alpha_t * loss # multiple alpha_t with targets here to balance the loss
 
         if self.reduction == 'mean':
-            return focal_loss.mean()  # Average the loss if reduction is set to 'mean'
+            return loss.mean()  # Average the loss if reduction is set to 'mean'
         elif self.reduction == 'sum':
-            return focal_loss.sum()  # Sum the loss if reduction is set to 'sum'
+            return loss.sum()  # Sum the loss if reduction is set to 'sum'
         else:
-            return focal_loss  # Return the focal loss without reduction
+            return loss  # Return the focal loss without reduction
+
+
+
+    # def forward(self, logits, targets):
+
+    #     logits, targets = logits.unsqueeze(0), targets.unsqueeze(0)
+
+    #     ce_loss = F.cross_entropy(logits, targets, reduction='none')  # Calculate the cross-entropy loss. inputs should be Predicted unnormalized logits according to the documentation
+                
+    #     pt = torch.exp(-ce_loss)  # Calculate the probability of the true class
+    #     focal_loss = self.alpha * (1 - pt) ** self.gamma * ce_loss  # Compute the focal loss
+
+    #     if self.reduction == 'mean':
+    #         return focal_loss.mean()  # Average the loss if reduction is set to 'mean'
+    #     elif self.reduction == 'sum':
+    #         return focal_loss.sum()  # Sum the loss if reduction is set to 'sum'
+    #     else:
+    #         return focal_loss  # Return the focal loss without reduction
