@@ -64,7 +64,7 @@ def choose_loss(config):
     if config.loss_reg == 'a':
         criterion_reg = nn.MSELoss().to(device)
 
-    elif config.loss_reg == 'b': # you are using this mostly
+    elif config.loss_reg == 'b':  # IN USE!!!!!!!!!!!!!!!
         criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
 
     elif config.loss_reg == 'c':
@@ -83,7 +83,7 @@ def choose_loss(config):
     elif config.loss_class == 'b':
         criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
-    elif config.loss_class == 'c': # and this
+    elif config.loss_class == 'c': # IN USE!!!!!!!!!!!!!!!
         criterion_class =  stableBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
     elif config.loss_class == 'd': 
@@ -321,15 +321,12 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
-            # logit test, sigmoid out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            #t0 = torch.sigmoid(t0)
-            # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             t1_pred, t1_pred_class, _ = model(t0, h_tt) # freeze
             #t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # or dont freez !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             # logit test, sigmoid out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            #t1_pred_class = torch.sigmoid(t1_pred_class)
+            t1_pred_class = torch.sigmoid(t1_pred_class)
             # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze())

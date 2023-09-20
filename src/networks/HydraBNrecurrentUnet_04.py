@@ -156,7 +156,7 @@ class HydraBNUNet04(nn.Module):
         H1_class = self.dec_conv2_class2_head1(H1_class)
 
         out_reg1 = F.relu(H1_reg)
-        out_class1 = torch.sigmoid(H1_class) # could move sigmoid outta here...
+        out_class1 = H1_class # torch.sigmoid(H1_class) # could move sigmoid outta here...
 
         #H2
         H2_d0 = F.relu(self.bn_dec_conv0_head2(self.dec_conv0_head2(torch.cat([self.upsample0_head2(b),e1s],1))))
@@ -177,7 +177,7 @@ class HydraBNUNet04(nn.Module):
         H2_class = self.dec_conv2_class2_head2(H2_class)
 
         out_reg2 = F.relu(H2_reg)
-        out_class2 = torch.sigmoid(H2_class)
+        out_class2 = H2_class#torch.sigmoid(H2_class)
 
         #H3
         d0 = F.relu(self.bn_dec_conv0_head3(self.dec_conv0_head3(torch.cat([self.upsample0_head3(b),e1s],1))))
@@ -198,7 +198,7 @@ class HydraBNUNet04(nn.Module):
         H3_class = self.dec_conv2_class2_head3(H3_class)
 
         out_reg3 = F.relu(H3_reg)
-        out_class3 = torch.sigmoid(H3_class)
+        out_class3 = H3_class #torch.sigmoid(H3_class)
 
         
         # Hidden state
