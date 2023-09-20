@@ -36,6 +36,7 @@ from gatedrecurrentUnet_v03 import GUNet_v03
 from HydraBNrecurrentUnet_01 import HydraBNUNet01
 from HydraBNrecurrentUnet_02 import HydraBNUNet02
 from HydraBNrecurrentUnet_03 import HydraBNUNet03
+from HydraBNrecurrentUnet_04 import HydraBNUNet04
 
 
 from BNrecurrentUnet import BNUNet
@@ -132,6 +133,9 @@ def make(config):
 
     elif config.model == 'HydraBNUNet03':
         unet = HydraBNUNet03(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
+    elif config.model == 'HydraBNUNet04':
+        unet = HydraBNUNet04(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'BNUNet':
         unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
@@ -513,7 +517,7 @@ if __name__ == "__main__":
 
         unet = model_pipeline(config = hyperparameters, project = project)
 
-        # print('Saving model...') # this should be an opiton wen not sweeping
+        # print('Saving model...') # this should be an opiton when not sweeping
 
         # if hyperparameters['loss'] == 'a':
         #     PATH = 'unet_monthly_sinkhorn.pth'
