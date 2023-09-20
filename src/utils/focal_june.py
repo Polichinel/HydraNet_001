@@ -11,7 +11,7 @@ class FocalLoss_new(nn.Module):
 
     def forward(self, logits, targets):
 
-        input, target = input.unsqueeze(0), target.unsqueeze(0)
+        logits, targets = logits.unsqueeze(0), targets.unsqueeze(0)
 
         ce_loss = F.cross_entropy(logits, targets, reduction='none')  # Calculate the cross-entropy loss
         pt = torch.exp(-ce_loss)  # Calculate the probability of the true class

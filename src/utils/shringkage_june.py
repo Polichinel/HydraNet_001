@@ -14,10 +14,11 @@ class ShrinkageLoss_new(nn.Module):
         input, target = input.unsqueeze(0), target.unsqueeze(0) 
 
         l = torch.abs(target - input)  # Absolute difference between target and input
-        exp_term = torch.exp(self.a * (self.c - l))  # Exponential term to ensure numerical stability
+        exp_term = torch.exp(self.a * (self.c - l))  # Exponential term to control the sensitivity of the loss to deviations from the target values.
         loss = (l ** 2) / (1 + exp_term)  # Shrinkage loss calculation
 
         if self.size_average:
             return loss.mean()  # Average the loss if size_average is True
         else:
             return loss.sum()  # Sum the loss if size_average is False
+
