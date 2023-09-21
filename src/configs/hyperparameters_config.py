@@ -8,7 +8,7 @@ def get_hp_config():
     'hidden_channels' : 32,
     'min_events' : 5,
     'samples': 512, # 10 just for debug
-    'batch_size': 6, 
+    'batch_size': 3, 
     'dropout_rate' : 0.05,
     'learning_rate' :  0.001,
     'weight_decay' :  0.1,
