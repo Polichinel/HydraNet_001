@@ -37,6 +37,8 @@ from HydraBNrecurrentUnet_01 import HydraBNUNet01
 from HydraBNrecurrentUnet_02 import HydraBNUNet02
 from HydraBNrecurrentUnet_03 import HydraBNUNet03
 from HydraBNrecurrentUnet_04 import HydraBNUNet04
+from HydraBNrecurrentUnet_05 import HydraBNUNet05
+
 
 
 from BNrecurrentUnet import BNUNet
@@ -67,7 +69,7 @@ def choose_loss(config):
     elif config.loss_reg == 'b':  # IN USE!!!!!!!!!!!!!!!
         criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
 
-    elif config.loss_reg == 'c':
+    elif config.loss_reg == 'c': # should change to this and I might need violence specific a and c....
         criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
 
     else:
@@ -83,10 +85,10 @@ def choose_loss(config):
     elif config.loss_class == 'b':
         criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
-    elif config.loss_class == 'c': # IN USE!!!!!!!!!!!!!!!
+    elif config.loss_class == 'c': # works.. but not right and for probs
         criterion_class =  stableBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
-    elif config.loss_class == 'd': 
+    elif config.loss_class == 'd': # works and w/ logits. But I might need violence specific gamma and alpha....
         criterion_class =  FocalLoss_new(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
     else:
@@ -136,6 +138,9 @@ def make(config):
 
     elif config.model == 'HydraBNUNet04':
         unet = HydraBNUNet04(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
+    elif config.model == 'HydraBNUNet05':
+        unet = HydraBNUNet05(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'BNUNet':
         unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
