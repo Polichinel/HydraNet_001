@@ -38,6 +38,7 @@ from HydraBNrecurrentUnet_02 import HydraBNUNet02
 from HydraBNrecurrentUnet_03 import HydraBNUNet03
 from HydraBNrecurrentUnet_04 import HydraBNUNet04
 from HydraBNrecurrentUnet_05 import HydraBNUNet05
+from HydraBNrecurrentUnet_06 import HydraBNUNet06
 
 
 
@@ -141,6 +142,10 @@ def make(config):
 
     elif config.model == 'HydraBNUNet05':
         unet = HydraBNUNet05(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
+    
+    elif config.model == 'HydraBNUNet06':
+        unet = HydraBNUNet06(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'BNUNet':
         unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
@@ -370,6 +375,8 @@ def get_posterior(model, views_vol, config, device, n):
     else:
         print('Running sweep. no posterior pickle dumped')
 
+
+    # YOU ARE MISSING SOMETHING ABOUT FEATURES HERE WHICH IS WHY YOU REPORTED AP ON WandB IS BIASED DOWNWARDS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # Get mean and std
     mean_array = np.array(posterior_list).mean(axis = 0) # get mean for each month!
     std_array = np.array(posterior_list).std(axis = 0)
