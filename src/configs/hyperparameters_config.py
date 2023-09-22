@@ -2,7 +2,7 @@
 def get_hp_config():
     
     hyperparameters = {
-    'model' : 'HydraBNUNet04', #'BNUNet',
+    'model' : 'HydraBNUNet05', #'BNUNet',
     'clip_grad_norm' : True,
     'scheduler' : 'linear',
     'hidden_channels' : 32,
@@ -17,8 +17,8 @@ def get_hp_config():
     'input_channels' : 3,
     'output_channels' : 3,
     'loss_class': 'd',  # band c are is still unstable... c is old, d = FocalLoss_new
-    'loss_class_gamma' : 1.5, # 0.1, # 2 works and 0 works. , # try with 1 here and 0.75 below # # gamma=0 no wieght. Between 0 and 1 seems very unstable... In general, this here above 0 seems unstable... At least the the reg values below 
-    'loss_class_alpha' : 0.75, #0.75, # try with 0.75 # alpha=0.5 even.
+    'loss_class_gamma' : 1.5, # 0 and 2 works. But 2 gives a lot of noise. "If you want to prioritize hard cases in your training and make your model focus more on misclassified or uncertain examples, you should consider setting gamma to a value greater than 1""
+    'loss_class_alpha' : 0.75, #An alpha value of 0.75 means that you are assigning more weight to the minority class during training.
     'loss_reg': 'b',
     'loss_reg_a' : 14, 
     'loss_reg_c' :  0.01, # 0.05 works...
