@@ -8,15 +8,15 @@ class STN_01(nn.Module):
         self.is_training = True  # Flag to control the STN activation
 
         # Localization network
-        self.conv1 = nn.Conv2d(input_channels+hidden_channels, 8, kernel_size=7)
-        self.maxpool1 = nn.MaxPool2d(2, stride=2)
+        self.conv1 = nn.Conv2d(input_channels+hidden_channels, 8, kernel_size=7) # 32x32x35 -> 26x26x8
+        self.maxpool1 = nn.MaxPool2d(2, stride=2) # 26x26x8 -> 13x13x8
         self.relu1 = nn.ReLU(True)
-        self.conv2 = nn.Conv2d(8, 10, kernel_size=5)
-        self.maxpool2 = nn.MaxPool2d(2, stride=2)
+        self.conv2 = nn.Conv2d(8, 10, kernel_size=5) # 13x13x8 -> 9x9x10
+        self.maxpool2 = nn.MaxPool2d(2, stride=2) # 9x9x10 -> 4x4x10
         self.relu2 = nn.ReLU(True)
 
         # Regressor for the transformation parameters
-        self.fc_loc1 = nn.Linear(10 * 3 * 3, 32)
+        self.fc_loc1 = nn.Linear(10*4*4, 32) # old but wrong (10 * 3 * 3, 32)
         self.relu3 = nn.ReLU(True)
         self.fc_loc2 = nn.Linear(32, 3 * 2)  # 3x2 for affine transformation
 
@@ -35,7 +35,7 @@ class STN_01(nn.Module):
             xs = self.maxpool2(xs)
             xs = self.relu2(xs)
 
-            xs = xs.view(-1, 10 * 3 * 3)
+            xs = xs.view(-1, 10 * 4 * 4) #old but wrong (-1, 10 * 3 * 3)
             theta = self.fc_loc1(xs)
             theta = self.relu3(theta)
             theta = self.fc_loc2(theta)
