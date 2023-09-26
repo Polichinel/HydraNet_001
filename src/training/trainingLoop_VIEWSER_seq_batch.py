@@ -39,6 +39,7 @@ from HydraBNrecurrentUnet_03 import HydraBNUNet03
 from HydraBNrecurrentUnet_04 import HydraBNUNet04
 from HydraBNrecurrentUnet_05 import HydraBNUNet05
 from HydraBNrecurrentUnet_06 import HydraBNUNet06
+from HydraBNrecurrentUnet_07 import HydraBNUNet07
 
 
 
@@ -143,9 +144,11 @@ def make(config):
     elif config.model == 'HydraBNUNet05':
         unet = HydraBNUNet05(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
-    
     elif config.model == 'HydraBNUNet06':
         unet = HydraBNUNet06(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
+    elif config.model == 'HydraBNUNet07':
+        unet = HydraBNUNet07(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'BNUNet':
         unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
@@ -308,6 +311,9 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 def test(model, test_tensor, time_steps, config, device): # should be called eval/validation
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
+
+    # Set the STN to evaluation mode (disable it) for inference
+    model.stn.is_training = False #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NEWNEWNENWNEWNENW
 
     # wait until you know if this work as usually
     pred_np_list = []

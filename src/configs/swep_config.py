@@ -11,7 +11,7 @@ def get_swep_config():
     sweep_config['metric'] = metric
 
     parameters_dict = {
-        'model' : {'value' :'HydraBNUNet06'},
+        'model' : {'value' :'HydraBNUNet07'},
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'linear'}, # 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
@@ -29,8 +29,8 @@ def get_swep_config():
         'loss_class_gamma' : {'value' : 1.5},
         'loss_class_alpha' : {'value' : 0.75}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b', },
-        'loss_reg_a' : { 'values' : [14, 18, 21]},
-        'loss_reg_c' : { 'values' : [0.01, 0.1]},
+        'loss_reg_a' : { 'values' : [14, 21]},
+        'loss_reg_c' : { 'value' : 0.01},
         'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
         'np_seed' : {'values' : [3,4]},
