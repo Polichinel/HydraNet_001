@@ -313,7 +313,7 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
     model.apply(apply_dropout)
 
     # Set the STN to evaluation mode (disable it) for inference
-    model.stn.is_training = False #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NEWNEWNENWNEWNENW
+    #model.stn.is_training = False #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NEWNEWNENWNEWNENW
 
     # wait until you know if this work as usually
     pred_np_list = []
