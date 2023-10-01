@@ -18,7 +18,7 @@ from sklearn.metrics import brier_score_loss
 import wandb
 
 # --------------------------------------------------------------
-def init_weights(m,config):
+def init_weights(m, config):
 
 	if config.weight_init == 'xavier_uni':
 		if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):

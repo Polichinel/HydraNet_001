@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 import time
 import sys
+import functools
 
 import torch
 import torch.nn as nn
@@ -116,7 +117,7 @@ def make(config):
 
     # unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
-    # ------------------------------------------------------------------------------------------------------DEBUG
+# ------------------------------------------------------------------------------------------------------ COULD BE A FUNCTION IN utils_sbnsos.py
     if config.model == 'UNet':
         unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
@@ -157,9 +158,13 @@ def make(config):
         print('no model...')
     # ------------------------------------------------------------------------------------------------------DEBUG
 
-    unet.apply(init_weights)
+    # Create a partial function with the initialization function and the config parameter
+    init_fn = functools.partial(init_weights, config=config)
 
-    # ------------------------------------------------------------------------------------------------------DEBUG
+    # Apply the initialization function to the model
+    unet.apply(init_fn)
+
+    # ------------------------------------------------------------------------------------------------------COULD BE A FUNCTION IN utils_sbnsos.py
 
 
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
