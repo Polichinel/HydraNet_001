@@ -157,6 +157,11 @@ def make(config):
         print('no model...')
     # ------------------------------------------------------------------------------------------------------DEBUG
 
+    unet.apply(init_weights)
+
+    # ------------------------------------------------------------------------------------------------------DEBUG
+
+
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
     optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
@@ -194,6 +199,7 @@ def make(config):
         scheduler = [] # could set to None...
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
+
 
 
 def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitaskloss_instance, views_vol, sample, config, device): # views vol and sample

@@ -12,6 +12,7 @@ def get_swep_config():
 
     parameters_dict = {
         'model' : {'value' :'HydraBNUNet06'},
+        'weight_init' : {'values' : ['xavier_uni', 'xavier_norm', 'kaiming_uni', 'kaiming_normal']},
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'linear'}, # 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results

@@ -17,6 +17,28 @@ from sklearn.metrics import brier_score_loss
 
 import wandb
 
+# --------------------------------------------------------------
+def init_weights(m,config):
+
+	if config.weight_init == 'xavier_uni':
+		if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+			nn.init.xavier_uniform_(m.weight)
+
+	elif config.weight_init == 'xavier_norm':
+		if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+			nn.init.xavier_normal_(m.weight)
+
+	elif config.weight_init == 'kaiming_uni':
+		if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+			nn.init.kaiming_uniform_(m.weight)
+			
+	elif config.weight_init == 'kaiming_norm':
+		if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+			nn.init.kaiming_normal_(m.weight)
+
+	else:
+		pass
+# --------------------------------------------------------------
 
 def get_data(run_type):
 
