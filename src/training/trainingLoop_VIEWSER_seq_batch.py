@@ -183,16 +183,21 @@ def make(config):
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = LinearLR(optimizer)
 
-    elif config.scheduler == 'OneCycleLR':
+    elif config.scheduler == 'CosineAnnealingLR':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples, eta_min = 0.00005) # you should try with config.samples * 0.2, 0,35 and 0.5
 
+
+    elif config.scheduler == 'OneCycleLR':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = OneCycleLR(optimizer,
                        total_steps=32, 
                        max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
                        anneal_strategy = 'cos') # Specifies the annealing strategy
 
-
     elif config.scheduler == 'CyclicLR':
 
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = CyclicLR(optimizer,
                        step_size_up=200,
                        base_lr = config.learning_rate * 0.1,
