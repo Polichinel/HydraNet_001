@@ -10,10 +10,17 @@ class HydraBNUNet06_LSTM(nn.Module):
         super().__init__()
 
         base = hidden_channels # ends up as hiddden channels
+        kernel_size = 3 # only use in the LSTM part but could be used through out.. 
+        padding = kernel_size // 2 # only use in the LSTM part but could be used through out.. 
+        hidden_channels_split = int(hidden_channels/2) # For the LSTM part because we are splitting h into two tensors hs (short-term) and hl (long-term)
+
+
         self.base = base # to extract later
         
         # encoder (downsampling)
-        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels, base, 3, padding=1, bias = False) # but then with hidden_c you go from 65 to 64...
+        #self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels, base, 3, padding=1, bias = False) # but then with hidden_c you go from 65 to 64...
+        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels_split, base, 3, padding=1, bias = False) # NOW hidden_channels_split + input channels because of the LSTM - you only concat x with hs and not h
+
         self.bn_enc_conv0 = nn.BatchNorm2d(base)
         self.pool0 = nn.MaxPool2d(2, 2, padding=0) # 16 -> 8
 
@@ -102,10 +109,10 @@ class HydraBNUNet06_LSTM(nn.Module):
 
 
         # LSTM
-        kernel_size = 3 # could be specified in the init
-        padding = kernel_size // 2 # could be specified in the init
-        # /2 because we are splitting the hidden state into two tensors hs (short-term) and hl (long-term)
-        hidden_channels_split = int(hidden_channels/2) # could be specified in the init
+        # kernel_size = 3 # could be specified in the init
+        # padding = kernel_size // 2 # could be specified in the init
+        # # /2 because we are splitting the hidden state into two tensors hs (short-term) and hl (long-term)
+        # hidden_channels_split = int(hidden_channels/2) # could be specified in the init
 
         # Input gate
         self.Wxi = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) # if it runs, try to remove bias - you are using batchnorm after all
