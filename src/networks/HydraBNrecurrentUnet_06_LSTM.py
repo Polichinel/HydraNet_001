@@ -105,16 +105,17 @@ class HydraBNUNet06_LSTM(nn.Module):
         kernel_size = 3 # could be specified in the init
         padding = kernel_size // 2 # could be specified in the init
         # /2 because we are splitting the hidden state into two tensors hs (short-term) and hl (long-term)
+        hidden_channels_split = int(hidden_channels/2) # could be specified in the init
 
         # Input gate
-        self.Wxi = nn.Conv2d(input_channels, hidden_channels/2, kernel_size, padding=padding, bias=True) # if it runs, try to remove bias - you are using batchnorm after all
-        self.Whi = nn.Conv2d(hidden_channels/2, hidden_channels/2, kernel_size, padding=padding, bias=True)
-        self.Wxf = nn.Conv2d(input_channels, hidden_channels/2, kernel_size, padding=padding, bias=True)
-        self.Whf = nn.Conv2d(hidden_channels/2, hidden_channels/2, kernel_size, padding=padding, bias=True)
-        self.Wxc = nn.Conv2d(input_channels, hidden_channels/2, kernel_size, padding=padding, bias=True)
-        self.Whc = nn.Conv2d(hidden_channels/2, hidden_channels/2, kernel_size, padding=padding, bias=True)
-        self.Wxo = nn.Conv2d(input_channels, hidden_channels/2, kernel_size, padding=padding, bias=True)
-        self.Who = nn.Conv2d(hidden_channels/2, hidden_channels/2, kernel_size, padding=padding, bias=True)
+        self.Wxi = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) # if it runs, try to remove bias - you are using batchnorm after all
+        self.Whi = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Wxf = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Whf = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Wxc = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Whc = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Wxo = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Who = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
 
 
 
