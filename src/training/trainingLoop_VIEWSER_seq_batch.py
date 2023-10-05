@@ -357,12 +357,29 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
+            # NEW-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            # split h_tt into hs_tt and hl_tt and save hl_tt as the forzen cell state/long term memory. Call it hl_frozen.
+            split = int(h_tt.shape[1]/2) # half of the second dimension wich is channels
+            _, hl_frozen = torch.split(h_tt, split, dim=1)
+            # NEW-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-            #t1_pred, t1_pred_class, _ = model(t0, h_tt) # freeze
+
+
+            #t1_pred, t1_pred_class, _ = model(t0, h_tt) # freeze - oldie nuut goldie
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # or dont freez !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-            # logit test, sigmoid out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            t1_pred_class = torch.sigmoid(t1_pred_class)
+
+
+            # NEW -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            # again split the h_tt into hs_tt and hl_tt. But discard the hl_tt
+            # Concatenate the frozen cell state/long term memory (hl_frozen) with the new hidden state/short term memory
+            hs, _ = torch.split(h_tt, split, dim=1)
+            h_tt = torch.cat((hs, hl_frozen), dim=1) # this is the new h_tt
+            # NEW -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+            t1_pred_class = torch.sigmoid(t1_pred_class) # there is no sigmoid in the model (the loss takes logits) so you need to do it here.
             # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze())
