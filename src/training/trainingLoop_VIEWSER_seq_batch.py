@@ -40,6 +40,7 @@ from HydraBNrecurrentUnet_03 import HydraBNUNet03
 from HydraBNrecurrentUnet_04 import HydraBNUNet04
 from HydraBNrecurrentUnet_05 import HydraBNUNet05
 from HydraBNrecurrentUnet_06 import HydraBNUNet06
+from HydraBNrecurrentUnet_06_LSTM import HydraBNUNet06_LSTM
 from HydraBNrecurrentUnet_07 import HydraBNUNet07
 
 
@@ -148,6 +149,9 @@ def make(config):
     elif config.model == 'HydraBNUNet06':
         unet = HydraBNUNet06(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
+    elif config.model == 'HydraBNUNet06_LSTM':
+        unet = HydraBNUNet06_LSTM(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
     elif config.model == 'HydraBNUNet07':
         unet = HydraBNUNet07(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
@@ -185,7 +189,7 @@ def make(config):
 
     elif config.scheduler == 'CosineAnnealingLR':
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples, eta_min = 0.00005) # you should try with config.samples * 0.2, 0,35 and 0.5
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples, eta_min = 0.00005) # you should try with config.samples * 0.2, 0,33 and 0.5
 
 
     elif config.scheduler == 'OneCycleLR':

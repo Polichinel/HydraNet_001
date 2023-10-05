@@ -11,15 +11,15 @@ def get_swep_config():
     sweep_config['metric'] = metric
 
     parameters_dict = {
-        'model' : {'value' :'HydraBNUNet06'},
+        'model' : {'value' :'HydraBNUNet06_LSTM'},
         'weight_init' : {'value' : 'xavier_norm'}, # ['xavier_uni', 'xavier_norm', 'kaiming_uni', 'kaiming_normal']
         'clip_grad_norm' : {'value': True},
-        'scheduler' : {'values': ['CosineAnnealingLR', 'linear']}, # 'OneCycleLR'
+        'scheduler' : {'value': 'linear'}, #  'CosineAnnealingLR' 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 5},
-        'samples': {'values':   [300, 500]}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
+        'samples': {'values':   400}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
         'batch_size': {'value':  3}, # just speed running here..
-        "dropout_rate" : {'values' : [0.125, 0.25]},
+        "dropout_rate" : {'values' : 0.125},
         'learning_rate': {'value' :  0.001}, #0.001 default, but 0.005 might be better
         "weight_decay" : {'value' : 0.1},
         "slope_ratio" : {'value' : 0.75},
