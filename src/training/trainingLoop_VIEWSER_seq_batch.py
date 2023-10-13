@@ -187,9 +187,24 @@ def make(config):
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = LinearLR(optimizer)
 
-    elif config.scheduler == 'CosineAnnealingLR':
+
+
+    elif config.scheduler == 'CosineAnnealingLR1':
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples, eta_min = 0.00005) # you should try with config.samples * 0.2, 0,33 and 0.5
+
+    elif config.scheduler == 'CosineAnnealingLR02':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.2, eta_min = 0.00005)
+
+    elif config.scheduler == 'CosineAnnealingLR033':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.33, eta_min = 0.00005)
+
+    elif config.scheduler == 'CosineAnnealingLR05':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.5, eta_min = 0.00005)
+
 
 
     elif config.scheduler == 'OneCycleLR':
@@ -359,7 +374,7 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
 
             # NEW-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
             # split h_tt into hs_tt and hl_tt and save hl_tt as the forzen cell state/long term memory. Call it hl_frozen.
-            split = int(h_tt.shape[1]/2) # half of the second dimension wich is channels
+            split = int(h_tt.shape[1]/2) # half of the second dimension which is channels
             _, hl_frozen = torch.split(h_tt, split, dim=1)
             # NEW-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
