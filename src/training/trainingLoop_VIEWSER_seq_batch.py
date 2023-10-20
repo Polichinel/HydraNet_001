@@ -205,6 +205,9 @@ def make(config):
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.5, eta_min = 0.00005)
 
+    elif config.scheduler == 'CosineAnnealingLR004':
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.04, eta_min = 0.00005)
 
 
     elif config.scheduler == 'OneCycleLR':
