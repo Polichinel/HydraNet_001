@@ -11,7 +11,7 @@ def get_swep_config():
     sweep_config['metric'] = metric
 
     parameters_dict = {
-        'model' : {'value' :'HydraBNUNet06_LSTM_PE'},
+        'model' : {'value' :'HydraBNUNet06_LSTM'},
         'weight_init' : {'value' : 'xavier_norm'}, # ['xavier_uni', 'xavier_norm', 'kaiming_uni', 'kaiming_normal']
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'values': ['CosineAnnealingLR004']}, #  'CosineAnnealingLR' 'OneCycleLR'
@@ -37,7 +37,8 @@ def get_swep_config():
         'np_seed' : {'values' : [3,4]},
         'torch_seed' : {'values' : [3,4]},
         'window_dim' : {'value' : 32},
-        'h_init' : {'value' : 'abs_rand_exp-100'}  # right now this is just as a note to self. Can't change it here     
+        'h_init' : {'value' : 'abs_rand_exp-100'},
+        'loss_distance_scale' : {'values' : [0.05, 0.01, 0.001]}  # right now this is just as a note to self. Can't change it here     
         }
 
     sweep_config['parameters'] = parameters_dict

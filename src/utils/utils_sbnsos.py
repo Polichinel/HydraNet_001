@@ -279,3 +279,18 @@ def get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, ou
     return (log_dict)
 
 
+def weigh_loss(loss, y_t0, y_t1, distance_scale):
+
+    """
+    This function is used to weigh the loss function with a distance penalty. 
+    If the distance between y_t0 and y_t1 is large, i.e. the level of violence differ, then the loss is increased.
+    The point is to make the model more sensitive to large changes in violence compared to inertia.
+    """
+
+    # Calculate the squared distance between y_t0 and y_t1
+    squared_distance = torch.pow(y_t1 - y_t0, 2)
+    
+    # Add the distance penalty to the original loss
+    new_loss = loss + torch.mean(squared_distance) * distance_scale
+
+    return new_loss

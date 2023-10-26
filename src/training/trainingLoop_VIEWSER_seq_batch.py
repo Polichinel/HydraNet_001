@@ -42,8 +42,6 @@ from HydraBNrecurrentUnet_05 import HydraBNUNet05
 from HydraBNrecurrentUnet_06 import HydraBNUNet06
 from HydraBNrecurrentUnet_06_LSTM import HydraBNUNet06_LSTM
 from HydraBNrecurrentUnet_07 import HydraBNUNet07
-from HydraBNrecurrentUnet_06_LSTM_PE import HydraBNUNet06_LSTM_PE
-
 
 from BNrecurrentUnet import BNUNet
 #from focal import FocalLoss
@@ -151,9 +149,6 @@ def make(config):
 
     elif config.model == 'HydraBNUNet06_LSTM':
         unet = HydraBNUNet06_LSTM(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet06_LSTM_PE':
-        unet = HydraBNUNet06_LSTM_PE(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet07':
         unet = HydraBNUNet07(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
@@ -288,6 +283,9 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
             losses = torch.stack(losses_list)
             loss = multitaskloss_instance(losses)
+
+            loss = weigh_loss(loss, t0, t1, config.loss_distance_scale)
+
             total_loss += loss
 
             # traning output
