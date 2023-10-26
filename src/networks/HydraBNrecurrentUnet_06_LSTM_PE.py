@@ -131,7 +131,7 @@ class HydraBNUNet06_LSTM_PE(nn.Module):
 
     # -----------------------------------------------------------------------------------------------------------------
 
-    def pos_emb_2d(rows, cols, func, scale=1.0):
+    def pos_emb_2d(self, rows, cols, func, scale=1.0):
 
         """
         rows: number of rows
@@ -156,7 +156,7 @@ class HydraBNUNet06_LSTM_PE(nn.Module):
         return X, Y, Z
 
 
-    def pos_embd_tensor(pe_channels = 5, scale_par = 1, H = 180, W = 180):
+    def pos_embd_tensor(self, pe_channels = 5, scale_par = 1, H = 180, W = 180):
 
         """
         channels: number of channels we want to create with positional embeddings. The default value is 5.
@@ -173,7 +173,7 @@ class HydraBNUNet06_LSTM_PE(nn.Module):
             elif i%2 == 1:
                 func = 'cos' 
 
-            _, _, Z = pos_emb_2d(H, W, func, scale = np.exp(-scale_par))
+            _, _, Z = self.pos_emb_2d(H, W, func, scale = np.exp(-scale_par))
             pos_emb_tensor[:, :, i] = torch.from_numpy(Z)
 
         return pos_emb_tensor
@@ -183,7 +183,7 @@ class HydraBNUNet06_LSTM_PE(nn.Module):
 
     def forward(self, x, h):
 
-        pet = pos_embd_tensor(pe_channels = 5, scale_par = 1)/10000 # 10000 anttention is all you need scaling - 5, 1, and 10000 should all be hyperparameters in the config file
+        pet = self.pos_embd_tensor(pe_channels = 5, scale_par = 1)/10000 # 10000 anttention is all you need scaling - 5, 1, and 10000 should all be hyperparameters in the config file
 
         x_pet = torch.cat([x, pet], 1)
 
