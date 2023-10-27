@@ -14,7 +14,7 @@ def get_swep_config():
         'model' : {'value' :'HydraBNUNet06_LSTM'},
         'weight_init' : {'value' : 'xavier_norm'}, # ['xavier_uni', 'xavier_norm', 'kaiming_uni', 'kaiming_normal']
         'clip_grad_norm' : {'value': True},
-        'scheduler' : {'values': ['CosineAnnealingLR004']}, #  'CosineAnnealingLR' 'OneCycleLR'
+        'scheduler' : {'value': 'CosineAnnealingLR004'}, #  'CosineAnnealingLR' 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 5},
         'samples': {'value':   600}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
@@ -38,7 +38,7 @@ def get_swep_config():
         'torch_seed' : {'values' : [3,4]},
         'window_dim' : {'value' : 32},
         'h_init' : {'value' : 'abs_rand_exp-100'},
-        'loss_distance_scale' : {'values' : [0.05, 0.01, 0.001]}  # right now this is just as a note to self. Can't change it here     
+        'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 
     sweep_config['parameters'] = parameters_dict
