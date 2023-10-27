@@ -27,6 +27,7 @@ def get_hp_config():
     'np_seed' : 4,
     'torch_seed' : 4,
     'window_dim' : 32,
+    'loss_distance_scale' : 0.05,  # right now this is just as a note to self. Can't change it here     
     'h_init' : 'abs_rand_exp-100' # right now this is just as a note to self. Can't change it here} and it is not true..
     }
 
