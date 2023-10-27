@@ -2,15 +2,15 @@
 def get_hp_config():
     
     hyperparameters = {
-    'model' : 'HydraBNUNet06', #'BNUNet',
+    'model' : 'HydraBNUNet06_LSTM', #'BNUNet',
     'weight_init' : 'xavier_norm',
     'clip_grad_norm' : True,
-    'scheduler' : 'linear',
+    'scheduler' : 'CosineAnnealingLR004', #  'CosineAnnealingLR' 'OneCycleLR'
     'hidden_channels' : 32,
     'min_events' : 5,
-    'samples': 300, # 10 just for debug
+    'samples': 600, # 10 just for debug
     'batch_size': 3, 
-    'dropout_rate' : 0.25,
+    'dropout_rate' : 0.125,
     'learning_rate' :  0.001,
     'weight_decay' :  0.1,
     'slope_ratio' : 0.75,
@@ -24,7 +24,7 @@ def get_hp_config():
     'loss_reg_a' : 14, 
     'loss_reg_c' :  0.01, # 0.05 works...
     'test_samples': 128,
-    'np_seed' : 3,
+    'np_seed' : 4,
     'torch_seed' : 4,
     'window_dim' : 32,
     'h_init' : 'abs_rand_exp-100' # right now this is just as a note to self. Can't change it here} and it is not true..
