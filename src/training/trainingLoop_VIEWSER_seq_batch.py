@@ -274,7 +274,10 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
             for j in range(config.output_channels):
 
-                losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
+                #losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
+
+                losses_list.append(criterion_reg(torch.exp(t1_pred[:,j,:,:]) - 1, torch.exp(t1[:,j,:,:]) - 1 )) #  NONE LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 
             for j in range(config.output_channels):
@@ -284,7 +287,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             losses = torch.stack(losses_list)
             loss = multitaskloss_instance(losses)
 
-            loss = weigh_loss(loss, t0, t1, config.loss_distance_scale)
+            #loss = weigh_loss(loss, t0, t1, config.loss_distance_scale) #!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             total_loss += loss
 
