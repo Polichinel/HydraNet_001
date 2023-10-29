@@ -64,7 +64,7 @@ def norm_channels(tensor, config, un_log = True, a = 0, b = 1) -> torch.Tensor: 
 
     # norm_tensor = (b-a)*(tensor - tensor.min())/(tensor.max()-tensor.min())+a
 
-    norm_tensor = (b-a)*(tensor - 0)/(tensor.max()-0)+a
+    norm_tensor = (b-a)*(tensor - 0)/(8-0)+a # 8 just hardcoded until later....
 
     
     return norm_tensor
