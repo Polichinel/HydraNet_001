@@ -282,11 +282,13 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
                 #losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
 
-                if config.non_logged == True:
-                    losses_list.append(criterion_reg(torch.exp(t1_pred[:,j,:,:]) - 1, torch.exp(t1[:,j,:,:]) - 1 )) #  NONE LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                # if config.non_logged == True:
+                #     losses_list.append(criterion_reg(torch.exp(t1_pred[:,j,:,:]) - 1, torch.exp(t1[:,j,:,:]) - 1 )) #  NONE LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                else:   
-                    losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:]))
+                # else:   
+                #     losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:]))
+
+                losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:]))
 
 
             for j in range(config.output_channels): # then classification loss
