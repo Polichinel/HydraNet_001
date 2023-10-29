@@ -30,15 +30,15 @@ def get_swep_config():
         'loss_class_gamma' : {'value' : 1.5},
         'loss_class_alpha' : {'value' : 0.75}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b', },
-        'loss_reg_a' : { 'value' : 14},
-        'loss_reg_c' : { 'value' : 0.01},
+        'loss_reg_a' : { 'valuse' : [10, 14, 20]},
+        'loss_reg_c' : { 'values' : [0.1, 0.01, 0.001]},
         'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
         'np_seed' : {'values' : [3,4]},
         'torch_seed' : {'values' : [3,4]},
         'window_dim' : {'value' : 32},
-        'h_init' : {'value' : 'abs_rand_exp-100'},
-        'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
+        'h_init' : {'value' : 'abs_rand_exp-100'}
+        #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 
     sweep_config['parameters'] = parameters_dict
