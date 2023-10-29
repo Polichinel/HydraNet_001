@@ -91,7 +91,7 @@ def standard(x, noise = False):
     return(x_standard)
 
 
-def norm_channels(tensor, config, pre_logged = True, a = 0, b = 1) -> torch.Tensor:
+def norm_channels(tensor, config, un_log = True, a = 0, b = 1) -> torch.Tensor:
 
     """
     Normalizes the feature channels for a tensor  to the range [a, b].
@@ -100,7 +100,7 @@ def norm_channels(tensor, config, pre_logged = True, a = 0, b = 1) -> torch.Tens
     Where N is the batch size, C is the number of timesteps, D is the features, H is the height and W is the width.   
     """
 
-    if pre_logged:
+    if un_log:
         tensor = torch.exp(tensor)
 
     first_feature_idx = 0 #config['first_feature_idx'] #config.first_feature_idx
@@ -244,8 +244,11 @@ def get_train_tensors(views_vol, sample, config, device):
     last_feature_idx = ln_best_sb_idx + config.input_channels
     train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
-    if config.non_logged:
-        train_tensor = norm_channels(train_tensor, config, pre_logged = True, a = -1, b = 1) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if config.un_log:
+        train_tensor = norm_channels(train_tensor, config, un_log = True, a = -1, b = 1) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    else:
+        train_tensor = norm_channels(train_tensor, config, un_log = False, a = -1, b = 1)
 
     # Reshape
     N = train_tensor.shape[0] # batch size. Always one - remember your do batch a different way here
@@ -275,8 +278,11 @@ def get_test_tensor(views_vol, config, device):
 
     test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :] 
 
-    if config.non_logged:
-        test_tensor = norm_channels(test_tensor, config, pre_logged = True, a = -1, b = 1)
+    if config.un_log:
+        train_tensor = norm_channels(train_tensor, config, un_log = True, a = -1, b = 1) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    else:
+        train_tensor = norm_channels(train_tensor, config, un_log = False, a = -1, b = 1)
 
     return test_tensor
 

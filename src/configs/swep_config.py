@@ -38,7 +38,7 @@ def get_swep_config():
         'torch_seed' : {'values' : [3,4]},
         'window_dim' : {'value' : 32},
         'h_init' : {'value' : 'abs_rand_exp-100'},
-        'non_logged' : {'value' : False},
+        'un_log' : {'value' : False},
         'warmup_steps' : {'value' : 100},
         'first_feature_idx' : {'value' : 5},
         #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
