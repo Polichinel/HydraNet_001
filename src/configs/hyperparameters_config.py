@@ -28,7 +28,8 @@ def get_hp_config():
     'torch_seed' : 4,
     'window_dim' : 32,
     'loss_distance_scale' : 0.001,  # right now this is just as a note to self. Can't change it here     
-    'h_init' : 'abs_rand_exp-100' # right now this is just as a note to self. Can't change it here} and it is not true..
+    'h_init' : 'abs_rand_exp-100',
+     'non_logged' : False # right now this is just as a note to self. Can't change it here} and it is not true..
     }
 
     return hyperparameters
