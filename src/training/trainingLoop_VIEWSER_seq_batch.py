@@ -476,7 +476,9 @@ def get_posterior(model, views_vol, config, device, n):
         y_var_prob = std_class_array[i].reshape(-1)  # nu 180x180
 
         y_true = out_of_sample_vol[:,i].reshape(-1)  # nu 180x180 . dim 0 is time
-        y_true_binary = (y_true > 0) * 1
+        #y_true_binary = (y_true > 0) * 1
+
+        y_true_binary = (y_true > 0.1) * 1 # DEBUG!!!!
 
 
         mse = mean_squared_error(y_true, y_score)  
