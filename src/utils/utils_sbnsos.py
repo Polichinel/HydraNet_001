@@ -298,12 +298,12 @@ def weigh_loss(loss, y_t0, y_t1, distance_scale):
 
 
 # Define a custom learning rate function
-def custom_lr_lambda(step, warmup_steps, d):
+# def custom_lr_lambda(step, warmup_steps, d):
 
-    """
-    Return a custom learning rate for the optimizer.
-    The learning rate is a function of the step number and the warmup_steps.
-    From the paper: attention is all you need.
-    """
+#     """
+#     Return a custom learning rate for the optimizer.
+#     The learning rate is a function of the step number and the warmup_steps.
+#     From the paper: attention is all you need.
+#     """
 
-    return (d**(-0.5)) * min(step**(-0.5), step * warmup_steps**(-1.5))
+#     return (d**(-0.5)) * min(step**(-0.5), step * warmup_steps**(-1.5))
