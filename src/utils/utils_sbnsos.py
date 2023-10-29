@@ -91,7 +91,7 @@ def standard(x, noise = False):
     return(x_standard)
 
 
-def norm_channels(tensor, config, pre_logged = True, a = -1, b = 1) -> torch.Tensor:
+def norm_channels(tensor, config, pre_logged = True, a = 0, b = 1) -> torch.Tensor:
 
     """
     Normalizes the feature channels for a tensor  to the range [a, b].
