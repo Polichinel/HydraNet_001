@@ -5,7 +5,7 @@ def get_hp_config():
     'model' : 'HydraBNUNet06_LSTM', #'BNUNet',
     'weight_init' : 'xavier_norm',
     'clip_grad_norm' : True,
-    'scheduler' : 'CosineAnnealingLR004', #  'CosineAnnealingLR' 'OneCycleLR'
+    'scheduler' : 'WarmupDecay', #  'CosineAnnealingLR' 'OneCycleLR'
     'hidden_channels' : 32,
     'min_events' : 5,
     'samples': 300, # 10 just for debug
@@ -29,7 +29,7 @@ def get_hp_config():
     'window_dim' : 32,
     'loss_distance_scale' : 0.001,  # right now this is just as a note to self. Can't change it here     
     'h_init' : 'abs_rand_exp-100',
-    'non_logged' : False, # right now this is just as a note to self. Can't change it here} and it is not true..
+    'non_logged' : True, # right now this is just as a note to self. Can't change it here} and it is not true..
     'warmup_steps' : 100,
     }
 

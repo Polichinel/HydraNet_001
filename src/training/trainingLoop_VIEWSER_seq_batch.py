@@ -223,7 +223,7 @@ def make(config):
                        max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
                        mode = 'triangular2') # Specifies the annealing strategy
         
-    elif config.scheduler == 'warmup_decay':
+    elif config.scheduler == 'WarmupDecay':
         
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         d = config.window_dim * config.window_dim * config.input_channels # this is the dimension of the input window
