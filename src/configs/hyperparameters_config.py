@@ -31,6 +31,7 @@ def get_hp_config():
     'h_init' : 'abs_rand_exp-100',
     'non_logged' : True, # right now this is just as a note to self. Can't change it here} and it is not true..
     'warmup_steps' : 100,
+    'first_feature_idx' : 5,
     }
 
     return hyperparameters
