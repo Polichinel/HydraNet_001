@@ -91,6 +91,33 @@ def standard(x, noise = False):
     return(x_standard)
 
 
+def norm_channels(tensor, config, pre_logged = True, a = -1, b = 1) -> torch.Tensor:
+
+    """
+    Normalizes the feature channels for a tensor  to the range [a, b].
+    Defualt is [-1, 1] to match the batch norm layers.
+    The input tensor is expected to have the shape [N, C, D, H, W]
+    Where N is the batch size, C is the number of timesteps, D is the features, H is the height and W is the width.   
+    """
+
+    if pre_logged:
+        tensor = torch.exp(tensor)
+
+    first_feature_idx = config['first_feature_idx'] #config.first_feature_idx
+    last_feature_idx = config['first_feature_idx'] + config['input_channels'] - 1 #config.first_feature_idx + config.input_channels - 1
+
+    min_list = []
+    max_list = []
+
+    for i in range(first_feature_idx, last_feature_idx + 1):
+        min_list.append(torch.min(tensor[:, :, i, :, :]))
+        max_list.append(torch.max(tensor[:, :, i, :, :]))
+
+    norm_tensor = (b-a)*(tensor - tensor.min())/(tensor.max()-tensor.min())+a
+    
+    return norm_tensor
+
+
 
 def my_decay(sample, samples, min_events, max_events, slope_ratio, roof_ratio):
 
@@ -118,7 +145,7 @@ def get_window_index(views_vol, config, sample):
 
     # BY NOW THIS IS PRETTY HACKY... SHOULD BE MADE MORE ELEGANT AT SOME POINT..
 
-    ln_best_sb_idx = 5 # 5 = ln_best_sb 
+    ln_best_sb_idx = config.first_feature_idx # 5 = ln_best_sb !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!SUPER HACKY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     last_feature_idx = ln_best_sb_idx + config.input_channels - 1 # 5 + 3 - 1 = 7 which is os
     min_events = config.min_events
     samples = config.samples
@@ -205,6 +232,7 @@ def get_train_tensors(views_vol, sample, config, device):
     # Not using the last 36 months - these ar for test set
     train_views_vol = views_vol[:-config.time_steps] 
 
+ #   min_max_values = 
     window_index = get_window_index(views_vol = views_vol, config = config, sample = sample) # you should try and take this out of the loop - so you keep the index but changes the window_coords!!!
     window_coords = get_window_coords(window_index = window_index, config = config)
 
@@ -212,12 +240,15 @@ def get_train_tensors(views_vol, sample, config, device):
 
     input_window = train_views_vol[ : , window_coords['min_row_indx'] : window_coords['max_row_indx'] , window_coords['min_col_indx'] : window_coords['max_col_indx'], :]
 
-    ln_best_sb_idx = 5
+    ln_best_sb_idx = config.first_feature_idx # 5 = ln_best_sb
     last_feature_idx = ln_best_sb_idx + config.input_channels
     train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
+    if config.non_logged:
+        train_tensor = norm_channels(train_tensor, config, pre_logged = True, a = -1, b = 1) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     # Reshape
-    N = train_tensor.shape[0] # batch size. Always 1 - you do batch a different way here
+    N = train_tensor.shape[0] # batch size. Always one - remember your do batch a different way here
     C = train_tensor.shape[1] # months
     D = config.input_channels # features
     H = train_tensor.shape[3] # height
@@ -239,10 +270,13 @@ def get_test_tensor(views_vol, config, device):
 
     """Uses to get the features for the test tensor. The test tensor is of size 1 x config.time_steps x config.input_channels x 180 x 180."""
 
-    ln_best_sb_idx = 5
+    ln_best_sb_idx = config.first_feature_idx # 5 = ln_best_sb
     last_feature_idx = ln_best_sb_idx + config.input_channels
 
-    test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
+    test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :] 
+
+    if config.non_logged:
+        test_tensor = norm_channels(test_tensor, config, pre_logged = True, a = -1, b = 1)
 
     return test_tensor
 
