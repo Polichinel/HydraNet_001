@@ -8,7 +8,7 @@ def get_hp_config():
     'scheduler' : 'WarmupDecay', #  'CosineAnnealingLR' 'OneCycleLR'
     'hidden_channels' : 32,
     'min_events' : 5,
-    'samples': 300, # 10 just for debug
+    'samples': 256, # 10 just for debug
     'batch_size': 3, 
     'dropout_rate' : 0.125,
     'learning_rate' :  0.001,
@@ -20,7 +20,7 @@ def get_hp_config():
     'loss_class': 'd',  # band c are is still unstable... c is old, d = FocalLoss_new
     'loss_class_gamma' : 1.5, # 0 and 2 works. But 2 gives a lot of noise. "If you want to prioritize hard cases in your training and make your model focus more on misclassified or uncertain examples, you should consider setting gamma to a value greater than 1""
     'loss_class_alpha' : 0.75, #An alpha value of 0.75 means that you are assigning more weight to the minority class during training.
-    'loss_reg': 'a',
+    'loss_reg': 'b',
     'loss_reg_a' : 14, 
     'loss_reg_c' :  0.01, # 0.05 works...
     'test_samples': 128,
