@@ -23,7 +23,7 @@ def get_hp_config():
     'loss_reg': 'a',
     'loss_reg_a' : 14, 
     'loss_reg_c' :  0.01, # 0.05 works...
-    'test_samples': 128,
+    'test_samples': 5,
     'np_seed' : 4,
     'torch_seed' : 4,
     'window_dim' : 32,
