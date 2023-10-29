@@ -59,8 +59,8 @@ def norm_channels(tensor, config, un_log = True, a = 0, b = 1) -> torch.Tensor:
     max_list = []
 
     for i in range(first_feature_idx, last_feature_idx + 1):
-        min_list.append(torch.min(tensor[:, :, :, :, i]))
-        max_list.append(torch.max(tensor[:, :, :, :, i]))
+        min_list.append(torch.min(tensor[ :, :, :, i]))
+        max_list.append(torch.max(tensor[ :, :, :, i]))
 
     norm_tensor = (b-a)*(tensor - tensor.min())/(tensor.max()-tensor.min())+a
     
