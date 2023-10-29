@@ -529,7 +529,8 @@ def model_pipeline(config=None, project=None):
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
 
-        views_vol = get_data(config.run_type)
+        views_vol = get_data(config)
+
 
         # make the model, data, and optimization problem
         unet, criterion, optimizer, scheduler = make(config)

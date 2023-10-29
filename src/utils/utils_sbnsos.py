@@ -40,10 +40,44 @@ def init_weights(m, config):
 		pass
 # --------------------------------------------------------------
 
-def get_data(run_type):
+def norm_channels(tensor, config, un_log = True, a = 0, b = 1) -> torch.Tensor:
+
+    """
+    Normalizes the feature channels for a tensor  to the range [a, b].
+    Defualt is [-1, 1] to match the batch norm layers.
+    The input tensor is expected to have the shape [N, C, D, H, W]
+    Where N is the batch size, C is the number of timesteps, D is the features, H is the height and W is the width.   
+    """
+
+    if un_log:
+        tensor = torch.exp(tensor)
+
+    first_feature_idx = config['first_feature_idx'] #config.first_feature_idx
+    last_feature_idx = first_feature_idx + config['input_channels'] - 1 #config.first_feature_idx + config.input_channels - 1
+
+    min_list = []
+    max_list = []
+
+    for i in range(first_feature_idx, last_feature_idx + 1):
+        min_list.append(torch.min(tensor[:, :, :, :, i]))
+        max_list.append(torch.max(tensor[:, :, :, :, i]))
+
+    norm_tensor = (b-a)*(tensor - tensor.min())/(tensor.max()-tensor.min())+a
+    
+    return norm_tensor
+
+
+def get_data(config):
+
+    """Return the data for either the calibration or the test run.
+    The shape for the views_vol is (N, C, H, W, D) where D is features.
+    Right now the features are ln_best_sb, ln_best_ns, ln_best_os
+    """
 
     # Data
     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
+
+    run_type = config.run_type
 
     # The viewser data
     if run_type == 'calib':
@@ -56,6 +90,10 @@ def get_data(run_type):
     pkl_file = open(location + file_name, 'rb')
     views_vol = pickle.load(pkl_file)
     pkl_file.close()
+
+
+    views_vol = norm_channels(views_vol, config, un_log = False, a = -1, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
     return(views_vol)
 
@@ -91,31 +129,6 @@ def standard(x, noise = False):
     return(x_standard)
 
 
-def norm_channels(tensor, config, un_log = True, a = 0, b = 1) -> torch.Tensor:
-
-    """
-    Normalizes the feature channels for a tensor  to the range [a, b].
-    Defualt is [-1, 1] to match the batch norm layers.
-    The input tensor is expected to have the shape [N, C, D, H, W]
-    Where N is the batch size, C is the number of timesteps, D is the features, H is the height and W is the width.   
-    """
-
-    if un_log:
-        tensor = torch.exp(tensor)
-
-    first_feature_idx = 0 #config['first_feature_idx'] #config.first_feature_idx
-    last_feature_idx = first_feature_idx + config['input_channels'] - 1 #config.first_feature_idx + config.input_channels - 1
-
-    min_list = []
-    max_list = []
-
-    for i in range(first_feature_idx, last_feature_idx + 1):
-        min_list.append(torch.min(tensor[:, :, i, :, :]))
-        max_list.append(torch.max(tensor[:, :, i, :, :]))
-
-    norm_tensor = (b-a)*(tensor - tensor.min())/(tensor.max()-tensor.min())+a
-    
-    return norm_tensor
 
 
 
