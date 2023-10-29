@@ -103,7 +103,7 @@ def norm_channels(tensor, config, pre_logged = True, a = -1, b = 1) -> torch.Ten
     if pre_logged:
         tensor = torch.exp(tensor)
 
-    first_feature_idx = config['first_feature_idx'] #config.first_feature_idx
+    first_feature_idx = 0 #config['first_feature_idx'] #config.first_feature_idx
     last_feature_idx = config['first_feature_idx'] + config['input_channels'] - 1 #config.first_feature_idx + config.input_channels - 1
 
     min_list = []
