@@ -49,8 +49,8 @@ def norm_channels(tensor, config, un_log = True, a = 0, b = 1) -> torch.Tensor: 
     Where N is the batch size, C is the number of timesteps, D is the features, H is the height and W is the width.   
     """
 
-    if un_log:
-        tensor = torch.exp(tensor)
+    # if un_log:
+    #     tensor = torch.exp(tensor)
 
     first_feature_idx = config['first_feature_idx'] #config.first_feature_idx
     last_feature_idx = first_feature_idx + config['input_channels'] - 1 #config.first_feature_idx + config.input_channels - 1
@@ -59,10 +59,13 @@ def norm_channels(tensor, config, un_log = True, a = 0, b = 1) -> torch.Tensor: 
     max_list = []
 
     for i in range(first_feature_idx, last_feature_idx + 1):
-        min_list.append(np.min(tensor[ :, :, :, i]))
+        #min_list.append(np.min(tensor[ :, :, :, i]))
         max_list.append(np.max(tensor[ :, :, :, i]))
 
-    norm_tensor = (b-a)*(tensor - tensor.min())/(tensor.max()-tensor.min())+a
+    # norm_tensor = (b-a)*(tensor - tensor.min())/(tensor.max()-tensor.min())+a
+
+    norm_tensor = (b-a)*(tensor - 0)/(tensor.max()-0)+a
+
     
     return norm_tensor
 
