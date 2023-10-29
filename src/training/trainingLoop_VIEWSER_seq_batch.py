@@ -272,7 +272,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         
             losses_list = []
 
-            for j in range(config.output_channels):
+            for j in range(config.output_channels): # first reggression loss
 
                 #losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
 
@@ -280,7 +280,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
 
 
-            for j in range(config.output_channels):
+            for j in range(config.output_channels): # then classification loss
 
                 losses_list.append(criterion_class(t1_pred_class[:,j,:,:], t1_binary[:,j,:,:]))
 
@@ -303,7 +303,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     # ---------------------------------------------------------------------------------
 
     # log each sequence/timeline/batch
-    train_log(avg_loss_reg_list, avg_loss_class_list, avg_loss_list)
+    train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list) # FIX!!!
 
     # Backpropagation and optimization - after a full sequence... 
     optimizer.zero_grad()
