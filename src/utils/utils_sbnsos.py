@@ -92,7 +92,7 @@ def get_data(config):
     pkl_file.close()
 
 
-    views_vol = norm_channels(views_vol, config, un_log = False, a = -1, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    views_vol = norm_channels(views_vol, config, un_log = False, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     return(views_vol)
