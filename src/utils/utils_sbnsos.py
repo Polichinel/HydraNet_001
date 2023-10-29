@@ -196,7 +196,7 @@ def train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list):
     wandb.log({"avg_loss": avg_loss, "avg_loss_reg": avg_loss_reg, "avg_loss_class": avg_loss_class})
 
 
-def get_train_tensors(views_vol, sample, config, device):
+def get_train_tensors(views_vol, sample, config, device): 
 
     """Uses the get_window_index and get_window_coords functions to sample a window from the training tensor. 
     The window is returned as a tensor of size 1 x config.time_steps x config.input_channels x 180 x 180.
@@ -207,6 +207,8 @@ def get_train_tensors(views_vol, sample, config, device):
 
     window_index = get_window_index(views_vol = views_vol, config = config, sample = sample) # you should try and take this out of the loop - so you keep the index but changes the window_coords!!!
     window_coords = get_window_coords(window_index = window_index, config = config)
+
+    # you can add positional encoding here if you want - perhaps.....
 
     input_window = train_views_vol[ : , window_coords['min_row_indx'] : window_coords['max_row_indx'] , window_coords['min_col_indx'] : window_coords['max_col_indx'], :]
 
@@ -240,7 +242,6 @@ def get_test_tensor(views_vol, config, device):
     ln_best_sb_idx = 5
     last_feature_idx = ln_best_sb_idx + config.input_channels
 
-    # THIS MIGHT BE WHERE TO CHANGE THE TEST SET TO NOT BE NORMALIZED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
 
     return test_tensor
@@ -294,3 +295,15 @@ def weigh_loss(loss, y_t0, y_t1, distance_scale):
     new_loss = loss + torch.mean(squared_distance) * distance_scale
 
     return new_loss
+
+
+# Define a custom learning rate function
+def custom_lr_lambda(step, warmup_steps, d):
+
+    """
+    Return a custom learning rate for the optimizer.
+    The learning rate is a function of the step number and the warmup_steps.
+    From the paper: attention is all you need.
+    """
+
+    return (d**(-0.5)) * min(step**(-0.5), step * warmup_steps**(-1.5))
