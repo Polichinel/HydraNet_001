@@ -53,6 +53,8 @@ from stable_balanced_focal_class import stableBalancedFocalLossClass
 
 from shringkage_june import ShrinkageLoss_new
 from focal_june import FocalLoss_new
+from warmup_decay_lr_scheduler import WarmupDecayLearningRateScheduler
+
 
 #from rmsle import RMSLELoss
 
@@ -61,7 +63,6 @@ from mtloss import *
 from utils_sbnsos import *
 from swep_config import *
 from hyperparameters_config import *
-
 
 def choose_loss(config):
 
@@ -185,8 +186,6 @@ def make(config):
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = LinearLR(optimizer)
 
-
-
     elif config.scheduler == 'CosineAnnealingLR1':
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples, eta_min = 0.00005) # you should try with config.samples * 0.2, 0,33 and 0.5
@@ -223,6 +222,13 @@ def make(config):
                        base_lr = config.learning_rate * 0.1,
                        max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
                        mode = 'triangular2') # Specifies the annealing strategy
+        
+    elif config.scheduler == 'warmup_decay':
+        
+        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+        d = config.window_dim * config.window_dim * config.input_channels # this is the dimension of the input window
+        scheduler = WarmupDecayLearningRateScheduler(optimizer, d = d, warmup_steps = config.warmup_steps)
+
 
     else:
         optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
@@ -276,8 +282,11 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
                 #losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
 
-                losses_list.append(criterion_reg(torch.exp(t1_pred[:,j,:,:]) - 1, torch.exp(t1[:,j,:,:]) - 1 )) #  NONE LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if config.non_logged == True:
+                    losses_list.append(criterion_reg(torch.exp(t1_pred[:,j,:,:]) - 1, torch.exp(t1[:,j,:,:]) - 1 )) #  NONE LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+                else:   
+                    losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:]))
 
 
             for j in range(config.output_channels): # then classification loss
@@ -441,7 +450,7 @@ def get_posterior(model, views_vol, config, device, n):
         print('Running sweep. no posterior pickle dumped')
 
 
-    # YOU ARE MISSING SOMETHING ABOUT FEATURES HERE WHICH IS WHY YOU REPORTED AP ON WandB IS BIASED DOWNWARDS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # YOU ARE MISSING SOMETHING ABOUT FEATURES HERE WHICH IS WHY YOU REPORTED AP ON WandB IS BIASED DOWNWARDS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!RYRYRYRYERYERYR
     # Get mean and std
     mean_array = np.array(posterior_list).mean(axis = 0) # get mean for each month!
     std_array = np.array(posterior_list).std(axis = 0)
@@ -468,7 +477,7 @@ def get_posterior(model, views_vol, config, device, n):
         y_true_binary = (y_true > 0) * 1
 
 
-        mse = mean_squared_error(y_true, y_score)  # SHOULD THIS THEN ALSO BE SHRINKAGE OR SOMETHING???
+        mse = mean_squared_error(y_true, y_score)  
         ap = average_precision_score(y_true_binary, y_score_prob)
         auc = roc_auc_score(y_true_binary, y_score_prob)
         brier = brier_score_loss(y_true_binary, y_score_prob)

@@ -39,6 +39,7 @@ def get_swep_config():
         'window_dim' : {'value' : 32},
         'h_init' : {'value' : 'abs_rand_exp-100'},
         'non_logged' : {'value' : False},
+        'warmup_steps' : {'value' : 100},
         #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 
