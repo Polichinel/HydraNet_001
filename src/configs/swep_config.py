@@ -14,13 +14,13 @@ def get_swep_config():
         'model' : {'value' :'HydraBNUNet06_LSTM'},
         'weight_init' : {'value' : 'xavier_norm'}, # ['xavier_uni', 'xavier_norm', 'kaiming_uni', 'kaiming_normal']
         'clip_grad_norm' : {'value': True},
-        'scheduler' : {'values': ['WarmupDecay', 'CosineAnnealingLR004']}, #CosineAnnealingLR004  'CosineAnnealingLR' 'OneCycleLR'
+        'scheduler' : {'values': ['WarmupDecay']}, #CosineAnnealingLR004  'CosineAnnealingLR' 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 5},
         'samples': {'value':   600}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
         'batch_size': {'value':  3}, # just speed running here..
         "dropout_rate" : {'value' : 0.125},
-        'learning_rate': {'value' :  0.001}, #0.001 default, but 0.005 might be better
+        'learning_rate': {'values' :  [0.005, 0.001, 0.0005]}, #0.001 default, but 0.005 might be better
         "weight_decay" : {'value' : 0.1},
         "slope_ratio" : {'value' : 0.75},
         "roof_ratio" : {'value' :  0.7},
@@ -41,6 +41,7 @@ def get_swep_config():
         'un_log' : {'value' : False},
         'warmup_steps' : {'value' : 100},
         'first_feature_idx' : {'value' : 5},
+        'norm_target' : {'values' : [False, True]},
         #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 

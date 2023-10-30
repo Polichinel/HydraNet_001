@@ -42,7 +42,7 @@ def init_weights(m, config):
 
 
 
-def norm_features(full_vol ,config, un_log = True, a = 0, b = 1) -> np.ndarray:
+def norm_features(full_vol , config, a = 0, b = 1) -> np.ndarray:
 
     """
     Normalize the features of the volume. One by one to the range [a, b]. 
@@ -96,7 +96,9 @@ def get_data(config):
 
 
     #views_vol = norm_channels(views_vol, config, un_log = False, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    #views_vol = norm_features(views_vol, config, un_log = False, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    
+    if config.norm_target:
+        views_vol = norm_features(views_vol, config, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     return(views_vol)
