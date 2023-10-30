@@ -87,7 +87,7 @@ def norm_features(full_vol ,config, un_log = True, a = 0, b = 1) -> np.ndarray:
         feature = full_vol[:, :, :, i] 
 
         if config.un_log:
-            feature = torch.exp(feature) - 1
+            feature = np.exp(feature) - 1
 
         feature_max = feature.max() # could make sure that we are not using information from the future.... But this is not a big deal... 
         feature_min = 0 #full_vol[:, :, :, i].min()
