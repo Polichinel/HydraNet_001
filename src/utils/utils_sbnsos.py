@@ -40,35 +40,6 @@ def init_weights(m, config):
 		pass
 # --------------------------------------------------------------
 
-# def norm_channels(tensor, config, un_log = True, a = 0, b = 1) -> torch.Tensor: # not reall a tensor now but an array...
-
-#     """
-#     Normalizes the feature channels for a tensor  to the range [a, b].
-#     Defualt is [-1, 1] to match the batch norm layers.
-#     The input tensor is expected to have the shape [ C, H, W, D]
-#     Where N is the batch size, C is the number of timesteps, D is the features, H is the height and W is the width.   
-#     """
-
-#     # if un_log:
-#     #     tensor = torch.exp(tensor)
-
-#     first_feature_idx = config['first_feature_idx'] #config.first_feature_idx
-#     last_feature_idx = first_feature_idx + config['input_channels'] - 1 #config.first_feature_idx + config.input_channels - 1
-
-#     min_list = []
-#     max_list = []
-
-#     for i in range(first_feature_idx, last_feature_idx + 1):
-#         #min_list.append(np.min(tensor[ :, :, :, i]))
-#         max_list.append(np.max(tensor[ :, :, :, i]))
-
-#     # norm_tensor = (b-a)*(tensor - tensor.min())/(tensor.max()-tensor.min())+a
-
-#     norm_tensor = (b-a)*(tensor - 0)/(8-0)+a # 8 just hardcoded until later....
-
-    
-#     return norm_tensor
-
 
 
 def norm_features(full_vol ,config, un_log = True, a = 0, b = 1) -> np.ndarray:
@@ -125,7 +96,7 @@ def get_data(config):
 
 
     #views_vol = norm_channels(views_vol, config, un_log = False, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    views_vol = norm_features(views_vol, config, un_log = False, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #views_vol = norm_features(views_vol, config, un_log = False, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     return(views_vol)
