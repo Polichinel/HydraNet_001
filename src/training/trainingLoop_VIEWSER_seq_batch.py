@@ -42,6 +42,7 @@ from HydraBNrecurrentUnet_05 import HydraBNUNet05
 from HydraBNrecurrentUnet_06 import HydraBNUNet06
 from HydraBNrecurrentUnet_06_LSTM import HydraBNUNet06_LSTM
 from HydraBNrecurrentUnet_07 import HydraBNUNet07
+from HydraBNrecurrentUnet_06_LSTM2 import HydraBNUNet06_LSTM2
 
 from BNrecurrentUnet import BNUNet
 #from focal import FocalLoss
@@ -149,6 +150,9 @@ def make(config):
         unet = HydraBNUNet06(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet06_LSTM':
+        unet = HydraBNUNet06_LSTM(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
+    elif config.model == 'HydraBNUNet06_LSTM2':
         unet = HydraBNUNet06_LSTM(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet07':
