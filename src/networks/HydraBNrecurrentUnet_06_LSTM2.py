@@ -19,7 +19,7 @@ class HydraBNUNet06_LSTM2(nn.Module):
         
         # encoder (downsampling)
         #self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels, base, 3, padding=1, bias = False) # but then with hidden_c you go from 65 to 64...
-        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels_split, base, 3, padding=1, bias = False) # NOW hidden_channels_split + input channels because of the LSTM - you only concat x with hs and not h
+        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels_split*2, base, 3, padding=1, bias = False) # NOW (hidden_channels_split*2)+ input channels because of the LSTM2 - you only concat x with hs and not h
 
         self.bn_enc_conv0 = nn.BatchNorm2d(base)
         self.pool0 = nn.MaxPool2d(2, 2, padding=0) # 16 -> 8
@@ -151,6 +151,7 @@ class HydraBNUNet06_LSTM2(nn.Module):
         # The result will be a tuple of two tensors
         hs, hl = split_tensors_hs_hl
 
+        # Second split to get the two tensors that make up hs and hl
         split_1_2 = int(split_hs_hl/2) # half of the second dimension wich is channels
 
         split_tensors_hs1_hs2 = torch.split(hs, split_1_2, dim=1)
@@ -165,6 +166,9 @@ class HydraBNUNet06_LSTM2(nn.Module):
         # x = torch.cat([x, h], 1) # torch.zeros((1,hidden_channels,dim,dim)
 
         #x = torch.cat([x, hs], 1) # concatenating x and short term  memory along the channels
+
+
+        # NO DROPOUT IN LSTM... If I did include dropout in the LSTM whould that mean that the LSTM be reinitialized at every timestep? Probably not...
 
         #----------------- LSTM 1 -----------------
         # Input gate
@@ -204,7 +208,7 @@ class HydraBNUNet06_LSTM2(nn.Module):
         # -----------------
 
         # THIS MIGHT BE BETTER. I.E. CONCATENATE X AND HS BEFORE THE U-NET AND USE THE NEW X... Start with this... 
-        x = torch.cat([x, hs], 1) # concatenating x and the new short term  memory along the channels
+        x = torch.cat([x, hs_1, hs_2], 1) # concatenating x and the new short term  memory along the channels
 
         # encoder
         e0s_ = F.relu(self.bn_enc_conv0(self.enc_conv0(x))) 
