@@ -2,7 +2,7 @@
 def get_hp_config():
     
     hyperparameters = {
-    'model' : 'HydraBNUNet06_LSTM', #'BNUNet',
+    'model' : 'HydraBNUNet06_LSTM2', #'BNUNet',
     'weight_init' : 'xavier_norm',
     'clip_grad_norm' : True,
     'scheduler' : 'WarmupDecay', #  'CosineAnnealingLR' 'OneCycleLR'
@@ -25,13 +25,15 @@ def get_hp_config():
     'loss_reg_c' :  0.01, # 0.05 works...
     'test_samples': 128,
     'np_seed' : 4,
-    'torch_seed' : 4,
+    'torch_seed' : 3,
     'window_dim' : 32,
     'loss_distance_scale' : 0.001,  # right now this is just as a note to self. Can't change it here     
     'h_init' : 'abs_rand_exp-100',
-    'un_log' : True, # right now this is just as a note to self. Can't change it here} and it is not true..
+    'un_log' : False, # right now this is just as a note to self. Can't change it here} and it is not true..
     'warmup_steps' : 100,
     'first_feature_idx' : 5,
+    'norm_target' : {'value' : False},
+
     }
 
     return hyperparameters
