@@ -15,6 +15,7 @@ class FocalLoss_new(nn.Module):
 
         logits, targets = logits.unsqueeze(0), targets.unsqueeze(0)
 
+        # since you are not taking log(p) anywhere, you don't need to clamp it for numerical stability.
         p = torch.sigmoid(logits)
 
         ce_loss = F.binary_cross_entropy_with_logits(logits, targets, reduction="none")# Calculate the cross-entropy loss. inputs should be Predicted unnormalized logits according to the documentation         
