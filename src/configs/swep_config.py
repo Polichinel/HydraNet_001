@@ -41,7 +41,7 @@ def get_swep_config():
         'un_log' : {'value' : False},
         'warmup_steps' : {'value' : 100},
         'first_feature_idx' : {'value' : 5},
-        'norm_target' : {'values' : False},
+        'norm_target' : {'value' : False},
         #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 
