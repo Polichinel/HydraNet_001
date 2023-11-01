@@ -8,7 +8,7 @@ def get_hp_config():
     'scheduler' : 'WarmupDecay', #  'CosineAnnealingLR' 'OneCycleLR'
     'hidden_channels' : 32,
     'min_events' : 5,
-    'samples': 10, # 10 just for debug
+    'samples': 600, # 10 just for debug
     'batch_size': 3, 
     'dropout_rate' : 0.125,
     'learning_rate' :  0.001,
@@ -23,11 +23,11 @@ def get_hp_config():
     'loss_reg': 'a',
     'loss_reg_a' : 14, 
     'loss_reg_c' :  0.01, # 0.05 works...
-    'test_samples': 10,
+    'test_samples': 128,
     'np_seed' : 4,
     'torch_seed' : 3,
     'window_dim' : 32,
-    'loss_distance_scale' : 0.001,  # right now this is just as a note to self. Can't change it here     
+    'loss_distance_scale' : 0.0005,  # right now this is just as a note to self. Can't change it here     
     'h_init' : 'abs_rand_exp-100',
     'un_log' : False, # right now this is just as a note to self. Can't change it here} and it is not true..
     'warmup_steps' : 100,
