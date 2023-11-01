@@ -126,6 +126,7 @@ class HydraBNUNet06_LSTM(nn.Module):
 
 
 
+
     def forward(self, x, h):
 
         # The whole split than concat thing,  is just becaues the hidden state use to be one tensor, when it was just an RNN, but now as an LSTM it is two tensors. 
@@ -144,9 +145,7 @@ class HydraBNUNet06_LSTM(nn.Module):
 
         #x = torch.cat([x, hs], 1) # concatenating x and short term  memory along the channels
 
-
         #-----------------
-
         # Input gate
         i_t = torch.sigmoid(self.Wxi(x) + self.Whi(hs)) # Wxi changes to dims for x to the same as hs
         # Forget gate
