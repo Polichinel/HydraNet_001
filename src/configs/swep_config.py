@@ -17,7 +17,7 @@ def get_swep_config():
         'scheduler' : {'value': 'WarmupDecay'}, #CosineAnnealingLR004  'CosineAnnealingLR' 'OneCycleLR'
         'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 5},
-        'samples': {'value':   600}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
+        'samples': {'value':   3}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
         'batch_size': {'value':  3}, # just speed running here..
         "dropout_rate" : {'value' : 0.125},
         'learning_rate': {'value' :  0.0005}, #0.001 default, but 0.005 might be better
@@ -32,7 +32,7 @@ def get_swep_config():
         'loss_reg' : { 'value' : 'b', },
         'loss_reg_a' : { 'value' : 28 },
         'loss_reg_c' : { 'value' : 0.005},
-        'test_samples': { 'value' : 128},
+        'test_samples': { 'value' : 3},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
         'np_seed' : {'values' : [3,4]},
         'torch_seed' : {'values' : [3,4]},
