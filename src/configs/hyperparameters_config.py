@@ -21,11 +21,11 @@ def get_hp_config():
     'loss_class_gamma' : 1.5, # 0 and 2 works. But 2 gives a lot of noise. "If you want to prioritize hard cases in your training and make your model focus more on misclassified or uncertain examples, you should consider setting gamma to a value greater than 1""
     'loss_class_alpha' : 0.75, #An alpha value of 0.75 means that you are assigning more weight to the minority class during training.
     'loss_reg': 'a',
-    'loss_reg_a' : 14, 
-    'loss_reg_c' :  0.01, # 0.05 works...
+    'loss_reg_a' : 28, 
+    'loss_reg_c' :  0.005, # 0.05 works...
     'test_samples': 128,
     'np_seed' : 4,
-    'torch_seed' : 3,
+    'torch_seed' : 4,
     'window_dim' : 32,
     'loss_distance_scale' : 0.0005,  # right now this is just as a note to self. Can't change it here     
     'h_init' : 'abs_rand_exp-100',
