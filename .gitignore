@@ -3,6 +3,8 @@ home/simon/Documents/scripts/conflictNet/data/processed/*
 home/simon/Documents/scripts/conflictNet/data/raw/*
 home/simon/Documents/scripts/conflictNet/data/generated/*
 
+home/simon/Documents/scripts/conflictNet/data/generated/conflictNet_01/*
+
 *.JPG
 *.pkl
 *.mp4
