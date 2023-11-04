@@ -1,10 +1,3 @@
-home/simon/Documents/scripts/conflictNet/data/*
-home/simon/Documents/scripts/conflictNet/data/processed/*
-home/simon/Documents/scripts/conflictNet/data/raw/*
-home/simon/Documents/scripts/conflictNet/data/generated/*
-
-/home/simon/Documents/scripts/conflictNet/data/generated/conflictNet_01/*
-
 hp_config
 
 *.pyc
