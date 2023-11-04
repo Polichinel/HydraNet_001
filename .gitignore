@@ -7,6 +7,7 @@ home/simon/Documents/scripts/conflictNet/data/generated/*
 
 hp_config
 
+*.pyc
 *.zip
 *.JPG
 *.pkl
