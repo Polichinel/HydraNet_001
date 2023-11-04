@@ -5,6 +5,9 @@ home/simon/Documents/scripts/conflictNet/data/generated/*
 
 /home/simon/Documents/scripts/conflictNet/data/generated/conflictNet_01/*
 
+hp_config
+
+*.zip
 *.JPG
 *.pkl
 *.mp4
