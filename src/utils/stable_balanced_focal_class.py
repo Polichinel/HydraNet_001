@@ -12,35 +12,79 @@ from torch.autograd import Variable
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+
 class stableBalancedFocalLossClass(nn.Module):
-
-    def __init__(self, gamma=0, alpha=0.5, size_average=True):
+    def __init__(self, gamma=2, alpha=0.25, size_average=True):
         super(stableBalancedFocalLossClass, self).__init__()
-
+        
         self.gamma = gamma
         self.alpha = alpha
         self.size_average = size_average
 
     def forward(self, input, target):
 
+        # there is only one batch
         input, target = input.unsqueeze(0), target.unsqueeze(0)
 
-        # Numerical stabilityt pytorhc trick.
-        floor = 0.0 + torch.exp(torch.tensor(-32, dtype = torch.float64))#1e-12 
-        ceiling = 1.0 - torch.exp(torch.tensor(-32, dtype = torch.float64))# This 1-e^37 is the highst value that does not results in nans... # 1e-12 
-        input = torch.clamp(input, min = floor.to(device), max = ceiling.to(device))
+        # Clamp input for numerical stability
+        input = torch.clamp(input, min=1e-12, max=1 - 1e-12) #1e-12 = 1-e^37 is the highst value that does not results in nans...
 
-        # for probs
-        pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
-        neg = (-(1-self.alpha) * (1-1-input)**self.gamma * torch.log(1-input))
-        
-        loss = (pos * target + neg * (1-target))
+        # Calculate focal loss components
+        pos_pt = (-self.alpha * (1 - input)**self.gamma * torch.log(input))
+        neg_pt = (-(1 - self.alpha) * input**self.gamma * torch.log(1 - input))
 
-        # averaging (or not) loss
+        # Combine positive and negative components
+        loss = - (target * pos_pt + (1 - target) * neg_pt)
+
+        # Average or sum loss
         if self.size_average:
             return loss.mean()
         else:
             return loss.sum()
+
+
+
+# WORKING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# class stableBalancedFocalLossClass(nn.Module):
+
+#     def __init__(self, gamma=0, alpha=0.5, size_average=True):
+#         super(stableBalancedFocalLossClass, self).__init__()
+
+#         self.gamma = gamma
+#         self.alpha = alpha
+#         self.size_average = size_average
+
+#     def forward(self, input, target):
+
+#         input, target = input.unsqueeze(0), target.unsqueeze(0)
+
+#         # Numerical stabilityt pytorhc trick.
+#         floor = 0.0 + torch.exp(torch.tensor(-32, dtype = torch.float64))#1e-12 
+#         ceiling = 1.0 - torch.exp(torch.tensor(-32, dtype = torch.float64))# This 1-e^37 is the highst value that does not results in nans... # 1e-12 
+#         input = torch.clamp(input, min = floor.to(device), max = ceiling.to(device))
+
+#         # for probs
+#         pos = (-self.alpha * (1-input)**self.gamma * torch.log(input))
+#         neg = (-(1-self.alpha) * (1-1-input)**self.gamma * torch.log(1-input))
+        
+#         loss = (pos * target + neg * (1-target))
+
+#         # averaging (or not) loss
+#         if self.size_average:
+#             return loss.mean()
+#         else:
+#             return loss.sum()
+# WORKING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+
+
+
+
+
 
 
 # class stableBalancedFocalLossClass(nn.Module):
