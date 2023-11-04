@@ -1,3 +1,7 @@
 /home/number_one/Documents/scripts/conflictNet/data/raw
 /home/number_one/Documents/scripts/conflictNet/data/processed
 /home/number_one/Documents/scripts/conflictNet/data/generated
+*.JPG
+*.pkl
+*.mp4
+*.png
