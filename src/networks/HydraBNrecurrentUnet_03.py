@@ -126,7 +126,7 @@ class HydraBNUNet03(nn.Module):
         H1_class = self.dec_conv2_class2_head1(H1_class)
 
         out_reg1 = F.relu(H1_reg)
-        out_class1 = torch.sigmoid(H1_class) # could move sigmoid outta here...
+        out_class1 = torch.sigmoid(H1_class) # could move sigmoid outta here... should
 
         #H2
         H2_pre = F.relu(self.bn1_head2(self.dec_conv2_pre_head2(d1)))
