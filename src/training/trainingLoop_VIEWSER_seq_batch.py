@@ -399,44 +399,51 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
 
             # should be function in utils... but you need to get the hidden state from the last time step. So you need to do it here maybe? 
 
+            # if  config.freeze_h == "random": # random pick between all, hs and hl
+            #     t1_pred, t1_pred_class, _ = model(t0, h_tt) # Start with all freeze
+            #     config.freeze_h = ['all','hs','hl'][np.random.choice(3)] # then change randomly between all, hs and hl. 
+            #     # You should split the states between hl1 and hl2 and hs1 and hs2... But this is just a quick test to see if it has some merrit. 
+
+            # else:
+            #     pass
+
             if config.freeze_h == "hl": # freeze the long term memory
-                # NEW-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                # split h_tt into hs_tt and hl_tt and save hl_tt as the forzen cell state/long term memory. Call it hl_frozen.
-                split = int(h_tt.shape[1]/2) # half of the second dimension which is channels
+                
+                split = int(h_tt.shape[1]/2) # split h_tt into hs_tt and hl_tt and save hl_tt as the forzen cell state/long term memory. Call it hl_frozen. Half of the second dimension which is channels.
                 _, hl_frozen = torch.split(h_tt, split, dim=1)
-                # NEW-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-                #t1_pred, t1_pred_class, _ = model(t0, h_tt) # freeze - oldie nuut goldie
-                t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # or dont freez !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                # NEW -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                # again split the h_tt into hs_tt and hl_tt. But discard the hl_tt
-                # Concatenate the frozen cell state/long term memory (hl_frozen) with the new hidden state/short term memory
-                hs, _ = torch.split(h_tt, split, dim=1)
-                h_tt = torch.cat((hs, hl_frozen), dim=1) # this is the new h_tt
-                # NEW -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                t1_pred, t1_pred_class, h_tt = model(t0, h_tt) 
+                hs, _ = torch.split(h_tt, split, dim=1) # Again split the h_tt into hs_tt and hl_tt. But discard the hl_tt
+                h_tt = torch.cat((hs, hl_frozen), dim=1) # Concatenate the frozen cell state/long term memory (hl_frozen) with the new hidden state/short term memory. this is the new h_tt
 
             elif config.freeze_h == "hs": # freeze the short term memory
 
-                split = int(h_tt.shape[1]/2) # half of the second dimension which is channels
+                split = int(h_tt.shape[1]/2) 
                 hs_frozen, _ = torch.split(h_tt, split, dim=1)
                 t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
                 _, hl = torch.split(h_tt, split, dim=1)
                 h_tt = torch.cat((hs_frozen, hl), dim=1) 
 
-            elif config.freeze_h == "all": # freeze the short term memory
+            elif config.freeze_h == "all": # freeze both h_l and h_s
 
-                t1_pred, t1_pred_class, _ = model(t0, h_tt) # freeze both h_l and h_s
+                t1_pred, t1_pred_class, _ = model(t0, h_tt) 
 
 
             elif config.freeze_h == "none": # dont freeze
-                t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # dont freeze
+                t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # dont freeze anything.
 
 
-            elif config.freeze_h == "random": # random pick between all, hs and hl
-                t1_pred, t1_pred_class, _ = model(t0, h_tt) # Start with all freeze
-                config.freeze_h = ['all','hs','hl'][np.random.choice(3)] # then change randomly between all, hs and hl. 
-                # You should split the states between hl1 and hl2 and hs1 and hs2... But this is just a quick test to see if it has some merrit. 
+            elif config.freeze_h == "random": # random pick between what tho freeze of hs1, hs2, hl1, and hl2
+
+                t1_pred, t1_pred_class, h_tt_new = model(t0, h_tt)
+
+                split_four_ways = int(h_tt.shape[1] / 4) # spltting the tensor four ways along dim 1 to get hs1, hs2, hl1, and hl2
+
+                hs_1_frozen, hs_2_frozen, hl_1_frozen, hl_2_frozen = torch.split(h_tt, split_four_ways, dim=1) # split the h_tt from the last step
+                hs_1_new, hs_2_new, hl_1_new, hl_2_new = torch.split(h_tt_new, split_four_ways, dim=1) # split the h_tt from the current step
+
+                pairs = [(hs_1_frozen, hs_1_new), (hs_2_frozen, hs_2_new), (hl_1_frozen, hl_1_new), (hl_2_frozen, hl_2_new)] # make pairs of the frozen and new hidden states
+
+                h_tt = torch.cat([pair[0] if torch.rand(1) < 0.5 else pair[1] for pair in pairs], dim=1) # concatenate the frozen and new hidden states. Randomly pick between the frozen and new hidden states for each pair.
 
             else:
                 print('Wrong freez option...')
