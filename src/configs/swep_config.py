@@ -42,7 +42,7 @@ def get_swep_config():
         'warmup_steps' : {'value' : 100},
         'first_feature_idx' : {'value' : 5},
         'norm_target' : {'value' : False},
-        'freeze_h' : {'values' : ["all", "hl", "hs"]},
+        'freeze_h' : {'values' : ["all", "random"]},
         #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 

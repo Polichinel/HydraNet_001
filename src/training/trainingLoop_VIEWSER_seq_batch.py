@@ -93,7 +93,7 @@ def choose_loss(config):
         criterion_class =  stableBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
 
     elif config.loss_class == 'd': # works and w/ logits. But I might need violence specific gamma and alpha....
-        criterion_class =  FocalLoss_new(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
+        criterion_class =  FocalLoss_new(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device) # THIS IS IN USE
 
     else:
         print('Wrong class loss...')
@@ -431,6 +431,12 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
 
             elif config.freeze_h == "none": # dont freeze
                 t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # dont freeze
+
+
+            elif config.freeze_h == "random": # random pick between all, hs and hl
+                t1_pred, t1_pred_class, _ = model(t0, h_tt) # Start with all freeze
+                config.freeze_h = ['all','hs','hl'][np.random.choice(3)] # then change randomly between all, hs and hl. 
+                # You should split the states between hl1 and hl2 and hs1 and hs2... But this is just a quick test to see if it has some merrit. 
 
             else:
                 print('Wrong freez option...')
