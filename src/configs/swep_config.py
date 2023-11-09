@@ -30,9 +30,9 @@ def get_swep_config():
         'loss_class_gamma' : {'value' : 1.5},
         'loss_class_alpha' : {'value' : 0.75}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b', },
-        'loss_reg_a' : { 'value' : 28 },
-        'loss_reg_c' : { 'value' : 0.005},
-        'test_samples': { 'values' : [128, 256]},
+        'loss_reg_a' : { 'values' : [28, 32, 64] },
+        'loss_reg_c' : { 'values' : [0.005, 0.001]},
+        'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
         'np_seed' : {'values' : [3,4]},
         'torch_seed' : {'values' : [3,4]},
@@ -42,7 +42,7 @@ def get_swep_config():
         'warmup_steps' : {'value' : 100},
         'first_feature_idx' : {'value' : 5},
         'norm_target' : {'value' : False},
-        'freeze_h' : {'values' : ["all", "random"]},
+        'freeze_h' : {'value' : "all"},
         #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 
