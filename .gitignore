@@ -1,5 +1,7 @@
 hp_config
 
+*.esp
+*.tiff
 *.pyc
 *.zip
 *.JPG
