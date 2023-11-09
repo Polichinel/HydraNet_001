@@ -11,7 +11,7 @@ def get_hp_config():
     'samples': 600, # 10 just for debug
     'batch_size': 3, 
     'dropout_rate' : 0.125,
-    'learning_rate' :  0.001,
+    'learning_rate' :  0.0005,
     'weight_decay' :  0.1,
     'slope_ratio' : 0.75,
     'roof_ratio' : 0.7,
@@ -33,7 +33,7 @@ def get_hp_config():
     'warmup_steps' : 100,
     'first_feature_idx' : 5,
     'norm_target' : False,
-
+    'freeze_h' : "all", # "all", "random", "hl", "hs", "none"
     }
 
     return hyperparameters
