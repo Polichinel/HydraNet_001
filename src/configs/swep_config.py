@@ -30,7 +30,7 @@ def get_swep_config():
         'loss_class_gamma' : {'value' : 1.5},
         'loss_class_alpha' : {'value' : 0.75}, # should be between 0.5 and 0.95...
         'loss_reg' : { 'value' : 'b', },
-        'loss_reg_a' : { 'values' : [28, 32, 64] },
+        'loss_reg_a' : { 'values' : [64, 96,128]},
         'loss_reg_c' : { 'values' : [0.005, 0.001]},
         'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
