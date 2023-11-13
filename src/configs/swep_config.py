@@ -29,9 +29,9 @@ def get_swep_config():
         'loss_class' : { 'value' : 'd'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
         'loss_class_gamma' : {'value' : 1.5},
         'loss_class_alpha' : {'value' : 0.75}, # should be between 0.5 and 0.95...
-        'loss_reg' : { 'value' : 'b', },
-        'loss_reg_a' : { 'values' : [64, 96,128]},
-        'loss_reg_c' : { 'values' : [0.005, 0.001]},
+        'loss_reg' : { 'values' : ['b', 'c'] },
+        'loss_reg_a' : { 'values' : [128, 256]},
+        'loss_reg_c' : { 'values' : [0.005, 0.001, 0.0005]},
         'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
         'np_seed' : {'values' : [3,4]},
