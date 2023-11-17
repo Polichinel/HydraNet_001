@@ -11,7 +11,7 @@ def get_hp_config():
     'samples': 600, # 10 just for debug
     'batch_size': 3, 
     'dropout_rate' : 0.125,
-    'learning_rate' :  0.0005,
+    'learning_rate' :  0.001,
     'weight_decay' :  0.1,
     'slope_ratio' : 0.75,
     'roof_ratio' : 0.7,
@@ -20,8 +20,8 @@ def get_hp_config():
     'loss_class': 'd',  # band c are is still unstable... c is old, d = FocalLoss_new
     'loss_class_gamma' : 1.5, # 0 and 2 works. But 2 gives a lot of noise. "If you want to prioritize hard cases in your training and make your model focus more on misclassified or uncertain examples, you should consider setting gamma to a value greater than 1""
     'loss_class_alpha' : 0.75, #An alpha value of 0.75 means that you are assigning more weight to the minority class during training.
-    'loss_reg': 'a',
-    'loss_reg_a' : 128, 
+    'loss_reg': 'c',
+    'loss_reg_a' : 256, 
     'loss_reg_c' :  0.001, # 0.05 works...
     'test_samples': 128,
     'np_seed' : 4,
@@ -35,6 +35,4 @@ def get_hp_config():
     'norm_target' : False,
     'freeze_h' : "all", # "all", "random", "hl", "hs", "none"
     }
-
     return hyperparameters
-
