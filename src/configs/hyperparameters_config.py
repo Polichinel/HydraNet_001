@@ -22,7 +22,7 @@ def get_hp_config():
     'loss_class_alpha' : 0.75, #An alpha value of 0.75 means that you are assigning more weight to the minority class during training.
     'loss_reg': 'c',
     'loss_reg_a' : 128, 
-    'loss_reg_c' :  0.001, # 0.05 works...
+    'loss_reg_c' :  0.0005, # 0.05 works...
     'test_samples': 128,
     'np_seed' : 4,
     'torch_seed' : 4,
