@@ -12,7 +12,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
         base = hidden_channels # ends up as hiddden channels
         kernel_size = 3 # only use in the LSTM part but could be used through out.. 
         padding = kernel_size // 2 # only use in the LSTM part but could be used through out.. 
-        hidden_channels_split = int(hidden_channels/4) # 4 for 2 LSTM layers /2) # For the LSTM part because we are splitting h into two tensors hs (short-term) and hl (long-term)
+        hidden_channels_split = int(hidden_channels/8) # 4 for 2 LSTM layers /2) # For the LSTM part because we are splitting h into two tensors hs (short-term) and hl (long-term)
 
 
         self.base = base # to extract later
