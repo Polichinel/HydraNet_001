@@ -19,7 +19,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
         
         # encoder (downsampling)
         #self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels, base, 3, padding=1, bias = False) # but then with hidden_c you go from 65 to 64...
-        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels_split*2, base, 3, padding=1, bias = False) # NOW (hidden_channels_split*2)+ input channels because of the LSTM2 - you only concat x with hs and not h
+        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels_split*4, base, 3, padding=1, bias = False) # NOW (hidden_channels_split*2)+ input channels because of the LSTM2 - you only concat x with hs and not h
 
         self.bn_enc_conv0 = nn.BatchNorm2d(base)
         self.pool0 = nn.MaxPool2d(2, 2, padding=0) # 16 -> 8
