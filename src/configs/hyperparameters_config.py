@@ -2,7 +2,7 @@
 def get_hp_config():
     
     hyperparameters = {
-    'model' : 'HydraBNUNet06_LSTM2', #'BNUNet',
+    'model' : 'HydraBNUNet06_LSTM4', #'BNUNet',
     'weight_init' : 'xavier_norm',
     'clip_grad_norm' : True,
     'scheduler' : 'WarmupDecay', #  'CosineAnnealingLR' 'OneCycleLR'

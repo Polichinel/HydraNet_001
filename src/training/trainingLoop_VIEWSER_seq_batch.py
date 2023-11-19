@@ -155,6 +155,9 @@ def make(config):
     elif config.model == 'HydraBNUNet06_LSTM2':
         unet = HydraBNUNet06_LSTM2(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
+    elif config.model == 'HydraBNUNet06_LSTM4':
+        unet = HydraBNUNet06_LSTM4(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+
     elif config.model == 'HydraBNUNet07':
         unet = HydraBNUNet07(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
