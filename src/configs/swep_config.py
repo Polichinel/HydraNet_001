@@ -11,7 +11,7 @@ def get_swep_config():
     sweep_config['metric'] = metric
 
     parameters_dict = {
-        'model' : {'value' :'HydraBNUNet06_LSTM2'},
+        'model' : {'value' :'HydraBNUNet06_LSTM4'},
         'weight_init' : {'value' : 'xavier_norm'}, # ['xavier_uni', 'xavier_norm', 'kaiming_uni', 'kaiming_normal']
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'WarmupDecay'}, #CosineAnnealingLR004  'CosineAnnealingLR' 'OneCycleLR'
@@ -39,7 +39,7 @@ def get_swep_config():
         'window_dim' : {'value' : 32},
         'h_init' : {'value' : 'abs_rand_exp-100'},
         'un_log' : {'value' : False},
-        'warmup_steps' : {'values' : [50, 100, 150]},
+        'warmup_steps' : {'value' : 100},
         'first_feature_idx' : {'value' : 5},
         'norm_target' : {'value' : False},
         'freeze_h' : {'value' : "all"},
