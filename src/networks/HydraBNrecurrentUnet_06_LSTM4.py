@@ -12,7 +12,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
         base = hidden_channels # ends up as hiddden channels
         kernel_size = 3 # only use in the LSTM part but could be used through out.. 
         padding = kernel_size // 2 # only use in the LSTM part but could be used through out.. 
-        hidden_channels_split = int(hidden_channels/8) # 4 for 2 LSTM layers /2) # For the LSTM part because we are splitting h into two tensors hs (short-term) and hl (long-term)
+        hidden_channels_split = int(hidden_channels/8) # 8 for 4 LSTM layers /2) # For the LSTM part because we are splitting h into two tensors hs (short-term) and hl (long-term)
 
 
         self.base = base # to extract later
@@ -115,7 +115,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
         # hidden_channels_split = int(hidden_channels/2) # could be specified in the init
 
         # LSTM 1
-        self.Wxi_1 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) # if it runs, try to remove bias - you are using batchnorm after all
+        self.Wxi_1 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) 
         self.Whi_1 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Wxf_1 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Whf_1 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
@@ -126,7 +126,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
 
 
         # LSTM 2
-        self.Wxi_2 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) # if it runs, try to remove bias - you are using batchnorm after all
+        self.Wxi_2 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Whi_2 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Wxf_2 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Whf_2 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
@@ -137,7 +137,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
 
 
         # LSTM 3
-        self.Wxi_3 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) # if it runs, try to remove bias - you are using batchnorm after all
+        self.Wxi_3 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) 
         self.Whi_3 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Wxf_3 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Whf_3 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
@@ -148,7 +148,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
 
 
         # LSTM 4
-        self.Wxi_4 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) # if it runs, try to remove bias - you are using batchnorm after all
+        self.Wxi_4 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) 
         self.Whi_4 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Wxf_4 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
         self.Whf_4 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
@@ -165,7 +165,6 @@ class HydraBNUNet06_LSTM4(nn.Module):
         hs_1, hs_2, hs_3, hs_4, hl_1, hl_2, hl_3, hl_4 = torch.split(h, split_hs, dim=1) 
 
 
-
         #----------------- LSTM 1 -----------------
         # Input gate
         i_t_1 = torch.sigmoid(self.Wxi_1(x) + self.Whi_1(hs_1)) # Wxi changes to dims for x to the same as hs
@@ -178,9 +177,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
         o_t_1 = torch.sigmoid(self.Wxo_1(x) + self.Who_1(hs_1)) # Wxo changes to dims for x to the same as hs
         
         hs_1 = o_t_1 * torch.tanh(hl_1) # The "input" that is used in the U-net below
-        # I am unsure whether it is a good idea that the U-net now nevers sees the original x....
-        # I possiple change is to concatenate x and hs before the U-net. It will just amount to a skip-connection.
-        # I'll try with this more conservative solution first....
+        # -----------------
 
 
         #----------------- LSTM 2 -----------------
@@ -195,7 +192,6 @@ class HydraBNUNet06_LSTM4(nn.Module):
         o_t_2 = torch.sigmoid(self.Wxo_2(x) + self.Who_2(hs_2)) # Wxo changes to dims for x to the same as hs
         
         hs_2 = o_t_2 * torch.tanh(hl_2) # The "input" that is used in the U-net below
-
         # -----------------
 
 
@@ -211,7 +207,6 @@ class HydraBNUNet06_LSTM4(nn.Module):
         o_t_3 = torch.sigmoid(self.Wxo_3(x) + self.Who_3(hs_3)) # Wxo changes to dims for x to the same as hs
 
         hs_3 = o_t_3 * torch.tanh(hl_3) # The "input" that is used in the U-net below
-
         # -----------------
 
         #----------------- LSTM 4 -----------------
@@ -226,9 +221,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
         o_t_4 = torch.sigmoid(self.Wxo_4(x) + self.Who_4(hs_4)) # Wxo changes to dims for x to the same as hs
 
         hs_4 = o_t_4 * torch.tanh(hl_4) # The "input" that is used in the U-net below
-
         # -----------------
-
         h = torch.cat([hs_1, hs_2, hs_3, hs_4, hl_1, hl_2, hl_3, hl_4], 1) # concatenating short and long term memory along the channels. What is carried forward to the next timestep. The concat is just to keep it tight...
         # -----------------
 
@@ -237,21 +230,19 @@ class HydraBNUNet06_LSTM4(nn.Module):
 
         # encoder
         e0s_ = F.relu(self.bn_enc_conv0(self.enc_conv0(x))) 
-        #e0s_ = F.relu(self.bn_enc_conv0(self.enc_conv0(hs))) 
 
         e0s = self.dropout(e0s_)
         e0 = self.pool0(e0s)
         
         e1s = self.dropout(F.relu(self.bn_enc_conv1(self.enc_conv1(e0))))
         e1 = self.pool1(e1s)
-        
 
         # bottleneck
         b = F.relu(self.bn_bottleneck_conv(self.bottleneck_conv(e1)))
         b = self.dropout(b)
 
-        # decoders
 
+        # decoders
         #H1 reg
         H1_d0 = F.relu(self.bn_dec_conv0_head1_reg(self.dec_conv0_head1_reg(torch.cat([self.upsample0_head1_reg(b),e1s],1))))
         H1_d0 = self.dropout(H1_d0)
@@ -365,7 +356,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
         out_reg = torch.concat([out_reg1, out_reg2, out_reg3], dim=1)        
         out_class = torch.concat([out_class1, out_class2, out_class3], dim=1)
 
-        return out_reg, out_class, e0s_ # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
+        return out_reg, out_class, h # e0s here also hidden state - should take tanh of self.enc_conv0(x) but it does not appear to make a big difference....
 
 
     def init_h(self, hidden_channels, dim, train_tensor): # could have x as input and then take x.shape
