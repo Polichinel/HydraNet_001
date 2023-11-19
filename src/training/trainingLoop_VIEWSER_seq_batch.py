@@ -43,6 +43,8 @@ from HydraBNrecurrentUnet_06 import HydraBNUNet06
 from HydraBNrecurrentUnet_06_LSTM import HydraBNUNet06_LSTM
 from HydraBNrecurrentUnet_07 import HydraBNUNet07
 from HydraBNrecurrentUnet_06_LSTM2 import HydraBNUNet06_LSTM2
+from HydraBNrecurrentUnet_06_LSTM4 import HydraBNUNet06_LSTM4
+
 
 from BNrecurrentUnet import BNUNet
 #from focal import FocalLoss
