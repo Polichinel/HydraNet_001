@@ -34,15 +34,15 @@ def get_swep_config():
         'loss_reg_c' : { 'value' : 0.001},
         'test_samples': { 'value' : 128},
         #'start_months' :{'values' : [1,2,4,6,8,12]},
-        'np_seed' : {'values' : [3,4,5]},
-        'torch_seed' : {'values' : [3,4,5]},
+        'np_seed' : {'values' : [3,4]},
+        'torch_seed' : {'values' : [3,4]},
         'window_dim' : {'value' : 32},
         'h_init' : {'value' : 'abs_rand_exp-100'},
         'un_log' : {'value' : False},
         'warmup_steps' : {'value' : 100},
         'first_feature_idx' : {'value' : 5},
         'norm_target' : {'value' : False},
-        'freeze_h' : {'value' : "all"},
+        'freeze_h' : {'values' : ["all", "hl", "hs", "none"]},
         #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 
