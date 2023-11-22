@@ -76,7 +76,7 @@ def choose_loss(config):
         criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
 
     elif config.loss_reg == 'c': # should change to this and I might need violence specific a and c....
-        criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c, size_average = False).to(device)
+        criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c, size_average = True).to(device)
 
     else:
         print('Wrong reg loss...')
@@ -441,12 +441,13 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
 
                 t1_pred, t1_pred_class, h_tt_new = model(t0, h_tt)
 
-                split_four_ways = int(h_tt.shape[1] / 4) # spltting the tensor four ways along dim 1 to get hs1, hs2, hl1, and hl2
+                split_four_ways = int(h_tt.shape[1] / 8) # spltting the tensor four ways along dim 1 to get hs1, hs2, hl1, and hl2
 
-                hs_1_frozen, hs_2_frozen, hl_1_frozen, hl_2_frozen = torch.split(h_tt, split_four_ways, dim=1) # split the h_tt from the last step
-                hs_1_new, hs_2_new, hl_1_new, hl_2_new = torch.split(h_tt_new, split_four_ways, dim=1) # split the h_tt from the current step
+                hs_1_frozen, hs_2_frozen, hs_3_frozen, hs_4_frozen, hl_1_frozen, hl_2_frozen, hl_3_frozen, hl_4_frozen = torch.split(h_tt, split_four_ways, dim=1) # split the h_tt from the last step
+                hs_1_new, hs_2_new, hs_3_new, hs_4_new, hl_1_new, hl_2_new, hl_3_new, hl_4_new = torch.split(h_tt_new, split_four_ways, dim=1) # split the h_tt from the current step
 
-                pairs = [(hs_1_frozen, hs_1_new), (hs_2_frozen, hs_2_new), (hl_1_frozen, hl_1_new), (hl_2_frozen, hl_2_new)] # make pairs of the frozen and new hidden states
+                pairs = [(hs_1_frozen, hs_1_new), (hs_2_frozen, hs_2_new), (hs_3_frozen, hs_3_new), (hs_4_frozen, hs_4_new), (hl_1_frozen, hl_1_new), (hl_2_frozen, hl_2_new), (hl_3_frozen, hl_3_new), (hl_4_frozen, hl_4_new)] # make pairs of the frozen and new hidden states
+                #pairs = [(hs_1_frozen, hs_1_new), (hs_2_frozen, hs_2_new), (hl_1_frozen, hl_1_new), (hl_2_frozen, hl_2_new)] # make pairs of the frozen and new hidden states
 
                 h_tt = torch.cat([pair[0] if torch.rand(1) < 0.5 else pair[1] for pair in pairs], dim=1) # concatenate the frozen and new hidden states. Randomly pick between the frozen and new hidden states for each pair.
 
