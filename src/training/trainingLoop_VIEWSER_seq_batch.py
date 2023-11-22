@@ -76,7 +76,7 @@ def choose_loss(config):
         criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
 
     elif config.loss_reg == 'c': # should change to this and I might need violence specific a and c....
-        criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
+        criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c, size_average = False).to(device)
 
     else:
         print('Wrong reg loss...')
