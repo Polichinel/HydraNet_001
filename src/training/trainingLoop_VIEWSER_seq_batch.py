@@ -118,53 +118,53 @@ def choose_loss(config):
 
 def make(config):
 
-    # unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+    # unet = UNet(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
 # ------------------------------------------------------------------------------------------------------ COULD BE A FUNCTION IN utils_sbnsos.py
     if config.model == 'UNet':
-        unet = UNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = UNet(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'GUNet_v01':
-        unet = GUNet_v01(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = GUNet_v01(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'GUNet_v02':
-        unet = GUNet_v02(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = GUNet_v02(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'GUNet_v03':
-        unet = GUNet_v03(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = GUNet_v03(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet01':
-        unet = HydraBNUNet01(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet01(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet02':
-        unet = HydraBNUNet02(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet02(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet03':
-        unet = HydraBNUNet03(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet03(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet04':
-        unet = HydraBNUNet04(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet04(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet05':
-        unet = HydraBNUNet05(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet05(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet06':
-        unet = HydraBNUNet06(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet06(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet06_LSTM':
-        unet = HydraBNUNet06_LSTM(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet06_LSTM(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet06_LSTM2':
-        unet = HydraBNUNet06_LSTM2(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet06_LSTM2(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet06_LSTM4':
-        unet = HydraBNUNet06_LSTM4(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet06_LSTM4(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'HydraBNUNet07':
-        unet = HydraBNUNet07(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = HydraBNUNet07(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     elif config.model == 'BNUNet':
-        unet = BNUNet(config.input_channels, config.hidden_channels, config.output_channels, config.dropout_rate).to(device)
+        unet = BNUNet(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
 
     else:
         print('no model...')
