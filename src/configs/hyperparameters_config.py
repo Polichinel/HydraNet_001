@@ -17,6 +17,7 @@ def get_hp_config():
     'roof_ratio' : 0.7,
     'input_channels' : 3,
     'output_channels' : 1,
+    'targets' : 6, # 3 class and 3 reg for now. And for now this parameter is only used in utils, and changing it does not change the model - so don't.
     'loss_class': 'd',  # band c are is still unstable... c is old, d = FocalLoss_new
     'loss_class_gamma' : 1.5, # 0 and 2 works. But 2 gives a lot of noise. "If you want to prioritize hard cases in your training and make your model focus more on misclassified or uncertain examples, you should consider setting gamma to a value greater than 1""
     'loss_class_alpha' : 0.75, #An alpha value of 0.75 means that you are assigning more weight to the minority class during training.
@@ -27,7 +28,7 @@ def get_hp_config():
     'np_seed' : 4,
     'torch_seed' : 4,
     'window_dim' : 32,
-    'loss_distance_scale' : 0.001,  # right now this is just as a note to self. Can't change it here     
+    #'loss_distance_scale' : 0.001,  # right now this is just as a note to self. Can't change it here     
     'h_init' : 'abs_rand_exp-100',
     'un_log' : False, # right now this is just as a note to self. Can't change it here} and it is not true..
     'warmup_steps' : 100,

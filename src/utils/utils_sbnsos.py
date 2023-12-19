@@ -40,8 +40,6 @@ def init_weights(m, config):
 		pass
 # --------------------------------------------------------------
 
-
-
 def norm_features(full_vol , config, a = 0, b = 1) -> np.ndarray:
 
     """
@@ -313,7 +311,9 @@ def get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, ou
     log_dict = {}
     log_dict["monthly/out_sample_month"] = i
 
-    for j in range(config.output_channels):
+
+    #Fix in a sec when you see if it runs at all.... 
+    for j in range(3): #(config.targets): # TARGETS IS & BUT THIS SHOULD BE 3!!!!!
 
         y_score = mean_array[i,j,:,:].reshape(-1) # make it 1d  # nu 180x180 
         y_score_prob = mean_class_array[i,j,:,:].reshape(-1) # nu 180x180 

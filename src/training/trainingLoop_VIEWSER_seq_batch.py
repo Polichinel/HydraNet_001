@@ -251,8 +251,6 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
     wandb.watch(model, [criterion_reg, criterion_class], log= None, log_freq=2048)
 
- 
-
     avg_loss_reg_list = []
     avg_loss_class_list = []
     avg_loss_list = []
@@ -287,33 +285,22 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         
             losses_list = []
 
-            for j in range(config.output_channels): # first reggression loss
+            for j in range(t1_pred.shape[1]): # first each reggression loss. Should be 1 channel, as I conccat the reg heads on dim = 1
 
-                #losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) #  works
+                losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:])) # index 0 is batch dim, 1 is channel dim (here pred), 2 is H dim, 3 is W dim
 
-                # if config.non_logged == True:
-                #     losses_list.append(criterion_reg(torch.exp(t1_pred[:,j,:,:]) - 1, torch.exp(t1[:,j,:,:]) - 1 )) #  NONE LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            for j in range(t1_pred_class.shape[1]): # then each classification loss. Should be 1 channel, as I conccat the class heads on dim = 1
 
-                # else:   
-                #     losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:]))
-
-                losses_list.append(criterion_reg(t1_pred[:,j,:,:], t1[:,j,:,:]))
-
-
-            for j in range(config.output_channels): # then classification loss
-
-                losses_list.append(criterion_class(t1_pred_class[:,j,:,:], t1_binary[:,j,:,:]))
+                losses_list.append(criterion_class(t1_pred_class[:,j,:,:], t1_binary[:,j,:,:])) # index 0 is batch dim, 1 is channel dim (here pred), 2 is H dim, 3 is W dim
 
             losses = torch.stack(losses_list)
             loss = multitaskloss_instance(losses)
 
-            #loss = weigh_loss(loss, t0, t1, config.loss_distance_scale) #!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
             total_loss += loss
 
             # traning output
-            loss_reg = losses[:config.output_channels].sum()
-            loss_class = losses[-config.output_channels:].sum()
+            loss_reg = losses[:t1_pred.shape[1]].sum() # sum the reg losses
+            loss_class = losses[-t1_pred.shape[1]:].sum() # assuming 
 
             avg_loss_reg_list.append(loss_reg.detach().cpu().numpy().item())
             avg_loss_class_list.append(loss_class.detach().cpu().numpy().item())
@@ -343,11 +330,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     # Adjust learning rate based on the loss
     scheduler.step()
 
-
-    # ----------------------------------------------------------------------------------
     # -----------------------------------------------------------------------------------------------------------
-
-
 
 
 def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
@@ -402,16 +385,6 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
 
 # NEW-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-            # should be function in utils... but you need to get the hidden state from the last time step. So you need to do it here maybe? 
-
-            # if  config.freeze_h == "random": # random pick between all, hs and hl
-            #     t1_pred, t1_pred_class, _ = model(t0, h_tt) # Start with all freeze
-            #     config.freeze_h = ['all','hs','hl'][np.random.choice(3)] # then change randomly between all, hs and hl. 
-            #     # You should split the states between hl1 and hl2 and hs1 and hs2... But this is just a quick test to see if it has some merrit. 
-
-            # else:
-            #     pass
-
             if config.freeze_h == "hl": # freeze the long term memory
                 
                 split = int(h_tt.shape[1]/2) # split h_tt into hs_tt and hl_tt and save hl_tt as the forzen cell state/long term memory. Call it hl_frozen. Half of the second dimension which is channels.
@@ -447,8 +420,6 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
                 hs_1_new, hs_2_new, hs_3_new, hs_4_new, hl_1_new, hl_2_new, hl_3_new, hl_4_new = torch.split(h_tt_new, split_four_ways, dim=1) # split the h_tt from the current step
 
                 pairs = [(hs_1_frozen, hs_1_new), (hs_2_frozen, hs_2_new), (hs_3_frozen, hs_3_new), (hs_4_frozen, hs_4_new), (hl_1_frozen, hl_1_new), (hl_2_frozen, hl_2_new), (hl_3_frozen, hl_3_new), (hl_4_frozen, hl_4_new)] # make pairs of the frozen and new hidden states
-                #pairs = [(hs_1_frozen, hs_1_new), (hs_2_frozen, hs_2_new), (hl_1_frozen, hl_1_new), (hl_2_frozen, hl_2_new)] # make pairs of the frozen and new hidden states
-
                 h_tt = torch.cat([pair[0] if torch.rand(1) < 0.5 else pair[1] for pair in pairs], dim=1) # concatenate the frozen and new hidden states. Randomly pick between the frozen and new hidden states for each pair.
 
             else:
@@ -458,19 +429,18 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
 # NEW -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             t1_pred_class = torch.sigmoid(t1_pred_class) # there is no sigmoid in the model (the loss takes logits) so you need to do it here.
-            pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze())
-            pred_class_np_list.append(t1_pred_class.cpu().detach().numpy().squeeze())
+            pred_np_list.append(t1_pred.cpu().detach().numpy().squeeze()) # squeeze to remove the batch dim. So this is a list of 3x180x180 arrays
+            pred_class_np_list.append(t1_pred_class.cpu().detach().numpy().squeeze()) # squeeze to remove the batch dim. So this is a list of 3x180x180 arrays
 
     return pred_np_list, pred_class_np_list
 
 
-def get_posterior(model, views_vol, config, device, n):
+def get_posterior(model, views_vol, config, device, n): 
     print('Testing initiated...')
 
     test_tensor = get_test_tensor(views_vol, config, device) # better cal thiis evel tensor
 
-    out_of_sample_vol = test_tensor[:,-config.time_steps:,:,:,:].cpu().numpy() # not really a tensor now.. # 0 is TEMP HACK unitl real dynasim !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+    out_of_sample_vol = test_tensor[:,-config.time_steps:,:,:,:].cpu().numpy() # From the 
 
     posterior_list = []
     posterior_list_class = []
@@ -521,11 +491,6 @@ def get_posterior(model, views_vol, config, device, n):
         y_true = out_of_sample_vol[:,i].reshape(-1)  # nu 180x180 . dim 0 is time
         y_true_binary = (y_true > 0) * 1
 
-        # print(y_true.min())
-        # print(y_true.max())
-        # print(y_true_binary.min())
-        # print(y_true_binary.max())
-
         mse = mean_squared_error(y_true, y_score)  
         ap = average_precision_score(y_true_binary, y_score_prob)
         auc = roc_auc_score(y_true_binary, y_score_prob)
@@ -534,7 +499,6 @@ def get_posterior(model, views_vol, config, device, n):
         log_dict = get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, out_of_sample_vol, config)# so at least it gets reported sep.
 
         wandb.log(log_dict)
-
 
         out_sample_month_list.append(i) # only used for pickle...
         mse_list.append(mse)
@@ -636,7 +600,6 @@ if __name__ == "__main__":
         project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickled_sbnsos"
 
         hyperparameters = get_hp_config()
-        #hyperparameters['loss'] = 'b' # change this or implement sinkhorn correctly also in sweeps.
         hyperparameters['time_steps'] = time_steps
         hyperparameters['run_type'] = run_type
         hyperparameters['sweep'] = False
@@ -649,16 +612,6 @@ if __name__ == "__main__":
         start_t = time.time()
 
         unet = model_pipeline(config = hyperparameters, project = project)
-
-        # print('Saving model...') # this should be an opiton when not sweeping
-
-        # if hyperparameters['loss'] == 'a':
-        #     PATH = 'unet_monthly_sinkhorn.pth'
-
-        # elif hyperparameters['loss'] == 'b':
-        #     PATH = 'unet_monthly.pth'
-
-        # torch.save(unet.state_dict(), PATH)
 
     end_t = time.time()
     minutes = (end_t - start_t)/60
