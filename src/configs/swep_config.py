@@ -26,6 +26,7 @@ def get_swep_config():
         "roof_ratio" : {'value' :  0.7},
         'input_channels' : {'value' : 3},
         'output_channels': {'value' : 1},
+        'targets' : {'value' : 6}, # 3 class and 3 reg for now. And for now this parameter is only used in utils, and changing it does not change the model - so don't.
         'loss_class' : { 'value' : 'd'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
         'loss_class_gamma' : {'value' : 1.5},
         'loss_class_alpha' : {'value' : 0.75}, # should be between 0.5 and 0.95...
@@ -42,7 +43,7 @@ def get_swep_config():
         'warmup_steps' : {'value' : 100},
         'first_feature_idx' : {'value' : 5},
         'norm_target' : {'value' : False},
-        'freeze_h' : {'values' : ["random", "hl", "all"]},
+        'freeze_h' : {'value' : "hl"},
         #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 
