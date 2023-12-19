@@ -6,19 +6,20 @@ import torch.nn.functional as F
 # why can't import????
 # give everything better names at some point
 class HydraBNUNet06_LSTM4(nn.Module):
-    def __init__(self, input_channels, hidden_channels, output_channels, dropout_rate):
+    def __init__(self, input_channels, total_hidden_channels, output_channels, dropout_rate):
         super().__init__()
 
-        base = hidden_channels # The fact that these are the same is legacy from when this was an RNN. It works, but it could be changed to something else.
-        kernel_size = 3 # only use in the LSTM part but could be used through out.. 
-        padding = kernel_size // 2 # only use in the LSTM part but could be used through out.. 
-        hidden_channels_split = int(hidden_channels/8) # 8 for 4 LSTM layers /2) # For the LSTM part because we are splitting h into two tensors hs (short-term) and hl (long-term)
-
-
+        kernel_size = 3 
+        base = total_hidden_channels # The fact that these are the same is legacy from when this was an RNN. It works, but it could be changed to something else.
+        lstm_padding = kernel_size // 2 # only use in the LSTM
+        
+        num_lstm_cells = 4 # could and should be hyperparameter to takes the vaules 1,2,3,4, 8, 16.
+        num_lstm_state_layers = int(total_hidden_channels/(num_lstm_cells*2)) # *2 because both hs (short-term) and hl (long-term). This diffinetion ensures the number of total layers does not change when you change the number of lstm cells. But it could be changed to something else.
+        
         self.base = base # to extract later
         
         # encoder (downsampling)
-        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels_split*4, base, kernel_size, padding=1, bias = False) # NOW (hidden_channels_split*2)+ input channels because of the LSTM2 - you only concat x with hs and not h
+        self.enc_conv0 = nn.Conv2d(input_channels + total_hidden_channels/2, base, kernel_size, padding=1, bias = False) #input channels + total_hidden_channels) because you only concat x with hs and not hl. So it will always be half.
 
         self.bn_enc_conv0 = nn.BatchNorm2d(base)
         self.pool0 = nn.MaxPool2d(2, 2, padding=0) # 16 -> 8
@@ -107,53 +108,49 @@ class HydraBNUNet06_LSTM4(nn.Module):
         self.dropout = nn.Dropout(p = dropout_rate)
 
         # LSTM
-        # kernel_size = 3 # could be specified in the init
-        # padding = kernel_size // 2 # could be specified in the init
-        # # /2 because we are splitting the hidden state into two tensors hs (short-term) and hl (long-term)
-        # hidden_channels_split = int(hidden_channels/2) # could be specified in the init
 
         # LSTM 1
-        self.Wxi_1 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) 
-        self.Whi_1 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxf_1 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whf_1 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxc_1 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whc_1 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxo_1 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Who_1 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Wxi_1 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True) 
+        self.Whi_1 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxf_1 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whf_1 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxc_1 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whc_1 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxo_1 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Who_1 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
 
 
         # LSTM 2
-        self.Wxi_2 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whi_2 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxf_2 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whf_2 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxc_2 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whc_2 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxo_2 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Who_2 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Wxi_2 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whi_2 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxf_2 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whf_2 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxc_2 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whc_2 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxo_2 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Who_2 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
 
 
         # LSTM 3
-        self.Wxi_3 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) 
-        self.Whi_3 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxf_3 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whf_3 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxc_3 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whc_3 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxo_3 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Who_3 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Wxi_3 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True) 
+        self.Whi_3 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxf_3 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whf_3 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxc_3 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whc_3 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxo_3 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Who_3 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
 
 
         # LSTM 4
-        self.Wxi_4 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True) 
-        self.Whi_4 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxf_4 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whf_4 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxc_4 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Whc_4 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Wxo_4 = nn.Conv2d(input_channels, hidden_channels_split, kernel_size, padding=padding, bias=True)
-        self.Who_4 = nn.Conv2d(hidden_channels_split, hidden_channels_split, kernel_size, padding=padding, bias=True)
+        self.Wxi_4 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True) 
+        self.Whi_4 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxf_4 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whf_4 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxc_4 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Whc_4 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Wxo_4 = nn.Conv2d(input_channels, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
+        self.Who_4 = nn.Conv2d(num_lstm_state_layers, num_lstm_state_layers, kernel_size, padding=lstm_padding, bias=True)
 
 
     def forward(self, x, h):

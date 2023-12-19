@@ -15,7 +15,7 @@ def get_swep_config():
         'weight_init' : {'value' : 'xavier_norm'}, # ['xavier_uni', 'xavier_norm', 'kaiming_uni', 'kaiming_normal']
         'clip_grad_norm' : {'value': True},
         'scheduler' : {'value': 'WarmupDecay'}, #CosineAnnealingLR004  'CosineAnnealingLR' 'OneCycleLR'
-        'hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
+        'total_hidden_channels': {'value': 32}, # you like need 32, it seems from qualitative results
         'min_events': {'value': 5},
         'samples': {'value':   600}, # should be a function of batches becaus batch 3 and sample 1000 = 3000....
         'batch_size': {'value':  3}, # just speed running here..

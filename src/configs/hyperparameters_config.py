@@ -6,7 +6,7 @@ def get_hp_config():
     'weight_init' : 'xavier_norm',
     'clip_grad_norm' : True,
     'scheduler' : 'WarmupDecay', #  'CosineAnnealingLR' 'OneCycleLR'
-    'hidden_channels' : 32,
+    'total_hidden_channels' : 32,
     'min_events' : 5,
     'samples': 600, # 10 just for debug
     'batch_size': 3, 
