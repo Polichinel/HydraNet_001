@@ -9,7 +9,7 @@ class HydraBNUNet06_LSTM4(nn.Module):
     def __init__(self, input_channels, hidden_channels, output_channels, dropout_rate):
         super().__init__()
 
-        base = hidden_channels # ends up as hiddden channels
+        base = hidden_channels # The fact that these are the same is legacy from when this was an RNN. It works, but it could be changed to something else.
         kernel_size = 3 # only use in the LSTM part but could be used through out.. 
         padding = kernel_size // 2 # only use in the LSTM part but could be used through out.. 
         hidden_channels_split = int(hidden_channels/8) # 8 for 4 LSTM layers /2) # For the LSTM part because we are splitting h into two tensors hs (short-term) and hl (long-term)
@@ -18,79 +18,78 @@ class HydraBNUNet06_LSTM4(nn.Module):
         self.base = base # to extract later
         
         # encoder (downsampling)
-        #self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels, base, 3, padding=1, bias = False) # but then with hidden_c you go from 65 to 64...
-        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels_split*4, base, 3, padding=1, bias = False) # NOW (hidden_channels_split*2)+ input channels because of the LSTM2 - you only concat x with hs and not h
+        self.enc_conv0 = nn.Conv2d(input_channels + hidden_channels_split*4, base, kernel_size, padding=1, bias = False) # NOW (hidden_channels_split*2)+ input channels because of the LSTM2 - you only concat x with hs and not h
 
         self.bn_enc_conv0 = nn.BatchNorm2d(base)
         self.pool0 = nn.MaxPool2d(2, 2, padding=0) # 16 -> 8
 
-        self.enc_conv1 = nn.Conv2d(base, base*2, 3, padding=1, bias = False)
+        self.enc_conv1 = nn.Conv2d(base, base*2, kernel_size, padding=1, bias = False)
         self.bn_enc_conv1 = nn.BatchNorm2d(base*2) 
         self.pool1 = nn.MaxPool2d(2, 2, padding=0) # 8 -> 4
 
         # bottleneck
-        self.bottleneck_conv = nn.Conv2d(base*2, base*4, 3, padding=1, bias = False)
+        self.bottleneck_conv = nn.Conv2d(base*2, base*4, kernel_size, padding=1, bias = False)
         self.bn_bottleneck_conv = nn.BatchNorm2d(base*4) 
         
 
         # HEAD1 reg
         self.upsample0_head1_reg = nn.ConvTranspose2d(base*4, base*2, 2, stride= 2, padding= 0, output_padding= 0) # 4 -> 8
-        self.dec_conv0_head1_reg = nn.Conv2d(base*4, base*2, 3, padding=1, bias = False) # base+base=base*2 because of skip conneciton
+        self.dec_conv0_head1_reg = nn.Conv2d(base*4, base*2, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip conneciton
         self.bn_dec_conv0_head1_reg = nn.BatchNorm2d(base*2) 
 
         self.upsample1_head1_reg = nn.ConvTranspose2d(base*2, base, 2, stride= 2, padding= 0, output_padding= 0) # 8 -> 16
-        self.dec_conv1_head1_reg = nn.Conv2d(base*2, base, 3, padding=1, bias = False) # base+base=base*2 because of skip connection
+        self.dec_conv1_head1_reg = nn.Conv2d(base*2, base, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip connection
         self.bn_dec_conv1_head1_reg = nn.BatchNorm2d(base) 
 
-        self.dec_conv4_head1_reg = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
+        self.dec_conv4_head1_reg = nn.Conv2d(base, output_channels, kernel_size, padding=1) # 2 because reg and class
 
 
         # HEAD1 class
         self.upsample0_head1_class = nn.ConvTranspose2d(base*4, base*2, 2, stride= 2, padding= 0, output_padding= 0) # 4 -> 8
-        self.dec_conv0_head1_class = nn.Conv2d(base*4, base*2, 3, padding=1, bias = False) # base+base=base*2 because of skip conneciton
+        self.dec_conv0_head1_class = nn.Conv2d(base*4, base*2, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip conneciton
         self.bn_dec_conv0_head1_class = nn.BatchNorm2d(base*2) 
 
         self.upsample1_head1_class = nn.ConvTranspose2d(base*2, base, 2, stride= 2, padding= 0, output_padding= 0) # 8 -> 16
-        self.dec_conv1_head1_class = nn.Conv2d(base*2, base, 3, padding=1, bias = False) # base+base=base*2 because of skip connection
+        self.dec_conv1_head1_class = nn.Conv2d(base*2, base, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip connection
         self.bn_dec_conv1_head1_class = nn.BatchNorm2d(base) 
 
-        self.dec_conv4_head1_class = nn.Conv2d(base, 1, 3, padding=1)
+        self.dec_conv4_head1_class = nn.Conv2d(base, output_channels, 3, padding=1)
         
 
         # HEAD2 reg
         self.upsample0_head2_reg = nn.ConvTranspose2d(base*4, base*2, 2, stride= 2, padding= 0, output_padding= 0) # 4 -> 8
-        self.dec_conv0_head2_reg = nn.Conv2d(base*4, base*2, 3, padding=1, bias = False) # base+base=base*2 because of skip conneciton
+        self.dec_conv0_head2_reg = nn.Conv2d(base*4, base*2, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip conneciton
         self.bn_dec_conv0_head2_reg = nn.BatchNorm2d(base*2) 
 
         self.upsample1_head2_reg = nn.ConvTranspose2d(base*2, base, 2, stride= 2, padding= 0, output_padding= 0) # 8 -> 16
-        self.dec_conv1_head2_reg = nn.Conv2d(base*2, base, 3, padding=1, bias = False) # base+base=base*2 because of skip connection
+        self.dec_conv1_head2_reg = nn.Conv2d(base*2, base, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip connection
         self.bn_dec_conv1_head2_reg = nn.BatchNorm2d(base) 
 
-        self.dec_conv4_head2_reg = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
+        self.dec_conv4_head2_reg = nn.Conv2d(base, output_channels, 3, padding=1) # 2 because reg and class
 
 
         # HEAD2 class
         self.upsample0_head2_class = nn.ConvTranspose2d(base*4, base*2, 2, stride= 2, padding= 0, output_padding= 0) # 4 -> 8
-        self.dec_conv0_head2_class = nn.Conv2d(base*4, base*2, 3, padding=1, bias = False) # base+base=base*2 because of skip conneciton
+        self.dec_conv0_head2_class = nn.Conv2d(base*4, base*2, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip conneciton
         self.bn_dec_conv0_head2_class = nn.BatchNorm2d(base*2) 
 
         self.upsample1_head2_class = nn.ConvTranspose2d(base*2, base, 2, stride= 2, padding= 0, output_padding= 0) # 8 -> 16
-        self.dec_conv1_head2_class = nn.Conv2d(base*2, base, 3, padding=1, bias = False) # base+base=base*2 because of skip connection
+        self.dec_conv1_head2_class = nn.Conv2d(base*2, base, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip connection
         self.bn_dec_conv1_head2_class = nn.BatchNorm2d(base) 
 
-        self.dec_conv4_head2_class = nn.Conv2d(base, 1, 3, padding=1)
+        self.dec_conv4_head2_class = nn.Conv2d(base, output_channels, kernel_size, padding=1)
 
 
         # HEAD3 reg
         self.upsample0_head3_reg = nn.ConvTranspose2d(base*4, base*2, 2, stride= 2, padding= 0, output_padding= 0) # 4 -> 8
-        self.dec_conv0_head3_reg = nn.Conv2d(base*4, base*2, 3, padding=1, bias = False) # base+base=base*2 because of skip conneciton
+        self.dec_conv0_head3_reg = nn.Conv2d(base*4, base*2, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip conneciton
         self.bn_dec_conv0_head3_reg = nn.BatchNorm2d(base*2) 
 
         self.upsample1_head3_reg = nn.ConvTranspose2d(base*2, base, 2, stride= 2, padding= 0, output_padding= 0) # 8 -> 16
-        self.dec_conv1_head3_reg = nn.Conv2d(base*2, base, 3, padding=1, bias = False) # base+base=base*2 because of skip connection
+        self.dec_conv1_head3_reg = nn.Conv2d(base*2, base, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip connection
         self.bn_dec_conv1_head3_reg = nn.BatchNorm2d(base) 
 
-        self.dec_conv4_head3_reg = nn.Conv2d(base, 1, 3, padding=1) # 2 because reg and class
+        self.dec_conv4_head3_reg = nn.Conv2d(base, output_channels, kernel_size, padding=1) # 2 because reg and class
 
 
         # HEAD3 class
@@ -99,14 +98,13 @@ class HydraBNUNet06_LSTM4(nn.Module):
         self.bn_dec_conv0_head3_class = nn.BatchNorm2d(base*2) 
 
         self.upsample1_head3_class = nn.ConvTranspose2d(base*2, base, 2, stride= 2, padding= 0, output_padding= 0) # 8 -> 16
-        self.dec_conv1_head3_class = nn.Conv2d(base*2, base, 3, padding=1, bias = False) # base+base=base*2 because of skip connection
+        self.dec_conv1_head3_class = nn.Conv2d(base*2, base, kernel_size, padding=1, bias = False) # base+base=base*2 because of skip connection
         self.bn_dec_conv1_head3_class = nn.BatchNorm2d(base) 
 
-        self.dec_conv4_head3_class = nn.Conv2d(base, 1, 3, padding=1)
+        self.dec_conv4_head3_class = nn.Conv2d(base, output_channels, kernel_size, padding=1)
 
         # Dropout
         self.dropout = nn.Dropout(p = dropout_rate)
-
 
         # LSTM
         # kernel_size = 3 # could be specified in the init
@@ -160,10 +158,9 @@ class HydraBNUNet06_LSTM4(nn.Module):
 
     def forward(self, x, h):
 
-        # The whole split than concat thing,  is just becaues the hidden state use to be one tensor, when it was just an RNN, but now as an LSTM it is two tensors. 
-        split_hs = int(h.shape[1] / 8) 
-        hs_1, hs_2, hs_3, hs_4, hl_1, hl_2, hl_3, hl_4 = torch.split(h, split_hs, dim=1) 
-
+        # Splitting the hidden state tensor into 4 short-term memory tensors and 4 long-term memory tensors. 
+        split_h = int(h.shape[1] / 8) # 32/8 = 4. 32 is the dim of the full hidden state. 8 is the number of tensors we want to split it into. Each tensor is then 4 channels.
+        hs_1, hs_2, hs_3, hs_4, hl_1, hl_2, hl_3, hl_4 = torch.split(h, split_h, dim=1) 
 
         #----------------- LSTM 1 -----------------
         # Input gate
@@ -177,8 +174,6 @@ class HydraBNUNet06_LSTM4(nn.Module):
         o_t_1 = torch.sigmoid(self.Wxo_1(x) + self.Who_1(hs_1)) # Wxo changes to dims for x to the same as hs
         
         hs_1 = o_t_1 * torch.tanh(hl_1) # The "input" that is used in the U-net below
-        # -----------------
-
 
         #----------------- LSTM 2 -----------------
         # Input gate
@@ -192,8 +187,6 @@ class HydraBNUNet06_LSTM4(nn.Module):
         o_t_2 = torch.sigmoid(self.Wxo_2(x) + self.Who_2(hs_2)) # Wxo changes to dims for x to the same as hs
         
         hs_2 = o_t_2 * torch.tanh(hl_2) # The "input" that is used in the U-net below
-        # -----------------
-
 
         #----------------- LSTM 3 -----------------
         # Input gate
@@ -207,7 +200,6 @@ class HydraBNUNet06_LSTM4(nn.Module):
         o_t_3 = torch.sigmoid(self.Wxo_3(x) + self.Who_3(hs_3)) # Wxo changes to dims for x to the same as hs
 
         hs_3 = o_t_3 * torch.tanh(hl_3) # The "input" that is used in the U-net below
-        # -----------------
 
         #----------------- LSTM 4 -----------------
         # Input gate
@@ -221,12 +213,12 @@ class HydraBNUNet06_LSTM4(nn.Module):
         o_t_4 = torch.sigmoid(self.Wxo_4(x) + self.Who_4(hs_4)) # Wxo changes to dims for x to the same as hs
 
         hs_4 = o_t_4 * torch.tanh(hl_4) # The "input" that is used in the U-net below
+        
         # -----------------
         h = torch.cat([hs_1, hs_2, hs_3, hs_4, hl_1, hl_2, hl_3, hl_4], 1) # concatenating short and long term memory along the channels. What is carried forward to the next timestep. The concat is just to keep it tight...
         # -----------------
 
-        # THIS MIGHT BE BETTER. I.E. CONCATENATE X AND HS BEFORE THE U-NET AND USE THE NEW X... Start with this... 
-        x = torch.cat([x, hs_1, hs_2, hs_3, hs_4], 1) # concatenating x and the new short term  memory along the channels
+        x = torch.cat([x, hs_1, hs_2, hs_3, hs_4], 1) # concatenating x and the new short term memory along the channels - x here as a skip connection
 
         # encoder
         e0s_ = F.relu(self.bn_enc_conv0(self.enc_conv0(x))) 
@@ -241,20 +233,13 @@ class HydraBNUNet06_LSTM4(nn.Module):
         b = F.relu(self.bn_bottleneck_conv(self.bottleneck_conv(e1)))
         b = self.dropout(b)
 
-
-        # decoders
+        # DECODERS #
         #H1 reg
         H1_d0 = F.relu(self.bn_dec_conv0_head1_reg(self.dec_conv0_head1_reg(torch.cat([self.upsample0_head1_reg(b),e1s],1))))
         H1_d0 = self.dropout(H1_d0)
         
         H1_d1 = F.relu(self.bn_dec_conv1_head1_reg(self.dec_conv1_head1_reg(torch.cat([self.upsample1_head1_reg(H1_d0), e0s],1)))) # You did not have any activations before - why not?
         H1_reg = self.dropout(H1_d1)
-
-        # H1_d2 = F.relu(self.bn_dec_conv2_head1_reg(self.dec_conv2_head1_reg(H1_d1)))
-        # H1_d2 = self.dropout(H1_d2) # is this good?
-
-        # H1_reg = F.relu(self.bn_dec_conv3_head1_reg(self.dec_conv3_head1_reg(H1_d2)))
-        # H1_reg = self.dropout(H1_reg) # is this good?
 
         H1_reg = self.dec_conv4_head1_reg(H1_reg)
         

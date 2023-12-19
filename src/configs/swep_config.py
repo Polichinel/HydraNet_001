@@ -25,7 +25,7 @@ def get_swep_config():
         "slope_ratio" : {'value' : 0.75},
         "roof_ratio" : {'value' :  0.7},
         'input_channels' : {'value' : 3},
-        'output_channels': {'value' : 3},
+        'output_channels': {'value' : 1},
         'loss_class' : { 'value' : 'd'}, # det nytter jo ikke noget at du køre over gamma og alpha for loss-class a...
         'loss_class_gamma' : {'value' : 1.5},
         'loss_class_alpha' : {'value' : 0.75}, # should be between 0.5 and 0.95...

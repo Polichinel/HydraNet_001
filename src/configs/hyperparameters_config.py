@@ -16,7 +16,7 @@ def get_hp_config():
     'slope_ratio' : 0.75,
     'roof_ratio' : 0.7,
     'input_channels' : 3,
-    'output_channels' : 3,
+    'output_channels' : 1,
     'loss_class': 'd',  # band c are is still unstable... c is old, d = FocalLoss_new
     'loss_class_gamma' : 1.5, # 0 and 2 works. But 2 gives a lot of noise. "If you want to prioritize hard cases in your training and make your model focus more on misclassified or uncertain examples, you should consider setting gamma to a value greater than 1""
     'loss_class_alpha' : 0.75, #An alpha value of 0.75 means that you are assigning more weight to the minority class during training.
