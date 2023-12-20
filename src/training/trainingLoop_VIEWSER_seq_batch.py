@@ -354,6 +354,15 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
 
 def test(model, test_tensor, time_steps, config, device): # should be called eval/validation
+
+    """
+    Function to test the model on the hold-out test set.
+    The function takes the model, the test tensor, the number of time steps to predict, the config, and the device as input.
+    The function returns **two lists of numpy arrays**. One list of the predicted magnitudes and one list of the predicted probabilities.
+    Each array is of the shap **fx180x180**, where f is the number of features (currently 3 types of violence).
+    """
+
+
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
 
@@ -435,35 +444,64 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
     return pred_np_list, pred_class_np_list
 
 
-def get_posterior(model, views_vol, config, device, n): 
-    print('Testing initiated...')
 
+def sample_posterior(model, views_vol, config, device): 
+
+    """
+    Samples from the posterior distribution of Hydranet.
+
+    Args:
+    - model: HydraNet
+    - views_vol (torch.Tensor): Input views data.
+    - config: Configuration file
+    - device: Device for computations.
+
+    Returns:
+    - tuple: (posterior_magnitudes, posterior_probabilities, out_of_sample_data)
+    """
+
+    print(f'Drawing {config.test_samples} posterior samples...')
+
+    # perhaps not on GPU? 
     test_tensor = get_test_tensor(views_vol, config, device) # better cal thiis evel tensor
-
-    out_of_sample_vol = test_tensor[:,-config.time_steps:,:,:,:].cpu().numpy() # From the 
+    out_of_sample_vol = test_tensor[:,-config.time_steps:,:,:,:].cpu().numpy() # From the test tensor get the out-of-sample time_steps. 
 
     posterior_list = []
     posterior_list_class = []
 
-    for i in range(n):
-        pred_np_list, pred_class_np_list = test(model, test_tensor, config.time_steps, config, device) # --------------------------------------------------------------
+    for i in range(config.test_samples): # number of posterior samples to draw - just set config.test_samples, no? 
+        
+        pred_np_list, pred_class_np_list = test(model, test_tensor, config.time_steps, config, device) # Returns two lists of numpy arrays (shape 3/180/180). One list of the predicted magnitudes and one list of the predicted probabilities.
         posterior_list.append(pred_np_list)
         posterior_list_class.append(pred_class_np_list)
 
         #if i % 10 == 0: # print steps 10
-        print(f'Posterior sample: {i}/{n}', end = '\r')
+        print(f'Posterior sample: {i}/{config.test_samples}', end = '\r')
 
-    if config.sweep == False: # should ne in config...
-        dump_location = '/home/projects/ku_00017/data/generated/conflictNet/'
-        posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_vol' : out_of_sample_vol}
-        with open(f'{dump_location}posterior_dict_{config.time_steps}_{config.run_type}.pkl', 'wb') as file:
-            pickle.dump(posterior_dict, file)
+    return posterior_list, posterior_list_class, out_of_sample_vol, test_tensor
+# ---------------------------------------------------------------------
 
-        print("Posterior pickle dumped!")
+def get_posterior(model, views_vol, config, device):
 
-    else:
-        print('Running sweep. no posterior pickle dumped')
+    """
+    Function to get the posterior distribution of Hydranet.
+    """
 
+    posterior_list, posterior_list_class, out_of_sample_vol, test_tensor = sample_posterior(model, views_vol, config, device)
+
+    # Dump 1
+#    if config.sweep == False:
+#
+#        dump_location = '/home/projects/ku_00017/data/generated/conflictNet/'
+#        posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_vol' : out_of_sample_vol}
+#        with open(f'{dump_location}posterior_dict_{config.time_steps}_{config.run_type}.pkl', 'wb') as file:
+#            pickle.dump(posterior_dict, file)
+
+#        print("Posterior pickle dumped!")
+
+#    else:
+#        print('Running sweep. no posterior pickle dumped')
+        
 
     # YOU ARE MISSING SOMETHING ABOUT FEATURES HERE WHICH IS WHY YOU REPORTED AP ON WandB IS BIASED DOWNWARDS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!RYRYRYRYERYERYR
     # Get mean and std
@@ -506,11 +544,18 @@ def get_posterior(model, views_vol, config, device, n):
         auc_list.append(auc)
         brier_list.append(brier)
 
-    if config.sweep == False:
+    if not config.sweep:
 
-    # DUMP
+    # DUMP 2
+        dump_location = '/home/projects/ku_00017/data/generated/conflictNet/' # should be in config
+        
+        posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_vol' : out_of_sample_vol}
+        
         metric_dict = {'out_sample_month_list' : out_sample_month_list, 'mse_list': mse_list,
                     'ap_list' : ap_list, 'auc_list': auc_list, 'brier_list' : brier_list}
+
+        with open(f'{dump_location}posterior_dict_{config.time_steps}_{config.run_type}.pkl', 'wb') as file:
+            pickle.dump(posterior_dict, file)       
 
         with open(f'{dump_location}metric_dict_{config.time_steps}_{config.run_type}.pkl', 'wb') as file:
             pickle.dump(metric_dict, file)
@@ -518,16 +563,18 @@ def get_posterior(model, views_vol, config, device, n):
         with open(f'{dump_location}test_vol_{config.time_steps}_{config.run_type}.pkl', 'wb') as file: # make it numpy
             pickle.dump(test_tensor.cpu().numpy(), file)
 
-        print('Metric and test pickle dumped!')
+        print('Posterior dict, metric dict and test vol pickled and dumped!')
 
     else:
-        print('Running sweep. no metric or test pickle dumped')
+        print('Running sweep. NO posterior dict, metric dict, or test vol pickled+dumped')
 
     # ------------------------------------------------------------------------------------
     wandb.log({f"{config.time_steps}month_mean_squared_error": np.mean(mse_list)})
     wandb.log({f"{config.time_steps}month_average_precision_score": np.mean(ap_list)})
     wandb.log({f"{config.time_steps}month_roc_auc_score": np.mean(auc_list)})
     wandb.log({f"{config.time_steps}month_brier_score_loss":np.mean(brier_list)})
+
+
 
 def model_pipeline(config=None, project=None):
 
@@ -549,10 +596,10 @@ def model_pipeline(config=None, project=None):
         training_loop(config, unet, criterion, optimizer, scheduler, views_vol)
         print('Done training')
 
-        get_posterior(unet, views_vol, config, device, n=config.test_samples) # actually since you give config now you do not need: time_steps, run_type, is_sweep,
+        get_posterior(unet, views_vol, config, device) # actually since you give config now you do not need: time_steps, run_type, is_sweep,
         print('Done testing')
 
-        if config.sweep == False: # if it is not a sweep
+        if config.sweep == False: # if it is not a sweep, return the model for pickling (not pickled right now...)
             return(unet)
 
 
