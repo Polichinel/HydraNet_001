@@ -173,7 +173,7 @@ def make(config):
     # Create a partial function with the initialization function and the config parameter
     init_fn = functools.partial(init_weights, config=config)
 
-    # Apply the initialization function to the model
+    # Apply the initialization function to the modeli
     unet.apply(init_fn)
 
     # ------------------------------------------------------------------------------------------------------COULD BE A FUNCTION IN utils_sbnsos.py
@@ -269,7 +269,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
         window_dim = train_tensor.shape[-1] # the last dim should always be a spatial dim (H or W)
 
         # initialize a hidden state
-        h = model.init_h(hidden_channels = model.base, dim = window_dim, train_tensor = train_tensor).float().to(device)
+        h = model.init_h(hidden_channels = model.base, dim = window_dim).float().to(device)
 
         # Sequens loop rnn style
         for i in range(seq_len-1): # so your sequnce is the full time len - last month.
@@ -362,7 +362,6 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
     Each array is of the shap **fx180x180**, where f is the number of features (currently 3 types of violence).
     """
 
-
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
 
@@ -373,7 +372,7 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
     pred_np_list = []
     pred_class_np_list = []
 
-    h_tt = model.init_hTtime(hidden_channels = model.base, H = 180, W  = 180, test_tensor = test_tensor).float().to(device) # coul auto the...
+    h_tt = model.init_hTtime(hidden_channels = model.base, H = 180, W  = 180).float().to(device) # coul auto the...
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
     print(f'\t\t\t\t sequence length: {seq_len}', end= '\r')
 
@@ -384,7 +383,7 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
 
             print(f'\t\t\t\t\t\t\t in sample. month: {i+1}', end= '\r')
 
-            t0 = test_tensor[:, i, :, :, :]
+            t0 = test_tensor[:, i, :, :, :].to(device) # THIS IS ALL YOU NEED TO PUT ON DEVICE!!!!!!!!!
             t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
 
         else: # take the last t1_pred
@@ -462,7 +461,7 @@ def sample_posterior(model, views_vol, config, device):
 
     print(f'Drawing {config.test_samples} posterior samples...')
 
-    # perhaps not on GPU? 
+    # Why do you put this test tensor on device here??!? 
     test_tensor = get_test_tensor(views_vol, config, device) # better cal thiis evel tensor
     out_of_sample_vol = test_tensor[:,-config.time_steps:,:,:,:].cpu().numpy() # From the test tensor get the out-of-sample time_steps. 
 
@@ -470,7 +469,8 @@ def sample_posterior(model, views_vol, config, device):
     posterior_list_class = []
 
     for i in range(config.test_samples): # number of posterior samples to draw - just set config.test_samples, no? 
-        
+
+        # test_tensor is need on device here, but maybe just do it inside the test function? 
         pred_np_list, pred_class_np_list = test(model, test_tensor, config.time_steps, config, device) # Returns two lists of numpy arrays (shape 3/180/180). One list of the predicted magnitudes and one list of the predicted probabilities.
         posterior_list.append(pred_np_list)
         posterior_list_class.append(pred_class_np_list)
