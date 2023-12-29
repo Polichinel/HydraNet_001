@@ -22,6 +22,22 @@ from sklearn.metrics import brier_score_loss
 
 import wandb
 
+# networks
+from recurrentUnet import UNet
+from gatedrecurrentUnet_v01 import GUNet_v01
+from gatedrecurrentUnet_v02 import GUNet_v02
+from gatedrecurrentUnet_v03 import GUNet_v03
+from HydraBNrecurrentUnet_01 import HydraBNUNet01
+from HydraBNrecurrentUnet_02 import HydraBNUNet02
+from HydraBNrecurrentUnet_03 import HydraBNUNet03
+from HydraBNrecurrentUnet_04 import HydraBNUNet04
+from HydraBNrecurrentUnet_05 import HydraBNUNet05
+from HydraBNrecurrentUnet_06 import HydraBNUNet06
+from HydraBNrecurrentUnet_06_LSTM import HydraBNUNet06_LSTM
+from HydraBNrecurrentUnet_07 import HydraBNUNet07
+from HydraBNrecurrentUnet_06_LSTM2 import HydraBNUNet06_LSTM2
+from HydraBNrecurrentUnet_06_LSTM4 import HydraBNUNet06_LSTM4
+
 # loss functions
 from focal_class import FocalLossClass
 from balanced_focal_class import BalancedFocalLossClass
