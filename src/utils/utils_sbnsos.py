@@ -522,7 +522,7 @@ def get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, ou
     return (log_dict)
 
 
-def execute_freezing_h_option(config, model, t0, h_tt):
+def execute_freeze_h_option(config, model, t0, h_tt):
 
     """
     This function is used to execute the freeze option set in config.
