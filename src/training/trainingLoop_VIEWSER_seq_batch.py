@@ -173,7 +173,7 @@ def make(config):
 
     # ------------------------------------------------------------------------------------------------------COULD BE A FUNCTION IN utils_sbnsos.py
 
-    criterion = choose_loss(config) # this is a touple of the reg and the class criteria
+    criterion = choose_loss(config, device) # this is a touple of the reg and the class criteria
     #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
