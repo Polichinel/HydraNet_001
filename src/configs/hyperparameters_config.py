@@ -34,6 +34,6 @@ def get_hp_config():
     'warmup_steps' : 100,
     'first_feature_idx' : 5,
     'norm_target' : False,
-    'freeze_h' : "hl", # "all", "random", "hl", "hs", "none"
+    'freeze_h' : "none", # "all", "random", "hl", "hs", "none" - you should use "hl" for now!
     }
     return hyperparameters
