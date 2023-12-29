@@ -33,7 +33,7 @@ from mtloss import MultiTaskLoss
 
 # learning rate schedulers
 from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, LinearLR, OneCycleLR, CyclicLR
-from warmup_decay_lr import WarmupDecayLearningRateScheduler
+from warmup_decay_lr_scheduler import WarmupDecayLearningRateScheduler
 
 def choose_model(config, device):
 
@@ -305,9 +305,6 @@ def standard(x, noise = False):
         x_unit_norm += np.random.normal(loc = 0, scale = x_standard.std(), size = len(x_standard))
 
     return(x_standard)
-
-
-
 
 
 def my_decay(sample, samples, min_events, max_events, slope_ratio, roof_ratio):
