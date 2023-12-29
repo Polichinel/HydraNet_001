@@ -8,13 +8,13 @@ import functools
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, LinearLR, OneCycleLR, CyclicLR
+#from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, LinearLR, OneCycleLR, CyclicLR
 #from torch.optim.lr_scheduler import ChainedScheduler
 
 #from torchvision import transforms
 #import geomloss # New loss. also needs: pip install pykeops
 
-from sklearn.preprocessing import MinMaxScaler
+#from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import mean_squared_error
@@ -27,38 +27,38 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
 
-#from trainingLoopUtils import *
-# from testLoopUtils import *
-from recurrentUnet import UNet
-from gatedrecurrentUnet_v01 import GUNet_v01
-from gatedrecurrentUnet_v02 import GUNet_v02
-from gatedrecurrentUnet_v03 import GUNet_v03
-from HydraBNrecurrentUnet_01 import HydraBNUNet01
-from HydraBNrecurrentUnet_02 import HydraBNUNet02
-from HydraBNrecurrentUnet_03 import HydraBNUNet03
-from HydraBNrecurrentUnet_04 import HydraBNUNet04
-from HydraBNrecurrentUnet_05 import HydraBNUNet05
-from HydraBNrecurrentUnet_06 import HydraBNUNet06
-from HydraBNrecurrentUnet_06_LSTM import HydraBNUNet06_LSTM
-from HydraBNrecurrentUnet_07 import HydraBNUNet07
-from HydraBNrecurrentUnet_06_LSTM2 import HydraBNUNet06_LSTM2
-from HydraBNrecurrentUnet_06_LSTM4 import HydraBNUNet06_LSTM4
-
-
-from BNrecurrentUnet import BNUNet
-
-# loss functions
-from focal_class import FocalLossClass
-from balanced_focal_class import BalancedFocalLossClass
-from shrinkage import ShrinkageLoss
-from stable_balanced_focal_class import stableBalancedFocalLossClass
-from shringkage_june import ShrinkageLoss_new
-from focal_june import FocalLoss_new
-from mtloss import MultiTaskLoss
-
-# custom learning rate schedulers
-from warmup_decay_lr_scheduler import WarmupDecayLearningRateScheduler
-
+##from trainingLoopUtils import *
+## from testLoopUtils import *
+#from recurrentUnet import UNet
+#from gatedrecurrentUnet_v01 import GUNet_v01
+#from gatedrecurrentUnet_v02 import GUNet_v02
+#from gatedrecurrentUnet_v03 import GUNet_v03
+#from HydraBNrecurrentUnet_01 import HydraBNUNet01
+#from HydraBNrecurrentUnet_02 import HydraBNUNet02
+#from HydraBNrecurrentUnet_03 import HydraBNUNet03
+#from HydraBNrecurrentUnet_04 import HydraBNUNet04
+#from HydraBNrecurrentUnet_05 import HydraBNUNet05
+#from HydraBNrecurrentUnet_06 import HydraBNUNet06
+#from HydraBNrecurrentUnet_06_LSTM import HydraBNUNet06_LSTM
+#from HydraBNrecurrentUnet_07 import HydraBNUNet07
+#from HydraBNrecurrentUnet_06_LSTM2 import HydraBNUNet06_LSTM2
+#from HydraBNrecurrentUnet_06_LSTM4 import HydraBNUNet06_LSTM4
+#
+#
+#from BNrecurrentUnet import BNUNet
+#
+## loss functions
+#from focal_class import FocalLossClass
+#from balanced_focal_class import BalancedFocalLossClass
+#from shrinkage import ShrinkageLoss
+#from stable_balanced_focal_class import stableBalancedFocalLossClass
+#from shringkage_june import ShrinkageLoss_new
+#from focal_june import FocalLoss_new
+#from mtloss import MultiTaskLoss
+#
+## custom learning rate schedulers
+#from warmup_decay_lr_scheduler import WarmupDecayLearningRateScheduler
+#
 
 #from rmsle import RMSLELoss
 
