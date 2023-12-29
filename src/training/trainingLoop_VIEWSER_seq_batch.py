@@ -24,7 +24,6 @@ import wandb
 
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
-# sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
 
@@ -47,128 +46,124 @@ from HydraBNrecurrentUnet_06_LSTM4 import HydraBNUNet06_LSTM4
 
 
 from BNrecurrentUnet import BNUNet
-#from focal import FocalLoss
+
+# loss functions
 from focal_class import FocalLossClass
-#from focal_reg import FocalLossReg
 from balanced_focal_class import BalancedFocalLossClass
 from shrinkage import ShrinkageLoss
 from stable_balanced_focal_class import stableBalancedFocalLossClass
-
 from shringkage_june import ShrinkageLoss_new
 from focal_june import FocalLoss_new
+from mtloss import MultiTaskLoss
+
+# custom learning rate schedulers
 from warmup_decay_lr_scheduler import WarmupDecayLearningRateScheduler
 
 
 #from rmsle import RMSLELoss
 
 #from utils import *
-from mtloss import *
 from utils_sbnsos import *
 from swep_config import *
 from hyperparameters_config import *
 
-def choose_loss(config):
-
-    if config.loss_reg == 'a':
-        criterion_reg = nn.MSELoss().to(device)
-
-    elif config.loss_reg == 'b':  # IN USE!!!!!!!!!!!!!!!
-        criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
-
-    elif config.loss_reg == 'c': # should change to this and I might need violence specific a and c....
-        criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c, size_average = True).to(device)
-
-    else:
-        print('Wrong reg loss...')
-        sys.exit()
-
-    if config.loss_class == 'a':
-        criterion_class = nn.BCELoss().to(device)
-
-    # elif config.loss_class == 'b':
-    #     criterion_class =  FocalLossClass(gamma=config.loss_class_gamma, alpha = 1).to(device)
-
-    elif config.loss_class == 'b':
-        criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
-
-    elif config.loss_class == 'c': # works.. but not right and for probs
-        criterion_class =  stableBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
-
-    elif config.loss_class == 'd': # works and w/ logits. But I might need violence specific gamma and alpha....
-        criterion_class =  FocalLoss_new(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device) # THIS IS IN USE
-
-    else:
-        print('Wrong class loss...')
-        sys.exit()
 
 
-    # if config.loss == 'a': #3 not currently implemented
-    #     PATH = 'unet_sinkhorn.pth'
-    #     criterion_reg = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
-    #     criterion_class = geomloss.SamplesLoss(loss='sinkhorn', scaling = 0.5, reach = 64, backend = 'multiscale', p = 2, blur= 0.05, verbose=False).to(device)
+# SHOULD BE XXXX SCRIPT ------------------------------------------------------------------
 
-
-    print(f'Regression loss: {criterion_reg}\n classification loss: {criterion_class}')
-
-    is_regression = torch.Tensor([True, True, True, False, False, False])   # for vea you can just have 1 extre False (classifcation) in the end for the kl... Or should it really be seen as a reg?
-    multitaskloss_instance = MultiTaskLoss(is_regression, reduction = 'sum') # also try mean
-
-    return(criterion_reg, criterion_class, multitaskloss_instance)
+#def choose_loss(config):
+#
+#    if config.loss_reg == 'a':
+#        criterion_reg = nn.MSELoss().to(device)
+#
+#    elif config.loss_reg == 'b':  # IN USE!!!!!!!!!!!!!!!
+#        criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
+#
+#    elif config.loss_reg == 'c': # should change to this and I might need violence specific a and c....
+#        criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c, size_average = True).to(device)
+#
+#    else:
+#        print('Wrong reg loss...')
+#        sys.exit()
+#
+#    if config.loss_class == 'a':
+#        criterion_class = nn.BCELoss().to(device)
+#
+#    elif config.loss_class == 'b':
+#        criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
+#
+#    elif config.loss_class == 'c': # works.. but not right and for probs
+#        criterion_class =  stableBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
+#
+#    elif config.loss_class == 'd': # works and w/ logits. But I might need violence specific gamma and alpha....
+#        criterion_class =  FocalLoss_new(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device) # THIS IS IN USE
+#
+#    else:
+#        print('Wrong class loss...')
+#        sys.exit()
+#
+#
+#    print(f'Regression loss: {criterion_reg}\n classification loss: {criterion_class}')
+#
+#    is_regression = torch.Tensor([True, True, True, False, False, False])   # for vea you can just have 1 extre False (classifcation) in the end for the kl... Or should it really be seen as a reg?
+#    multitaskloss_instance = MultiTaskLoss(is_regression, reduction = 'sum') # also try mean
+#
+#    return(criterion_reg, criterion_class, multitaskloss_instance)
 
 
 def make(config):
 
-    # unet = UNet(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
 # ------------------------------------------------------------------------------------------------------ COULD BE A FUNCTION IN utils_sbnsos.py
-    if config.model == 'UNet':
-        unet = UNet(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'GUNet_v01':
-        unet = GUNet_v01(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'GUNet_v02':
-        unet = GUNet_v02(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'GUNet_v03':
-        unet = GUNet_v03(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet01':
-        unet = HydraBNUNet01(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet02':
-        unet = HydraBNUNet02(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet03':
-        unet = HydraBNUNet03(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet04':
-        unet = HydraBNUNet04(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet05':
-        unet = HydraBNUNet05(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet06':
-        unet = HydraBNUNet06(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet06_LSTM':
-        unet = HydraBNUNet06_LSTM(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet06_LSTM2':
-        unet = HydraBNUNet06_LSTM2(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet06_LSTM4':
-        unet = HydraBNUNet06_LSTM4(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'HydraBNUNet07':
-        unet = HydraBNUNet07(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    elif config.model == 'BNUNet':
-        unet = BNUNet(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
-
-    else:
-        print('no model...')
+#    if config.model == 'UNet':
+#        unet = UNet(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'GUNet_v01':
+#        unet = GUNet_v01(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'GUNet_v02':
+#        unet = GUNet_v02(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'GUNet_v03':
+#        unet = GUNet_v03(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet01':
+#        unet = HydraBNUNet01(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet02':
+#        unet = HydraBNUNet02(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet03':
+#        unet = HydraBNUNet03(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet04':
+#        unet = HydraBNUNet04(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet05':
+#        unet = HydraBNUNet05(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet06':
+#        unet = HydraBNUNet06(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet06_LSTM':
+#        unet = HydraBNUNet06_LSTM(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet06_LSTM2':
+#        unet = HydraBNUNet06_LSTM2(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet06_LSTM4':
+#        unet = HydraBNUNet06_LSTM4(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'HydraBNUNet07':
+#        unet = HydraBNUNet07(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    elif config.model == 'BNUNet':
+#        unet = BNUNet(config.input_channels, config.total_hidden_channels, config.output_channels, config.dropout_rate).to(device)
+#
+#    else:
+#        print('no model...')
     # ------------------------------------------------------------------------------------------------------DEBUG
+
+    unet = choose_model(config, device)
 
     # Create a partial function with the initialization function and the config parameter
     init_fn = functools.partial(init_weights, config=config)
@@ -178,73 +173,79 @@ def make(config):
 
     # ------------------------------------------------------------------------------------------------------COULD BE A FUNCTION IN utils_sbnsos.py
 
-
     criterion = choose_loss(config) # this is a touple of the reg and the class criteria
-    optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
+    #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999)) # no weight decay when using scheduler
     #optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
 
-    if config.scheduler == 'plateau':
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = ReduceLROnPlateau(optimizer)
-
-    elif config.scheduler == 'step': # seems to be an DEPRECATION issue
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = StepLR(optimizer, step_size= 60)
-
-    elif config.scheduler == 'linear':
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = LinearLR(optimizer)
-
-    elif config.scheduler == 'CosineAnnealingLR1':
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples, eta_min = 0.00005) # you should try with config.samples * 0.2, 0,33 and 0.5
-
-    elif config.scheduler == 'CosineAnnealingLR02':
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.2, eta_min = 0.00005)
-
-    elif config.scheduler == 'CosineAnnealingLR033':
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.33, eta_min = 0.00005)
-
-    elif config.scheduler == 'CosineAnnealingLR05':
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.5, eta_min = 0.00005)
-
-    elif config.scheduler == 'CosineAnnealingLR004':
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.04, eta_min = 0.00005)
 
 
-    elif config.scheduler == 'OneCycleLR':
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = OneCycleLR(optimizer,
-                       total_steps=32, 
-                       max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
-                       anneal_strategy = 'cos') # Specifies the annealing strategy
+#    if config.scheduler == 'plateau':
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = ReduceLROnPlateau(optimizer)
+#
+#    elif config.scheduler == 'step': # seems to be an DEPRECATION issue
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = StepLR(optimizer, step_size= 60)
+#
+#    elif config.scheduler == 'linear':
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = LinearLR(optimizer)
+#
+#    elif config.scheduler == 'CosineAnnealingLR1':
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples, eta_min = 0.00005) # you should try with config.samples * 0.2, 0,33 and 0.5
+#
+#    elif config.scheduler == 'CosineAnnealingLR02':
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.2, eta_min = 0.00005)
+#
+#    elif config.scheduler == 'CosineAnnealingLR033':
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.33, eta_min = 0.00005)
+#
+#    elif config.scheduler == 'CosineAnnealingLR05':
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.5, eta_min = 0.00005)
+#
+#    elif config.scheduler == 'CosineAnnealingLR004':
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = config.samples * 0.04, eta_min = 0.00005)
+#
+#
+#    elif config.scheduler == 'OneCycleLR':
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = OneCycleLR(optimizer,
+#                       total_steps=32, 
+#                       max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
+#                       anneal_strategy = 'cos') # Specifies the annealing strategy
+#
+#    elif config.scheduler == 'CyclicLR':
+#
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        scheduler = CyclicLR(optimizer,
+#                       step_size_up=200,
+#                       base_lr = config.learning_rate * 0.1,
+#                       max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
+#                       mode = 'triangular2') # Specifies the annealing strategy
+#        
+#    elif config.scheduler == 'WarmupDecay':
+#        
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
+#        d = config.window_dim * config.window_dim * config.input_channels # this is the dimension of the input window
+#        scheduler = WarmupDecayLearningRateScheduler(optimizer, d = d, warmup_steps = config.warmup_steps)
+#
+#
+#    else:
+#        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
+#        scheduler = [] # could set to None...
 
-    elif config.scheduler == 'CyclicLR':
-
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        scheduler = CyclicLR(optimizer,
-                       step_size_up=200,
-                       base_lr = config.learning_rate * 0.1,
-                       max_lr = config.learning_rate, # Upper learning rate boundaries in the cycle for each parameter group
-                       mode = 'triangular2') # Specifies the annealing strategy
-        
-    elif config.scheduler == 'WarmupDecay':
-        
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, betas = (0.9, 0.999))
-        d = config.window_dim * config.window_dim * config.input_channels # this is the dimension of the input window
-        scheduler = WarmupDecayLearningRateScheduler(optimizer, d = d, warmup_steps = config.warmup_steps)
-
-
-    else:
-        optimizer = torch.optim.AdamW(unet.parameters(), lr=config.learning_rate, weight_decay = config.weight_decay, betas = (0.9, 0.999))
-        scheduler = [] # could set to None...
+    optimizer, scheduler = choose_sheduler(config, unet)
 
     return(unet, criterion, optimizer, scheduler) #, dataloaders, dataset_sizes)
 
+
+
+# SHOULD BE TRAIN SCRIPT ------------------------------------------------------------------
 
 
 def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitaskloss_instance, views_vol, sample, config, device): # views vol and sample
@@ -260,7 +261,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     multitaskloss_instance.train() # meybe another place...
 
 
-    # Batch loops:# -----------------------------------------------------------------------------------------------------------
+    # Batch loops:
     for batch in range(config.batch_size):
 
         # Getting the train_tensor
@@ -307,8 +308,6 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
             avg_loss_list.append(loss.detach().cpu().numpy().item())
 
 
-    # ---------------------------------------------------------------------------------
-
     # log each sequence/timeline/batch
     train_log(avg_loss_list, avg_loss_reg_list, avg_loss_class_list) # FIX!!!
 
@@ -329,8 +328,6 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
 
     # Adjust learning rate based on the loss
     scheduler.step()
-
-    # -----------------------------------------------------------------------------------------------------------
 
 
 def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
@@ -353,6 +350,10 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
 
 
 
+
+# SHOULD BE TEST SCRIPT ------------------------------------------------------------------
+
+
 def test(model, test_tensor, time_steps, config, device): # should be called eval/validation
 
     """
@@ -364,9 +365,6 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
 
     model.eval() # remove to allow dropout to do its thing as a poor mans ensamble. but you need a high dropout..
     model.apply(apply_dropout)
-
-    # Set the STN to evaluation mode (disable it) for inference
-    #model.stn.is_training = False #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NEWNEWNENWNEWNENW
 
     # wait until you know if this work as usually
     pred_np_list = []
@@ -390,49 +388,50 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
             print(f'\t\t\t\t\t\t\t Out of sample. month: {i+1}', end= '\r')
             t0 = t1_pred.detach()
 
-
 # NEW-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-            if config.freeze_h == "hl": # freeze the long term memory
-                
-                split = int(h_tt.shape[1]/2) # split h_tt into hs_tt and hl_tt and save hl_tt as the forzen cell state/long term memory. Call it hl_frozen. Half of the second dimension which is channels.
-                _, hl_frozen = torch.split(h_tt, split, dim=1)
-                t1_pred, t1_pred_class, h_tt = model(t0, h_tt) 
-                hs, _ = torch.split(h_tt, split, dim=1) # Again split the h_tt into hs_tt and hl_tt. But discard the hl_tt
-                h_tt = torch.cat((hs, hl_frozen), dim=1) # Concatenate the frozen cell state/long term memory (hl_frozen) with the new hidden state/short term memory. this is the new h_tt
+#            if config.freeze_h == "hl": # freeze the long term memory
+#                
+#                split = int(h_tt.shape[1]/2) # split h_tt into hs_tt and hl_tt and save hl_tt as the forzen cell state/long term memory. Call it hl_frozen. Half of the second dimension which is channels.
+#                _, hl_frozen = torch.split(h_tt, split, dim=1)
+#                t1_pred, t1_pred_class, h_tt = model(t0, h_tt) 
+#                hs, _ = torch.split(h_tt, split, dim=1) # Again split the h_tt into hs_tt and hl_tt. But discard the hl_tt
+#                h_tt = torch.cat((hs, hl_frozen), dim=1) # Concatenate the frozen cell state/long term memory (hl_frozen) with the new hidden state/short term memory. this is the new h_tt
+#
+#            elif config.freeze_h == "hs": # freeze the short term memory
+#
+#                split = int(h_tt.shape[1]/2) 
+#                hs_frozen, _ = torch.split(h_tt, split, dim=1)
+#                t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
+#                _, hl = torch.split(h_tt, split, dim=1)
+#                h_tt = torch.cat((hs_frozen, hl), dim=1) 
+#
+#            elif config.freeze_h == "all": # freeze both h_l and h_s
+#
+#                t1_pred, t1_pred_class, _ = model(t0, h_tt) 
+#
+#
+#            elif config.freeze_h == "none": # dont freeze
+#                t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # dont freeze anything.
+#
+#
+#            elif config.freeze_h == "random": # random pick between what tho freeze of hs1, hs2, hl1, and hl2
+#
+#                t1_pred, t1_pred_class, h_tt_new = model(t0, h_tt)
+#
+#                split_four_ways = int(h_tt.shape[1] / 8) # spltting the tensor four ways along dim 1 to get hs1, hs2, hl1, and hl2
+#
+#                hs_1_frozen, hs_2_frozen, hs_3_frozen, hs_4_frozen, hl_1_frozen, hl_2_frozen, hl_3_frozen, hl_4_frozen = torch.split(h_tt, split_four_ways, dim=1) # split the h_tt from the last step
+#                hs_1_new, hs_2_new, hs_3_new, hs_4_new, hl_1_new, hl_2_new, hl_3_new, hl_4_new = torch.split(h_tt_new, split_four_ways, dim=1) # split the h_tt from the current step
+#
+#                pairs = [(hs_1_frozen, hs_1_new), (hs_2_frozen, hs_2_new), (hs_3_frozen, hs_3_new), (hs_4_frozen, hs_4_new), (hl_1_frozen, hl_1_new), (hl_2_frozen, hl_2_new), (hl_3_frozen, hl_3_new), (hl_4_frozen, hl_4_new)] # make pairs of the frozen and new hidden states
+#                h_tt = torch.cat([pair[0] if torch.rand(1) < 0.5 else pair[1] for pair in pairs], dim=1) # concatenate the frozen and new hidden states. Randomly pick between the frozen and new hidden states for each pair.
+#
+#            else:
+#                print('Wrong freez option...')
+#                sys.exit()
 
-            elif config.freeze_h == "hs": # freeze the short term memory
-
-                split = int(h_tt.shape[1]/2) 
-                hs_frozen, _ = torch.split(h_tt, split, dim=1)
-                t1_pred, t1_pred_class, h_tt = model(t0, h_tt)
-                _, hl = torch.split(h_tt, split, dim=1)
-                h_tt = torch.cat((hs_frozen, hl), dim=1) 
-
-            elif config.freeze_h == "all": # freeze both h_l and h_s
-
-                t1_pred, t1_pred_class, _ = model(t0, h_tt) 
-
-
-            elif config.freeze_h == "none": # dont freeze
-                t1_pred, t1_pred_class, h_tt = model(t0, h_tt) # dont freeze anything.
-
-
-            elif config.freeze_h == "random": # random pick between what tho freeze of hs1, hs2, hl1, and hl2
-
-                t1_pred, t1_pred_class, h_tt_new = model(t0, h_tt)
-
-                split_four_ways = int(h_tt.shape[1] / 8) # spltting the tensor four ways along dim 1 to get hs1, hs2, hl1, and hl2
-
-                hs_1_frozen, hs_2_frozen, hs_3_frozen, hs_4_frozen, hl_1_frozen, hl_2_frozen, hl_3_frozen, hl_4_frozen = torch.split(h_tt, split_four_ways, dim=1) # split the h_tt from the last step
-                hs_1_new, hs_2_new, hs_3_new, hs_4_new, hl_1_new, hl_2_new, hl_3_new, hl_4_new = torch.split(h_tt_new, split_four_ways, dim=1) # split the h_tt from the current step
-
-                pairs = [(hs_1_frozen, hs_1_new), (hs_2_frozen, hs_2_new), (hs_3_frozen, hs_3_new), (hs_4_frozen, hs_4_new), (hl_1_frozen, hl_1_new), (hl_2_frozen, hl_2_new), (hl_3_frozen, hl_3_new), (hl_4_frozen, hl_4_new)] # make pairs of the frozen and new hidden states
-                h_tt = torch.cat([pair[0] if torch.rand(1) < 0.5 else pair[1] for pair in pairs], dim=1) # concatenate the frozen and new hidden states. Randomly pick between the frozen and new hidden states for each pair.
-
-            else:
-                print('Wrong freez option...')
-                sys.exit()
+            t1_pred, t1_pred_class, h_tt = execute_freeze_h_option(config, model, t0, h_tt)
 
 # NEW -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -573,6 +572,10 @@ def get_posterior(model, views_vol, config, device):
     wandb.log({f"{config.time_steps}month_average_precision_score": np.mean(ap_list)})
     wandb.log({f"{config.time_steps}month_roc_auc_score": np.mean(auc_list)})
     wandb.log({f"{config.time_steps}month_brier_score_loss":np.mean(brier_list)})
+
+
+
+# SHOULD BE MAIN SCRIPT ------------------------------------------------------------------
 
 
 
