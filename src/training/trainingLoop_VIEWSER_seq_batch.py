@@ -321,7 +321,10 @@ def get_posterior(model, views_vol, config, device):
 
 
 
-def model_pipeline(config = None, project = None, device = None):
+def model_pipeline(config = None, project = None):
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(device)
 
     # tell wandb to get started
     with wandb.init(project=project, entity="nornir", config=config): # project and config ignored when runnig a sweep
@@ -333,7 +336,6 @@ def model_pipeline(config = None, project = None, device = None):
         config = wandb.config
 
         views_vol = get_data(config)
-
 
         # make the model, data, and optimization problem
         unet, criterion, optimizer, scheduler = make(config, device)
@@ -379,8 +381,8 @@ if __name__ == "__main__":
 
         sweep_id = wandb.sweep(sweep_config, project=project) # and then you put in the right project name
 
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        print(device)
+        #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        #print(device)
 
         start_t = time.time()
         wandb.agent(sweep_id, model_pipeline)
@@ -398,12 +400,12 @@ if __name__ == "__main__":
 
         print(f"using: {hyperparameters['model']}")
 
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        print(device)
+        #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        #print(device)
 
         start_t = time.time()
 
-        unet = model_pipeline(config = hyperparameters, project = project, device = device)
+        unet = model_pipeline(config = hyperparameters, project = project)
 
     end_t = time.time()
     minutes = (end_t - start_t)/60
