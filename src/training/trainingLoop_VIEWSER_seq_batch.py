@@ -130,7 +130,7 @@ def train(model, optimizer, scheduler, criterion_reg, criterion_class, multitask
     scheduler.step()
 
 
-def training_loop(config, model, criterion, optimizer, scheduler, views_vol):
+def training_loop(config, model, criterion, optimizer, scheduler, views_vol, device):
 
     # # add spatail transformer
 
@@ -340,7 +340,7 @@ def model_pipeline(config = None, project = None):
         # make the model, data, and optimization problem
         unet, criterion, optimizer, scheduler = make(config, device)
 
-        training_loop(config, unet, criterion, optimizer, scheduler, views_vol)
+        training_loop(config, unet, criterion, optimizer, scheduler, views_vol, device)
         print('Done training')
 
         get_posterior(unet, views_vol, config, device) # actually since you give config now you do not need: time_steps, run_type, is_sweep,
