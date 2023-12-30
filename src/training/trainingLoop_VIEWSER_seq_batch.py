@@ -244,20 +244,6 @@ def get_posterior(model, views_vol, config, device):
 
     posterior_list, posterior_list_class, out_of_sample_vol, test_tensor = sample_posterior(model, views_vol, config, device)
 
-    # Dump 1
-#    if config.sweep == False:
-#
-#        dump_location = '/home/projects/ku_00017/data/generated/conflictNet/'
-#        posterior_dict = {'posterior_list' : posterior_list, 'posterior_list_class': posterior_list_class, 'out_of_sample_vol' : out_of_sample_vol}
-#        with open(f'{dump_location}posterior_dict_{config.time_steps}_{config.run_type}.pkl', 'wb') as file:
-#            pickle.dump(posterior_dict, file)
-
-#        print("Posterior pickle dumped!")
-
-#    else:
-#        print('Running sweep. no posterior pickle dumped')
-        
-
     # YOU ARE MISSING SOMETHING ABOUT FEATURES HERE WHICH IS WHY YOU REPORTED AP ON WandB IS BIASED DOWNWARDS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!RYRYRYRYERYERYR
     # Get mean and std
     mean_array = np.array(posterior_list).mean(axis = 0) # get mean for each month!
