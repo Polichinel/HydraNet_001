@@ -22,7 +22,7 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
 #from utils import *
-from utils_sbnsos import *
+from utils import *
 from swep_config import *
 from hyperparameters_config import *
 
