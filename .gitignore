@@ -9,6 +9,7 @@ hp_config
 *.pkl
 *.mp4
 *.png
+*.svg
 
 # Python-related
 __pycache__/
