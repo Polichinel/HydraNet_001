@@ -26,13 +26,9 @@ import wandb
 from HydraBNrecurrentUnet_06_LSTM4 import HydraBNUNet06_LSTM4
 
 # loss functions
-from focal_class import FocalLossClass
-from balanced_focal_class import BalancedFocalLossClass
-from shrinkage import ShrinkageLoss
-from stable_balanced_focal_class import stableBalancedFocalLossClass
-from shringkage_june import ShrinkageLoss_new
-from focal_june import FocalLoss_new
-from mtloss import MultiTaskLoss
+from shringkage_loss import ShrinkageLoss 
+from focal_loss import FocalLoss 
+from mtloss import MultiTaskLoss 
 
 # learning rate schedulers
 from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, LinearLR, OneCycleLR, CyclicLR
@@ -56,11 +52,8 @@ def choose_loss(config, device):
     if config.loss_reg == 'a':
         criterion_reg = nn.MSELoss().to(device)
 
-    elif config.loss_reg == 'b':  # IN USE!!!!!!!!!!!!!!!
-        criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c).to(device)
-
-    elif config.loss_reg == 'c': # should change to this and I might need violence specific a and c....
-        criterion_reg = ShrinkageLoss_new(a=config.loss_reg_a, c=config.loss_reg_c, size_average = True).to(device)
+    elif config.loss_reg == 'b': 
+        criterion_reg = ShrinkageLoss(a=config.loss_reg_a, c=config.loss_reg_c, size_average = True).to(device)
 
     else:
         print('Wrong reg loss...')
@@ -69,14 +62,8 @@ def choose_loss(config, device):
     if config.loss_class == 'a':
         criterion_class = nn.BCELoss().to(device)
 
-    elif config.loss_class == 'b':
-        criterion_class =  BalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
-
-    elif config.loss_class == 'c': # works.. but not right and for probs
-        criterion_class =  stableBalancedFocalLossClass(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device)
-
-    elif config.loss_class == 'd': # works and w/ logits. But I might need violence specific gamma and alpha....
-        criterion_class =  FocalLoss_new(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device) # THIS IS IN USE
+    elif config.loss_class == 'b': # 
+        criterion_class =  FocalLoss(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device) # THIS IS IN USE
 
     else:
         print('Wrong class loss...')

@@ -18,10 +18,10 @@ def get_hp_config():
     'input_channels' : 3,
     'output_channels' : 1,
     'targets' : 6, # 3 class and 3 reg for now. And for now this parameter is only used in utils, and changing it does not change the model - so don't.
-    'loss_class': 'd',  # band c are is still unstable... c is old, d = FocalLoss_new
+    'loss_class': 'b',  # band c are is still unstable... c is old, d = FocalLoss_new
     'loss_class_gamma' : 1.5, # 0 and 2 works. But 2 gives a lot of noise. "If you want to prioritize hard cases in your training and make your model focus more on misclassified or uncertain examples, you should consider setting gamma to a value greater than 1""
     'loss_class_alpha' : 0.75, #An alpha value of 0.75 means that you are assigning more weight to the minority class during training.
-    'loss_reg': 'c',
+    'loss_reg': 'b',
     'loss_reg_a' : 258, 
     'loss_reg_c' :  0.001, # 0.05 works...
     'test_samples': 128,

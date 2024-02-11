@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class ShrinkageLoss_new(nn.Module):
+class ShrinkageLoss(nn.Module):
     def __init__(self, a=10, c=0.2, size_average=True):
-        super(ShrinkageLoss_new, self).__init__()
+        super(ShrinkageLoss, self).__init__()
         self.a = a  # Shrinkage factor
         self.c = c  # Threshold
         self.size_average = size_average
