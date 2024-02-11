@@ -34,7 +34,6 @@ def get_swep_config():
         'loss_reg_a' : { 'value' : 256},
         'loss_reg_c' : { 'value' : 0.001},
         'test_samples': { 'value' : 128},
-        #'start_months' :{'values' : [1,2,4,6,8,12]},
         'np_seed' : {'values' : [4,8,16]},
         'torch_seed' : {'values' : [4,8,16]},
         'window_dim' : {'value' : 32},
@@ -44,7 +43,6 @@ def get_swep_config():
         'first_feature_idx' : {'value' : 5},
         'norm_target' : {'value' : False},
         'freeze_h' : {'value' : "hl"},
-        #'loss_distance_scale' : {'values' : [1, 0.5, 0.1]}  # right now this is just as a note to self. Can't change it here     
         }
 
     sweep_config['parameters'] = parameters_dict
