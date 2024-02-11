@@ -1,3 +1,2 @@
-ffmpeg -framerate 1 -pattern_type glob -i "*.JPG" -s 1920x1080 my-timelapse.mp4
-ffmpeg -framerate 1 -pattern_type glob -i "*.png" -s 1920x1080 my-timelapse.mp4
-ffmpeg -framerate 1 -pattern_type glob -i "*.tiff" -s 1920x1080 my-timelapse.mp4
+ffmpeg -framerate 2 -pattern_type glob -i "*.tiff" -s 2560x1440 -c:v mpeg4 -b:v 10M -pix_fmt yuv420p my-timelapse.mp4
+
