@@ -23,8 +23,8 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 
 #from utils import *
 from utils import *
-from swep_config import *
-from hyperparameters_config import *
+from config_sweep import *
+from config_hyperparameters import *
 
 
 # SHOULD BE TRAIN SCRIPT ------------------------------------------------------------------
