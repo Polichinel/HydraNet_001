@@ -21,10 +21,9 @@ sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/sr
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
 sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
-#from utils import *
-from utils import *
-from config_sweep import *
-from config_hyperparameters import *
+from utils import choose_model, choose_loss, choose_sheduler, get_train_tensors, get_test_tensor, apply_dropout, execute_freeze_h_option, get_log_dict, train_log, init_weights
+from config_sweep import get_swep_config
+from config_hyperparameters import get_hp_config
 
 
 # SHOULD BE TRAIN SCRIPT ------------------------------------------------------------------
