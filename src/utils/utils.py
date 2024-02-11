@@ -62,7 +62,7 @@ def choose_loss(config, device):
     if config.loss_class == 'a':
         criterion_class = nn.BCELoss().to(device)
 
-    elif config.loss_class == 'b': # 
+    elif config.loss_class == 'b': 
         criterion_class =  FocalLoss(alpha = config.loss_class_alpha, gamma=config.loss_class_gamma).to(device) # THIS IS IN USE
 
     else:
