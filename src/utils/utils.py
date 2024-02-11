@@ -349,8 +349,8 @@ def get_window_index(views_vol, config, sample):
 
     # BY NOW THIS IS PRETTY HACKY... SHOULD BE MADE MORE ELEGANT AT SOME POINT..
 
-    ln_best_sb_idx = config.first_feature_idx # 5 = ln_best_sb !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!SUPER HACKY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    last_feature_idx = ln_best_sb_idx + config.input_channels - 1 # 5 + 3 - 1 = 7 which is os
+    ln_best_sb_idx = config.first_feature_idx # 5 = ln_best_sb 
+    last_feature_idx = ln_best_sb_idx + config.input_channels # removed -1 here. Now this is the last feature index.
     min_events = config.min_events
     samples = config.samples
     slope_ratio = config.slope_ratio
@@ -385,7 +385,6 @@ def get_window_index(views_vol, config, sample):
     return(window_index)
 
 
-# ----------------------------------------------------------------------------------------------------
 def get_window_coords(window_index, config):
     """Return the coordinates of the window around the sampled index. 
     This implementaions ensures that the window does never go out of bounds.
@@ -410,7 +409,6 @@ def get_window_coords(window_index, config):
 
     return(window_coords)
 
-# ----------------------------------------------------------------------------------------------------
 
 
 def apply_dropout(m):
@@ -447,12 +445,6 @@ def get_train_tensors(views_vol, sample, config, device):
     ln_best_sb_idx = config.first_feature_idx # 5 = ln_best_sb
     last_feature_idx = ln_best_sb_idx + config.input_channels
     train_tensor = torch.tensor(input_window).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :]
-
-    # if config.un_log:
-    #     train_tensor = norm_channels(train_tensor, config, un_log = True, a = -1, b = 1) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    # else:
-    #     train_tensor = norm_channels(train_tensor, config, un_log = False, a = -1, b = 1)
 
     # Reshape
     N = train_tensor.shape[0] # batch size. Always one - remember your do batch a different way here
