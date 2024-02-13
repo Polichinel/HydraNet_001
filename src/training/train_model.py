@@ -364,7 +364,7 @@ if __name__ == "__main__":
     model = model_pipeline(config = hyperparameters, project = project)
 
     # save the model - should prolly use the state_dict instead of the model object... 
-    model_save_path = f"src/artifacts/model_{model_type}.pth"
+    model_save_path = f"/home/projects/ku_00017/people/simpol/scripts/conflictNet/artifacts/model_{model_type}.pth"
     model = torch.save(model, model_save_path)
     print("Model saved as: ", model_save_path)
 
