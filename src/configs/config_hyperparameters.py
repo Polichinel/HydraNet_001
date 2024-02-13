@@ -34,5 +34,6 @@ def get_hp_config():
     'first_feature_idx' : 5,
     'norm_target' : False,
     'freeze_h' : "hl", # "all", "random", "hl", "hs", "none" - you should use "hl" for now!
+    'time_steps' : 32,
     }
     return hyperparameters
