@@ -202,14 +202,21 @@ def get_data(config):
     # Data
     location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
 
-    run_type = config.run_type
+    model_type = config.model_type
 
     # The viewser data
-    if run_type == 'calib':
-        file_name = "/viewser_monthly_vol_calib_sbnsos.pkl"
+    if config.model_type == 'calibration':
+        file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
 
-    elif run_type == 'test':
+    elif config.model_type == 'testing':
         file_name = "/viewser_monthly_vol_test_sbnsos.pkl"
+
+    elif config.model_type == "forecasting":
+         file_name = "/viewser_monthly_vol_forecast_sbnsos.pkl"
+
+    else:
+        print('Wrong model type...')
+        sys.exit()
 
     print('loading data....')
     pkl_file = open(location + file_name, 'rb')

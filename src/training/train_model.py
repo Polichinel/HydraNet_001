@@ -349,14 +349,14 @@ if __name__ == "__main__":
     wandb.login()
 
     model_type_dict = {'a' : 'calibration', 'b' : 'testing', 'c' : 'forecasting'}
-    model_type = model_type_dict[input("a) Calibration\nb) Testing\nc) Forecast")]
+    model_type = model_type_dict[input("a) Calibration\nb) Testing\nc) Forecasting\n")]
     print(f'Run type: {model_type}\n')
 
     project = f"imp_new_structure_{model_type}" # temp.
 
     hyperparameters = get_hp_config()
 
-    hyperparameters['run_type'] = model_type
+    hyperparameters['model_type'] = model_type
     hyperparameters['sweep'] = False
 
     start_t = time.time()
@@ -366,7 +366,7 @@ if __name__ == "__main__":
     # save the model - should prolly use the state_dict instead of the model object... 
     model_save_path = f"src/artifacts/model_{model_type}.pth"
     model = torch.save(model, model_save_path)
-    print(f'Model saved to {model_save_path}')
+    print("Model saved as: ", model_save_path)
 
     end_t = time.time()
     minutes = (end_t - start_t)/60
