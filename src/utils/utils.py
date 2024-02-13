@@ -205,13 +205,13 @@ def get_data(config):
     model_type = config.model_type
 
     # The viewser data
-    if config.model_type == 'calibration':
+    if model_type == 'calibration':
         file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
 
-    elif config.model_type == 'testing':
+    elif model_type == 'testing':
         file_name = "/viewser_monthly_vol_test_sbnsos.pkl"
 
-    elif config.model_type == "forecasting":
+    elif model_type == "forecasting":
          file_name = "/viewser_monthly_vol_forecast_sbnsos.pkl"
 
     else:

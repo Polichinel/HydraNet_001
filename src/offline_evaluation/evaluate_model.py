@@ -352,25 +352,16 @@ if __name__ == "__main__":
 
     time_steps = time_steps_dict[input('a) 12 months\nb) 24 months\nc) 36 months\nd) 48 months\nNote: 48 is the current VIEWS standard.\n')]
 
-    runtype_dict = {'a' : 'calib', 'b' : 'test'}
-    run_type = runtype_dict[input("a) Calibration\nb) Testing\n")]
-    print(f'Run type: {run_type}\n')
+    model_type_dict = {'a' : 'calibration', 'b' : 'testing'}
+    model_type = model_type_dict[input("a) Calibration\nb) Testing\n")]
+    print(f'Run type: {model_type}\n')
 
-    do_sweep = input(f'a) Do sweep \nb) Do one run and pickle results \n')
-
-    print(f'One run and pickle!')
-
-    project = f"RUNET_VIEWS_{time_steps}_{run_type}_pickled_sbnsos"
+    project = f"imp_new_structure_{model_type}" # temp.
 
     hyperparameters = get_hp_config()
-    hyperparameters['time_steps'] = time_steps
-    hyperparameters['run_type'] = run_type
+
+    hyperparameters['model_type'] = model_type
     hyperparameters['sweep'] = False
-
-    print(f"using: {hyperparameters['model']}")
-
-        #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        #print(device)
 
     start_t = time.time()
 

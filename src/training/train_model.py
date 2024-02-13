@@ -314,7 +314,7 @@ def training_loop(config, model, criterion, optimizer, scheduler, views_vol, dev
 # 
 # 
 # # SHOULD BE MAIN SCRIPT ------------------------------------------------------------------
-# 
+
 
 
 def model_pipeline(config = None, project = None):
