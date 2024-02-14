@@ -16,7 +16,7 @@ import geopandas as gpd
 
 def get_views_date(location, partitioner_dict):
 
-    path_views_data = location + '/views_data.pkl'
+    path_views_data = location + '/views_data.pkl' # this does not work with your current naming...
 
     if os.path.isfile(path_views_data) == True:
 
