@@ -8,6 +8,8 @@ import urllib.request
 import os
 import sys
 
+import requests
+
 import pickle
 import numpy as np
 import pandas as pd
@@ -56,6 +58,7 @@ def get_prio_shape(location):
 
     path_prio = location + '/priogrid_shapefiles.zip'
 
+
     if os.path.isfile(path_prio) == True:
         
         print('File already downloaded')
@@ -65,9 +68,26 @@ def get_prio_shape(location):
 
     else:
         print('Beginning file download PRIO...')
-        url_prio = 'http://file.prio.no/ReplicationData/PRIO-GRID/priogrid_shapefiles.zip'
 
-        urllib.request.urlretrieve(url_prio, path_prio, timeout=20)
+
+        url_prio = 'http://file.prio.no/ReplicationData/PRIO-GRID/priogrid_shapefiles.zip'
+        print(f'from {url_prio}')
+        print(f'saveing to {path_prio}')
+        # urllib.request.urlretrieve(url_prio, path_prio) # old
+
+        # New: ------
+        # Set the timeout duration in seconds
+        timeout_duration = 60
+
+        try:
+            response = requests.get(url_prio, timeout=timeout_duration)
+            with open(path_prio, 'wb') as file:
+                file.write(response.content)
+
+        except requests.exceptions.RequestException as e:
+            print("Error:", e)
+        # ------
+
         prio_grid = gpd.read_file('zip://' + path_prio)
 
         prio_grid =  pd.DataFrame(prio_grid.drop(columns = ['geometry']))
