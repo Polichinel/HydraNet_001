@@ -67,7 +67,7 @@ def get_prio_shape(location):
         print('Beginning file download PRIO...')
         url_prio = 'http://file.prio.no/ReplicationData/PRIO-GRID/priogrid_shapefiles.zip'
 
-        urllib.request.urlretrieve(url_prio, path_prio)
+        urllib.request.urlretrieve(url_prio, path_prio, timeout=20)
         prio_grid = gpd.read_file('zip://' + path_prio)
 
         prio_grid =  pd.DataFrame(prio_grid.drop(columns = ['geometry']))
