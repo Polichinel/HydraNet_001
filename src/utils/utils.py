@@ -207,21 +207,28 @@ def get_data(config):
 
     # The viewser data
     if model_type == 'calibration':
-        file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
+        # file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
 
-        print('loading data....')
-        pkl_file = open(location + file_name, 'rb')
-        views_vol = pickle.load(pkl_file)
-        pkl_file.close()
+#        print('loading data....')
+#        pkl_file = open(location + file_name, 'rb')
+#        views_vol = pickle.load(pkl_file)
+#        pkl_file.close()
+        file_name = "/train_vol.npy"
+        views_vol = np.load(location + file_name)
 
 
     elif model_type == 'testing':
-        file_name = "/viewser_monthly_vol_test_sbnsos.pkl"
+        # file_name = "/viewser_monthly_vol_test_sbnsos.pkl"
 
-        print('loading data....')
-        pkl_file = open(location + file_name, 'rb')
-        views_vol = pickle.load(pkl_file)
-        pkl_file.close()
+        file_name = "/test_vol.npy"
+        views_vol = np.load(location + file_name)
+
+
+
+#        print('loading data....')
+#        pkl_file = open(location + file_name, 'rb')
+#        views_vol = pickle.load(pkl_file)
+#        pkl_file.close()
 
     elif model_type == "forecasting":
          file_name = "/latest_vol.npy"

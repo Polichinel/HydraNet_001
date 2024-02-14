@@ -83,8 +83,8 @@ if __name__ == "__main__":
     processed_location = '/home/simmaa/HydraNet_001/data/processed' # server
     raw_location = '/home/simmaa/HydraNet_001/data/raw' # server
 
-    path_viewser_data = raw_location + '/latest_viewser_data.pkl'
-    path_vol = processed_location +  '/latest_vol.npy'
+    path_viewser_data = raw_location + '/test_viewser_data.pkl'
+    path_vol = processed_location +  '/test_vol.npy'
 
     # create the folders if they don't exist
     if not os.path.exists(raw_location):
