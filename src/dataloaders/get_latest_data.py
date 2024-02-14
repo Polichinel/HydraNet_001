@@ -71,8 +71,11 @@ def df_to_vol(df):
 
 if __name__ == "__main__":
     
-    processed_location = '/home/simon/Documents/scripts/conflictNet/data/processed' # local
-    raw_location = '/home/simon/Documents/scripts/conflictNet/data/raw' # local
+    # processed_location = '/home/simon/Documents/scripts/conflictNet/data/processed' # local
+    # raw_location = '/home/simon/Documents/scripts/conflictNet/data/raw' # local
+
+    processed_location = '/home/simmaa/HydraNet_001/data/processed' # server
+    raw_location = '/home/simmaa/HydraNet_001/data/raw' # server
 
     path_viewser_data = raw_location + '/latest_viewser_data.pkl'
     path_vol = processed_location +  '/latest_vol.npy'
