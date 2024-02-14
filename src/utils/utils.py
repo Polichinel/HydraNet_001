@@ -200,7 +200,8 @@ def get_data(config):
     """
 
     # Data
-    location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
+    #location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
+    location = '/home/simmaa/HydraNet_001/data/processed' # data dir in fimbulthul.
 
     model_type = config.model_type
 
@@ -208,26 +209,33 @@ def get_data(config):
     if model_type == 'calibration':
         file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
 
+        print('loading data....')
+        pkl_file = open(location + file_name, 'rb')
+        views_vol = pickle.load(pkl_file)
+        pkl_file.close()
+
+
     elif model_type == 'testing':
         file_name = "/viewser_monthly_vol_test_sbnsos.pkl"
 
+        print('loading data....')
+        pkl_file = open(location + file_name, 'rb')
+        views_vol = pickle.load(pkl_file)
+        pkl_file.close()
+
     elif model_type == "forecasting":
-         file_name = "/viewser_monthly_vol_forecast_sbnsos.pkl"
+         file_name = "/latest_vol.npy"
+         views_vol = np.load(location + file_name)
 
     else:
         print('Wrong model type...')
         sys.exit()
 
-    print('loading data....')
-    pkl_file = open(location + file_name, 'rb')
-    views_vol = pickle.load(pkl_file)
-    pkl_file.close()
-
 
     #views_vol = norm_channels(views_vol, config, un_log = False, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
-    if config.norm_target:
-        views_vol = norm_features(views_vol, config, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #if config.norm_target: # nor used...
+    #    views_vol = norm_features(views_vol, config, a = 0, b = 1) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     return(views_vol)
