@@ -202,7 +202,12 @@ if __name__ == "__main__":
     model = model_pipeline(config = hyperparameters, project = project)
 
     # save the model - should prolly use the state_dict instead of the model object... 
-    artifacts_path = f"/home/projects/ku_00017/people/simpol/scripts/conflictNet/artifacts"
+    
+    # for computerome
+    # artifacts_path = f"/home/projects/ku_00017/people/simpol/scripts/conflictNet/artifacts"
+    
+    artifacts_path = f"/home/simmaa/HydraNet_001/artifacts"
+
     os.makedirs(artifacts_path, exist_ok=True)
 
     model = torch.save(model, f"{artifacts_path}/{model_type}_model.pt")
@@ -211,5 +216,3 @@ if __name__ == "__main__":
     end_t = time.time()
     minutes = (end_t - start_t)/60
     print(f'Done. Runtime: {minutes:.3f} minutes')
-
-
