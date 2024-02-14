@@ -106,7 +106,6 @@ def monthly_grid(prio_grid, views_df):
     return full_grid
 
 
-
 def get_sub_grid(grid, views_df):
 
         views_gids = views_df['pg_id'].unique()
@@ -153,12 +152,14 @@ def compile():
 
     file_name = "/viewser_monthly_vol_forecast_sbnsos.pkl"
 
-    location = '/home/projects/ku_00017/data/raw/conflictNet'
+    #location = '/home/projects/ku_00017/data/raw/conflictNet' # computerome
+    raw_location = '/home/simmaa/HydraNet_001/data/raw' # fimbulthul
+    processed_location = '/home/simmaa/HydraNet_001/data/processed' # fimbulthul
 
-    df = get_views_date(location, file_name)
+    df = get_views_date(processed_location, file_name)
     print('Data loaded from viewser')
     
-    grid = get_prio_shape(location)
+    grid = get_prio_shape(raw_location)
     print('PRIO-grid loaded')
     
     grid = monthly_grid(grid, df)
@@ -171,7 +172,7 @@ def compile():
     print('Created volumn')
 
     print(f'Pickling {file_name}')
-    output = open(location + file_name, 'wb')
+    output = open( processed_location + file_name, 'wb')
     pickle.dump(vol, output)
     output.close()
     print(f'Pickled {file_name}')
