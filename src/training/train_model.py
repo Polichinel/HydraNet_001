@@ -18,13 +18,13 @@ import torch.nn.functional as F
 import wandb
 
 # for computerome
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
+sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 #
-sys.path.insert(0, "/home/simmaa/HydraNet_001/src/networks")
-sys.path.insert(0, "/home/simmaa/HydraNet_001/src/configs")
-sys.path.insert(0, "/home/simmaa/HydraNet_001/src/utils")
+#sys.path.insert(0, "/home/simmaa/HydraNet_001/src/networks")
+#sys.path.insert(0, "/home/simmaa/HydraNet_001/src/configs")
+#sys.path.insert(0, "/home/simmaa/HydraNet_001/src/utils")
 
 
 from utils import choose_model, choose_loss, choose_sheduler, get_train_tensors, get_test_tensor, apply_dropout, execute_freeze_h_option, get_log_dict, train_log, init_weights, get_data
