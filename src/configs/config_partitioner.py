@@ -6,7 +6,7 @@ def get_partitioner_dict(partion):
 
     if partion == 'calibration':
 
-        partitioner_dict = {"train":(121,444),"predict":(445,492)} 
+        partitioner_dict = {"train":(121,396),"predict":(397,444)} # calib_partitioner_dict - (01/01/1990 - 12/31/2012) : (01/01/2013 - 31/12/2015)
 
     if partion == 'testing':
 
@@ -18,6 +18,4 @@ def get_partitioner_dict(partion):
 
         partitioner_dict = {"train":(121, last_month),"predict":(last_month, last_month + 36)} # 36 should not be hard coded...  
 
-    return partitioner_dict    
-
-
+    return partitioner_dict
