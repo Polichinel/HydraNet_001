@@ -98,7 +98,7 @@ if __name__ == "__main__":
     # processed_location = '/home/simmaa/HydraNet_001/data/processed' # server
     # raw_location = '/home/simmaa/HydraNet_001/data/raw' # server
 
-    partion  = 'forecast'
+    partion  = 'forecasting'
 
     config = get_hp_config()
 
