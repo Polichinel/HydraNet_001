@@ -207,9 +207,11 @@ def get_data(config):
 
     # The viewser data
     if model_type == 'calibration':
-        # file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
-
+        
+        
         # OLD SOLUTION STLL USED ON COMPUTEROME
+        file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
+
         print('loading data....')
         pkl_file = open(location + file_name, 'rb')
         views_vol = pickle.load(pkl_file)
