@@ -210,16 +210,16 @@ def get_data(config):
         
         
         # OLD SOLUTION STLL USED ON COMPUTEROME
-        file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
-
-        print('loading data....')
-        pkl_file = open(location + file_name, 'rb')
-        views_vol = pickle.load(pkl_file)
-        pkl_file.close()
+#        file_name = "/viewser_monthly_vol_calib_sbnsos.pkl" # bad names... 
+#
+#        print('loading data....')
+#        pkl_file = open(location + file_name, 'rb')
+#        views_vol = pickle.load(pkl_file)
+#        pkl_file.close()
         
         # THIS IS THE ONE TO USE
-#        file_name = "/calibration_vol.npy"
-#        views_vol = np.load(location + file_name)
+        file_name = "/calibration_vol.npy"
+        views_vol = np.load(location + file_name)
 
 
     elif model_type == 'testing':
