@@ -35,8 +35,8 @@ def get_hp_config():
     'norm_target' : False,
     'freeze_h' : "hl", # "all", "random", "hl", "hs", "none" - you should use "hl" for now!
     'time_steps' : 32,
-    'path_raw_data' : '/home/projects/ku_00017/data/raw/conflictNet', #'/home/simmaa/HydraNet_001/data/raw', # '/home/projects/ku_00017/data/raw/conflictNet
-    'path_processed_data' : '/home/projects/ku_00017/data/raw/conflictNet', # '/home/simmaa/HydraNet_001/data/processed', # /home/projects/ku_00017/data/raw/conflictNet
-    'path_repo' : '/home/projects/ku_00017/people/simpol/scripts/conflictNet', #'/home/simmaa/HydraNet_001', # /home/projects/ku_00017/people/simpol/scripts/conflictNet" 
+    'path_raw_data' : '/home/simmaa/HydraNet_001/data/raw', # '/home/projects/ku_00017/data/raw/conflictNet', #'/home/simmaa/HydraNet_001/data/raw', # '/home/projects/ku_00017/data/raw/conflictNet
+    'path_processed_data' : '/home/simmaa/HydraNet_001/data/processed', #'/home/projects/ku_00017/data/raw/conflictNet', # '/home/simmaa/HydraNet_001/data/processed', # /home/projects/ku_00017/data/raw/conflictNet
+    'path_repo' : '/home/simmaa/HydraNet_001' #'/home/projects/ku_00017/people/simpol/scripts/conflictNet', #'/home/simmaa/HydraNet_001', # /home/projects/ku_00017/people/simpol/scripts/conflictNet" 
     }
     return hyperparameters
