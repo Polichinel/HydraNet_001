@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.join(base_path, "utils"))
 
 from config_hyperparameters import get_hp_config
 from config_partitioner import get_partitioner_dict
-from utils_dataloader import get_views_date, df_to_vol
+from utils_dataloaders import get_views_date, df_to_vol
 
 
 # def get_views_date():
