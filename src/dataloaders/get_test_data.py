@@ -11,7 +11,17 @@ import pickle
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, "/home/simmaa/HydraNet_001/src/configs")
+
+# Set the base path relative to the current script location
+base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+print(f'working int {base_path}')
+
+# Add the required directories to the system path
+sys.path.insert(0, os.path.join(base_path, "architectures"))
+sys.path.insert(0, os.path.join(base_path, "configs"))
+sys.path.insert(0, os.path.join(base_path, "utils"))  
+
 from config_hyperparameters import get_hp_config
 
 def get_views_date():
