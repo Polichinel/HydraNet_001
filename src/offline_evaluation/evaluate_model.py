@@ -48,7 +48,7 @@ def test(model, test_tensor, time_steps, config, device): # should be called eva
     pred_np_list = []
     pred_class_np_list = []
 
-    h_tt = model.init_hTtime(hidden_channels = model.base, H = 180, W  = 180).float().to(device) # coul auto the...
+    h_tt = model.init_hTtime(hidden_channels = model.base, H = 180, W  = 180).float().to(device) # should infere the dim...
     seq_len = test_tensor.shape[1] # og nu køre eden bare helt til roden
     print(f'\t\t\t\t sequence length: {seq_len}', end= '\r')
 

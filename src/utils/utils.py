@@ -421,6 +421,9 @@ def get_train_tensors(views_vol, sample, config, device):
     return(train_tensor)
 
 
+
+
+
 def get_test_tensor(views_vol, config, device):
 
     """Uses to get the features for the test tensor. The test tensor is of size 1 x config.time_steps x config.input_channels x 180 x 180."""
@@ -430,9 +433,17 @@ def get_test_tensor(views_vol, config, device):
 
     # !!!!!!!!!!!!!! why is this test tensor put on device here? !!!!!!!!!!!!!!!!!!
     #test_tensor = torch.tensor(views_vol).float().to(device).unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :] 
+
+    print(f'views_vol shape {views_vol.shape}')
+
     test_tensor = torch.tensor(views_vol).float().unsqueeze(dim=0).permute(0,1,4,2,3)[:, :, ln_best_sb_idx:last_feature_idx, :, :] 
 
+    print(f'test_tensor shape {test_tensor.shape}')
+
     return test_tensor
+
+
+
 
 
 def get_log_dict(i, mean_array, mean_class_array, std_array, std_class_array, out_of_sample_vol, config):
