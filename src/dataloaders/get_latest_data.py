@@ -72,8 +72,10 @@ def df_to_vol(df):
     vol[df['abs_row'], df['abs_col'], df['abs_month'], 7] = df['ln_os_best']
     
     vol = np.flip(vol, axis = 0) # flip the rows, so north is up.
-    vol = np.transpose(vol, (2,0,1,3) ) # move the month dim to the front. Could just do it above but..
+    vol = np.transpose(vol, (2,0,1,3) ) # move the month dim to the front. Could just do it above but.. should be something like (324, 180, 180, 8)
     
+    print(f'Volume of shape {vol.shape} created. Should be (n_month, 180, 180, 8)')
+
     return vol
 
 if __name__ == "__main__":
