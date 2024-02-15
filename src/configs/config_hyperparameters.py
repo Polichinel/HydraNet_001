@@ -35,7 +35,7 @@ def get_hp_config():
     'norm_target' : False,
     'freeze_h' : "hl", # "all", "random", "hl", "hs", "none" - you should use "hl" for now!
     'time_steps' : 36, # 36 right?
-    'path_raw_data' : '/home/simon/Documents/scripts/conflictNet/data/raw',#'/home/simmaa/HydraNet_001/data/raw', # '/home/projects/ku_00017/data/raw/conflictNet', #'/home/simmaa/HydraNet_001/data/raw', # '/home/projects/ku_00017/data/raw/conflictNet
-    'path_processed_data' : '/home/simon/Documents/scripts/conflictNet/data/processed',#'/home/simmaa/HydraNet_001/data/processed', #'/home/projects/ku_00017/data/raw/conflictNet', # '/home/simmaa/HydraNet_001/data/processed', # /home/projects/ku_00017/data/raw/conflictNet
+    'path_raw_data' : '/home/simmaa/HydraNet_001/data/raw', # '/home/simon/Documents/scripts/conflictNet/data/raw',#, # '/home/projects/ku_00017/data/raw/conflictNet', #'/home/simmaa/HydraNet_001/data/raw', # '/home/projects/ku_00017/data/raw/conflictNet
+    'path_processed_data' : '/home/simmaa/HydraNet_001/data/processed', #'/home/simon/Documents/scripts/conflictNet/data/processed',#'/home/simmaa/HydraNet_001/data/processed', #'/home/projects/ku_00017/data/raw/conflictNet', # '/home/simmaa/HydraNet_001/data/processed', # /home/projects/ku_00017/data/raw/conflictNet
     }
     return hyperparameters
