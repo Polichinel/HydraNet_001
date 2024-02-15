@@ -176,9 +176,6 @@ def model_pipeline(config = None, project = None):
         training_loop(config, model, criterion, optimizer, scheduler, views_vol, device)
         print('Done training')
 
-#        get_posterior(unet, views_vol, config, device) # actually since you give config now you do not need: time_steps, run_type, is_sweep,
-#        print('Done testing')
-
         return(model)
 
 
