@@ -9,14 +9,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-#from sklearn.preprocessing import MinMaxScaler
-# from sklearn.metrics import average_precision_score
-# from sklearn.metrics import roc_auc_score
-# from sklearn.metrics import mean_squared_error
-# from sklearn.metrics import brier_score_loss
-
 import wandb
-
 
 # Set the base path relative to the current script location
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
