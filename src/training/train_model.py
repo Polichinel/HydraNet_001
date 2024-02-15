@@ -17,20 +17,16 @@ import torch.nn.functional as F
 
 import wandb
 
-# for computerome
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
-#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
-# Assuming this script is located in /home/simmaa/HydraNet_001/src/
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "networks")) # should be archictures... 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "configs"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "utils"))
+# Set the base path relative to the current script location
+base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#
-#sys.path.insert(0, "/home/simmaa/HydraNet_001/src/networks")
-#sys.path.insert(0, "/home/simmaa/HydraNet_001/src/configs")
-#sys.path.insert(0, "/home/simmaa/HydraNet_001/src/utils")
+print(f'working int {base_path}')
+
+# Add the required directories to the system path
+sys.path.insert(0, os.path.join(base_path, "architectures"))
+sys.path.insert(0, os.path.join(base_path, "configs"))
+sys.path.insert(0, os.path.join(base_path, "utils"))  
 
 
 from utils import choose_model, choose_loss, choose_sheduler, get_train_tensors, get_test_tensor, apply_dropout, execute_freeze_h_option, get_log_dict, train_log, init_weights, get_data
