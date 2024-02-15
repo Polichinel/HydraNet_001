@@ -16,15 +16,16 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import brier_score_loss
 
 import wandb
-# computerome paths 
-# sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
-# sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
-# sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
-# fimbulthul paths  
-sys.path.insert(0, "/home/simmaa/HydraNet_001/src/networks")
-sys.path.insert(0, "/home/simmaa/HydraNet_001/src/configs")
-sys.path.insert(0, "/home/simmaa/HydraNet_001/src/utils")
+# Set the base path relative to the current script location
+base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+print(f'working int {base_path}')
+
+# Add the required directories to the system path
+sys.path.insert(0, os.path.join(base_path, "architectures"))
+sys.path.insert(0, os.path.join(base_path, "configs"))
+sys.path.insert(0, os.path.join(base_path, "utils"))  
 
 
 from utils import choose_model, choose_loss, choose_sheduler, get_train_tensors, get_test_tensor, apply_dropout, execute_freeze_h_option, get_log_dict, train_log, init_weights, get_data
