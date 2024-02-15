@@ -41,7 +41,7 @@ def make(config, device):
     # Create a partial function with the initialization function and the config parameter
     init_fn = functools.partial(init_weights, config=config)
 
-    # Apply the initialization function to the modeli
+    # Apply the initialization function to the modelrawi
     model.apply(init_fn)
 
     # choose loss function
@@ -203,7 +203,10 @@ if __name__ == "__main__":
     # for computerome
     # artifacts_path = f"/home/projects/ku_00017/people/simpol/scripts/conflictNet/artifacts"
     
-    artifacts_path = f"/home/simmaa/HydraNet_001/artifacts"
+    # for fimbulthul
+#    artifacts_path = f"/home/simmaa/HydraNet_001/artifacts"
+
+    artifacts_path = f"{hyperparameters['path_repo']}/artifacts"
 
     os.makedirs(artifacts_path, exist_ok=True)
 

@@ -5,9 +5,9 @@ import time
 import sys
 
 # local imports
-sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
-sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
-sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
 
 import torch
 import torch.nn as nn
@@ -201,8 +201,8 @@ def get_data(config):
 
     # Data
     #location = '/home/projects/ku_00017/data/raw/conflictNet' # data dir in computerome.
-    location = '/home/simmaa/HydraNet_001/data/processed' # data dir in fimbulthul.
-
+    #location = '/home/simmaa/HydraNet_001/data/processed' # data dir in fimbulthul.
+    location = config.path_processed_data
     model_type = config.model_type
 
     # The viewser data

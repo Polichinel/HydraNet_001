@@ -1,5 +1,7 @@
 # Use viewser env
 
+import sys
+
 from viewser import Queryset, Column
 from ingester3.ViewsMonth import ViewsMonth
 
@@ -8,6 +10,9 @@ import pickle
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, "/home/simmaa/HydraNet_001/src/configs")
+from config_hyperparameters import get_hp_config
 
 def get_views_date():
 
@@ -81,8 +86,13 @@ if __name__ == "__main__":
     # processed_location = '/home/simon/Documents/scripts/conflictNet/data/processed' # local
     # raw_location = '/home/simon/Documents/scripts/conflictNet/data/raw' # local
 
-    processed_location = '/home/simmaa/HydraNet_001/data/processed' # server
-    raw_location = '/home/simmaa/HydraNet_001/data/raw' # server
+    #processed_location = '/home/simmaa/HydraNet_001/data/processed' # server
+    #raw_location = '/home/simmaa/HydraNet_001/data/raw' # server
+
+    config = get_hp_config()
+
+    processed_location = config['path_processed_data']
+    raw_location = config['path_raw_data']
 
     path_viewser_data = raw_location + '/calibration_viewser_data.pkl'
     path_vol = processed_location +  '/calibration_vol.npy'

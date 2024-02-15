@@ -1,5 +1,7 @@
 # Use viewser env
 
+import sys
+
 from viewser import Queryset, Column
 from ingester3.ViewsMonth import ViewsMonth
 
@@ -8,6 +10,9 @@ import pickle
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, "/home/simmaa/HydraNet_001/src/configs")
+from config_hyperparameters import get_hp_config
 
 def get_views_date():
 
@@ -72,6 +77,7 @@ def df_to_vol(df):
     vol[df['abs_row'], df['abs_col'], df['abs_month'], 7] = df['ln_os_best']
     
     vol = np.flip(vol, axis = 0) # flip the rows, so north is up.
+    vol = np.transpose(vol, (2,0,1,3) ) # move the month dim to the front. Could just do it above but..
     
     return vol
 
@@ -80,8 +86,17 @@ if __name__ == "__main__":
     # processed_location = '/home/simon/Documents/scripts/conflictNet/data/processed' # local
     # raw_location = '/home/simon/Documents/scripts/conflictNet/data/raw' # local
 
-    processed_location = '/home/simmaa/HydraNet_001/data/processed' # server
-    raw_location = '/home/simmaa/HydraNet_001/data/raw' # server
+    #processed_location = '/home/simmaa/HydraNet_001/data/processed' # server
+    #raw_location = '/home/simmaa/HydraNet_001/data/raw' # server
+
+
+    config = get_hp_config()
+
+    processed_location = config['path_processed_data']
+    raw_location = config['path_raw_data']
+
+    path_viewser_data = raw_location + '/calibration_viewser_data.pkl'
+    path_vol = processed_location +  '/calibration_vol.npy'
 
     path_viewser_data = raw_location + '/test_viewser_data.pkl'
     path_vol = processed_location +  '/test_vol.npy'
