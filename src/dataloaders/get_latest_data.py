@@ -144,6 +144,7 @@ if __name__ == "__main__":
         # create volume
         vol = df_to_vol(df)
 
+        print(f'shape of volume: {vol.shape}')
         print(f'Saving volume to {path_vol}')
         # save npy
         np.save(path_vol, vol)
