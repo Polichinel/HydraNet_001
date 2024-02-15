@@ -200,7 +200,8 @@ if __name__ == "__main__":
     # for fimbulthul
 #    artifacts_path = f"/home/simmaa/HydraNet_001/artifacts"
 
-    artifacts_path = f"{hyperparameters['path_repo']}/artifacts"
+    #artifacts_path = f"{hyperparameters['path_repo']}/artifacts"
+    artifacts_path = base_path.replace('src', 'artifacts')
 
     os.makedirs(artifacts_path, exist_ok=True)
 

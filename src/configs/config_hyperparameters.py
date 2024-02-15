@@ -37,6 +37,5 @@ def get_hp_config():
     'time_steps' : 32,
     'path_raw_data' : '/home/simmaa/HydraNet_001/data/raw', # '/home/projects/ku_00017/data/raw/conflictNet', #'/home/simmaa/HydraNet_001/data/raw', # '/home/projects/ku_00017/data/raw/conflictNet
     'path_processed_data' : '/home/simmaa/HydraNet_001/data/processed', #'/home/projects/ku_00017/data/raw/conflictNet', # '/home/simmaa/HydraNet_001/data/processed', # /home/projects/ku_00017/data/raw/conflictNet
-    'path_repo' : '/home/simmaa/HydraNet_001' #'/home/projects/ku_00017/people/simpol/scripts/conflictNet', #'/home/simmaa/HydraNet_001', # /home/projects/ku_00017/people/simpol/scripts/conflictNet" 
     }
     return hyperparameters
