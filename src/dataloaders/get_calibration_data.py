@@ -72,7 +72,8 @@ def df_to_vol(df):
     vol[df['abs_row'], df['abs_col'], df['abs_month'], 7] = df['ln_os_best']
     
     vol = np.flip(vol, axis = 0) # flip the rows, so north is up.
-    
+    vol = np.transpose(vol, (2,0,1,3) ) # move the month dim to the front. Could just do it above but..
+ 
     return vol
 
 if __name__ == "__main__":
@@ -83,8 +84,8 @@ if __name__ == "__main__":
     processed_location = '/home/simmaa/HydraNet_001/data/processed' # server
     raw_location = '/home/simmaa/HydraNet_001/data/raw' # server
 
-    path_viewser_data = raw_location + '/train_viewser_data.pkl'
-    path_vol = processed_location +  '/train_vol.npy'
+    path_viewser_data = raw_location + '/calibration_viewser_data.pkl'
+    path_vol = processed_location +  '/calibration_vol.npy'
 
     # create the folders if they don't exist
     if not os.path.exists(raw_location):
