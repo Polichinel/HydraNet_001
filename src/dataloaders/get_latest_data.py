@@ -61,7 +61,7 @@ def get_views_date():
 
 def df_to_vol(df):
 
-    month_first = df['month_id'].min() # Jan 1990
+    month_first = df['month_id'].min() # Jan 1990Column_3
     month_last =  df['month_id'].max() # minus 1 because the current month is not yet available,
 
     month_range = month_last - month_first + 1
@@ -103,8 +103,6 @@ if __name__ == "__main__":
 
     path_viewser_data = raw_location + '/calibration_viewser_data.pkl'
     path_vol = processed_location +  '/calibration_vol.npy'
-
-
 
     path_viewser_data = raw_location + '/latest_viewser_data.pkl'
     path_vol = processed_location +  '/latest_vol.npy'

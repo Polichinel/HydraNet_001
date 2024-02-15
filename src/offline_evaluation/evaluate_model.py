@@ -245,6 +245,7 @@ if __name__ == "__main__":
 
     hyperparameters = get_hp_config()
 
+    hyperparameters['time_steps'] = time_steps
     hyperparameters['model_type'] = model_type
     hyperparameters['sweep'] = False
 

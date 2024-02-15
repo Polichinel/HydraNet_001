@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.join(base_path, "configs"))
 sys.path.insert(0, os.path.join(base_path, "utils"))  
 
 from config_hyperparameters import get_hp_config
+from config_partitioner import get_partitioner_dict
 
 def get_views_date():
 
@@ -53,13 +54,14 @@ def get_views_date():
     df.loc[:,'abs_row'] = df.loc[:,'row'] - df.loc[:,'row'].min() 
     df.loc[:,'abs_col'] = df.loc[:,'col'] - df.loc[:,'col'].min()
     df.loc[:,'abs_month'] = df.loc[:,'month_id'] - month_first  
-    partitioner_dict = {"train":(121,396),"predict":(397,444)} # calib_partitioner_dict - (01/01/1990 - 12/31/2012) : (01/01/2013 - 31/12/2015)
+    #partitioner_dict = {"train":(121,396),"predict":(397,444)} # calib_partitioner_dict - (01/01/1990 - 12/31/2012) : (01/01/2013 - 31/12/2015)
  
+    partitioner_dict = get_partitioner_dict('calibration')
+
     month_range = np.arange(partitioner_dict['train'][0], partitioner_dict['predict'][1]+1,1)
 
     df = df[df['month_id'].isin(month_range)] # temp sub
  
-
     return df
 
 

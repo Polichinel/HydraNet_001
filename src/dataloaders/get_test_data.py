@@ -11,7 +11,6 @@ import pickle
 import numpy as np
 import pandas as pd
 
-
 # Set the base path relative to the current script location
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,6 +22,7 @@ sys.path.insert(0, os.path.join(base_path, "configs"))
 sys.path.insert(0, os.path.join(base_path, "utils"))  
 
 from config_hyperparameters import get_hp_config
+from config_partitioner import get_partitioner_dict
 
 def get_views_date():
 
@@ -54,8 +54,10 @@ def get_views_date():
     df.loc[:,'abs_row'] = df.loc[:,'row'] - df.loc[:,'row'].min() 
     df.loc[:,'abs_col'] = df.loc[:,'col'] - df.loc[:,'col'].min()
     df.loc[:,'abs_month'] = df.loc[:,'month_id'] - month_first  
-    partitioner_dict = {"train":(121,444),"predict":(445,492)} # test_partitioner_dict - (01/01/1990 - 31/12/2015) : (01/01/2016 - 31/12/2018)
+#    partitioner_dict = {"train":(121,444),"predict":(445,492)} # test_partitioner_dict - (01/01/1990 - 31/12/2015) : (01/01/2016 - 31/12/2018)
  
+    partitioner_dict = get_partitioner_dict('testing')
+
     month_range = np.arange(partitioner_dict['train'][0], partitioner_dict['predict'][1]+1,1)
 
     df = df[df['month_id'].isin(month_range)] # temp sub
