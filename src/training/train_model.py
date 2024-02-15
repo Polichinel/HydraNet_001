@@ -18,9 +18,15 @@ import torch.nn.functional as F
 import wandb
 
 # for computerome
-sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
-sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
-sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/networks")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/configs")
+#sys.path.insert(0, "/home/projects/ku_00017/people/simpol/scripts/conflictNet/src/utils")
+
+# Assuming this script is located in /home/simmaa/HydraNet_001/src/
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "networks")) # should be archictures... 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "configs"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "utils"))
+
 #
 #sys.path.insert(0, "/home/simmaa/HydraNet_001/src/networks")
 #sys.path.insert(0, "/home/simmaa/HydraNet_001/src/configs")
@@ -31,8 +37,7 @@ from utils import choose_model, choose_loss, choose_sheduler, get_train_tensors,
 #from config_sweep import get_swep_config
 from config_hyperparameters import get_hp_config
 
-
-# SHOULD BE TRAIN SCRIPT ------------------------------------------------------------------
+print('Imports done...')
 
 def make(config, device):
 
