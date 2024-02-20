@@ -201,7 +201,7 @@ if __name__ == "__main__":
 #    artifacts_path = f"/home/simmaa/HydraNet_001/artifacts"
 
     #artifacts_path = f"{hyperparameters['path_repo']}/artifacts"
-    artifacts_path = base_path.replace('src', 'artifacts')
+    artifacts_path = base_path.replace('src', 'artifacts') # outer folder as the artifacts folder is not in the src folder
 
     os.makedirs(artifacts_path, exist_ok=True)
 
