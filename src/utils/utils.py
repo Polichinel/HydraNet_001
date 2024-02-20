@@ -204,7 +204,7 @@ def get_data(config):
     model_type = config.model_type # 'calibration', 'testing' or 'forecasting'
 
     try:
-        file_name = f'{model_type}_vol.npy'
+        file_name = f'/{model_type}_vol.npy'
         views_vol = np.load(location + file_name)
     
     except FileNotFoundError as e:
